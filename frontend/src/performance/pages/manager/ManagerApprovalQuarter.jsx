@@ -31,32 +31,32 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 // Helper function to get full name with priority to fullNameAsAadhaar
 const getFullName = (data) => {
   if (!data) return null;
-  
+
   // Check for fullNameAsAadhaar
   if (data.fullNameAsAadhaar && data.fullNameAsAadhaar.trim() !== "") {
     return data.fullNameAsAadhaar.trim();
   }
-  
+
   // Check for employeeFullName
   if (data.employeeFullName && data.employeeFullName.trim() !== "") {
     return data.employeeFullName.trim();
   }
-  
+
   // Check for name
   if (data.name && data.name.trim() !== "") {
     return data.name.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = data.firstName || "";
   const middleName = data.middleName || "";
   const lastName = data.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return null;
 };
 
@@ -186,10 +186,10 @@ const ManagerApprovalQuarter = () => {
   const fetchEmployeeDetails = async () => {
     try {
       if (!empId) return;
-      
+
       // Corrected API endpoint - using BASE_URL_EPMS_EMP with the empId
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${empId}`);
-      
+
       let employee = null;
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
@@ -200,7 +200,7 @@ const ManagerApprovalQuarter = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -320,14 +320,14 @@ const ManagerApprovalQuarter = () => {
         actionType === "APPROVE"
           ? `${totalGoals} goal(s) approved successfully!`
           : `${totalGoals} goal(s) sent back to employee with comments!`;
-      
+
       setShowModal(false);
       setApprovalComment("");
       setActionType(null);
-      
+
       await fetchSmartGoals();
       await fetchDevelopmentGoals();
-      
+
       showInfoModalMessage("Success", message, "success", () => {
         navigate(-1);
       });
@@ -425,7 +425,7 @@ const ManagerApprovalQuarter = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors font-medium"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Goal Approval</span>
@@ -549,11 +549,10 @@ const ManagerApprovalQuarter = () => {
               <>
                 {/* Weightage Summary */}
                 <div
-                  className={`rounded-xl p-4 mb-6 flex items-center justify-between ${
-                    isValidWeightage
+                  className={`rounded-xl p-4 mb-6 flex items-center justify-between ${isValidWeightage
                       ? "bg-green-50 border border-green-200"
                       : "bg-red-50 border border-red-200"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     {isValidWeightage ? (
@@ -564,9 +563,8 @@ const ManagerApprovalQuarter = () => {
                     <div>
                       <p className="text-sm font-semibold">Total Weightage</p>
                       <p
-                        className={`text-2xl font-bold ${
-                          isValidWeightage ? "text-green-700" : "text-red-700"
-                        }`}
+                        className={`text-2xl font-bold ${isValidWeightage ? "text-green-700" : "text-red-700"
+                          }`}
                       >
                         {totalWeightage}%
                       </p>
@@ -764,11 +762,10 @@ const ManagerApprovalQuarter = () => {
               disabled={
                 submitting || (smartGoals.length > 0 && !isValidWeightage)
               }
-              className={`px-6 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium shadow-md ${
-                smartGoals.length > 0 && !isValidWeightage
+              className={`px-6 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium shadow-md ${smartGoals.length > 0 && !isValidWeightage
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-green-600 text-white hover:bg-green-700"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               title={
                 smartGoals.length > 0 && !isValidWeightage
                   ? "SMART goals total weightage must be 100% before approval"

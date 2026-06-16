@@ -40,32 +40,32 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 // Helper function to get full name with priority to fullNameAsAadhaar
 const getFullName = (data) => {
   if (!data) return null;
-  
+
   // Check for fullNameAsAadhaar
   if (data.fullNameAsAadhaar && data.fullNameAsAadhaar.trim() !== "") {
     return data.fullNameAsAadhaar.trim();
   }
-  
+
   // Check for employeeFullName
   if (data.employeeFullName && data.employeeFullName.trim() !== "") {
     return data.employeeFullName.trim();
   }
-  
+
   // Check for name
   if (data.name && data.name.trim() !== "") {
     return data.name.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = data.firstName || "";
   const middleName = data.middleName || "";
   const lastName = data.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return null;
 };
 
@@ -400,10 +400,10 @@ const ManagerReviewQuarter = () => {
     try {
       const storedEmpId = empId;
       if (!storedEmpId) return;
-      
+
       // Corrected API endpoint - using BASE_URL_EPMS_EMP with the storedEmpId
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpId}`);
-      
+
       let employee = null;
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
@@ -414,7 +414,7 @@ const ManagerReviewQuarter = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -696,7 +696,7 @@ const ManagerReviewQuarter = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors font-medium"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Final Review</span>

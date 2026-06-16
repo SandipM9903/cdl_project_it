@@ -19,28 +19,28 @@ import { FiArrowLeft } from "react-icons/fi";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee";
 };
 
@@ -215,9 +215,9 @@ const ManagerReview = () => {
           const emailPayload = {
             templateId: 4,
             to: employeeData.emailId,
-            variables: { 
-              employeeName: getEmployeeFullName(employeeData), 
-              quarter: quarter || "current quarter" 
+            variables: {
+              employeeName: getEmployeeFullName(employeeData),
+              quarter: quarter || "current quarter"
             },
           };
           fetch(`${BASE_URL_EPMS}/api/email/send`, {
@@ -243,9 +243,9 @@ const ManagerReview = () => {
   };
 
   const ratingOptions = [
-    { value: "1", label: "1 - Poor" }, 
+    { value: "1", label: "1 - Poor" },
     { value: "2", label: "2 - Fair" },
-    { value: "3", label: "3 - Good" }, 
+    { value: "3", label: "3 - Good" },
     { value: "4", label: "4 - Very Good" },
     { value: "5", label: "5 - Excellent" },
   ];
@@ -272,7 +272,7 @@ const ManagerReview = () => {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
       <div className="mt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pb-12">
-        
+
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center text-sm mb-6">
           <button
@@ -294,7 +294,7 @@ const ManagerReview = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600 cursor-default">
@@ -310,7 +310,7 @@ const ManagerReview = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             {/* Employee Info Card - Same as ManagerPredefinedGoals */}
             <div className="bg-white rounded-lg shadow-md p-6">
               {employeeLoading ? (
@@ -435,8 +435,8 @@ const ManagerReview = () => {
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold mb-2">Overall Rating *</label>
-                  <select 
-                    value={overallManagerRating} 
+                  <select
+                    value={overallManagerRating}
                     onChange={(e) => setOverallManagerRating(e.target.value)}
                     className={`w-full p-2.5 border rounded-lg ${validationErrors.overallManagerRating ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                   >
@@ -449,8 +449,8 @@ const ManagerReview = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-2">Overall Comment *</label>
-                  <textarea 
-                    value={overallManagerComment} 
+                  <textarea
+                    value={overallManagerComment}
                     onChange={(e) => setOverallManagerComment(e.target.value)}
                     rows="3"
                     className={`w-full p-2.5 border rounded-lg ${validationErrors.overallManagerComment ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -501,9 +501,9 @@ const ManagerReview = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div>
                     <label className="block text-sm font-semibold mb-2">Achievement Level *</label>
-                    <select 
-                      value={achievementLevel} 
-                      onChange={e => setAchievementLevel(e.target.value)} 
+                    <select
+                      value={achievementLevel}
+                      onChange={e => setAchievementLevel(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg ${validationErrors.achievementLevel ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     >
                       <option value="">Select</option>
@@ -515,9 +515,9 @@ const ManagerReview = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2">Potential *</label>
-                    <select 
-                      value={potential} 
-                      onChange={e => setPotential(e.target.value)} 
+                    <select
+                      value={potential}
+                      onChange={e => setPotential(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg ${validationErrors.potential ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     >
                       <option value="">Select</option>
@@ -531,9 +531,9 @@ const ManagerReview = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2">Performance *</label>
-                    <select 
-                      value={performance} 
-                      onChange={e => setPerformance(e.target.value)} 
+                    <select
+                      value={performance}
+                      onChange={e => setPerformance(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg ${validationErrors.performance ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     >
                       <option value="">Select</option>
@@ -547,9 +547,9 @@ const ManagerReview = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2">Talent Status *</label>
-                    <select 
-                      value={talentResource} 
-                      onChange={e => setTalentResource(e.target.value)} 
+                    <select
+                      value={talentResource}
+                      onChange={e => setTalentResource(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg ${validationErrors.talentResource ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                     >
                       <option value="">Select</option>
@@ -561,7 +561,7 @@ const ManagerReview = () => {
                     )}
                   </div>
                 </div>
-                
+
                 {category && (
                   <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2">
@@ -576,16 +576,16 @@ const ManagerReview = () => {
 
             {/* Submission Actions */}
             <div className="flex justify-end gap-4">
-              <button 
-                type="button" 
-                onClick={() => navigate(-1)} 
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
                 className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                disabled={submitting} 
+              <button
+                type="submit"
+                disabled={submitting}
                 className="px-6 py-3 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-w-[200px]"
               >
                 {submitting ? (

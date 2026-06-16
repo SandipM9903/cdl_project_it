@@ -64,7 +64,7 @@ const employeeCode = localStorage.getItem('empId');
 const LoadingOverlay = ({ message = "" }) => {
   const getLoadingText = () => {
     const msg = message.toLowerCase();
-    
+
     if (msg.includes("saving") || msg.includes("draft")) {
       return "Saving Draft...";
     } else if (msg.includes("submitting")) {
@@ -74,7 +74,7 @@ const LoadingOverlay = ({ message = "" }) => {
     } else if (msg.includes("uploading")) {
       return "Uploading Document...";
     }
-    
+
     return message || "Processing...";
   };
 
@@ -497,17 +497,17 @@ const EmployeeAnnualReview = () => {
     try {
       const storedEmpCode = localStorage.getItem('empId');
       console.log("Fetching employee details for code:", storedEmpCode);
-      
+
       if (!storedEmpCode) {
         console.error("No employee code found in localStorage");
         return;
       }
-      
+
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpCode}`);
       console.log("Employee API Response:", response.data);
-      
+
       let employee = null;
-      
+
       if (Array.isArray(response.data)) {
         employee = response.data.find(
           (emp) => emp.empCode?.toString() === storedEmpCode?.toString()
@@ -515,16 +515,16 @@ const EmployeeAnnualReview = () => {
       } else if (response.data && typeof response.data === 'object') {
         employee = response.data;
       }
-      
+
       if (employee) {
         console.log("Found employee:", employee);
         setEmployeeData(employee);
-        
-        const managerIdValue = employee.reportingManagerEmailId || 
-                               employee.managerEmailId || 
-                               employee.reportingManager ||
-                               employee.managerId;
-        
+
+        const managerIdValue = employee.reportingManagerEmailId ||
+          employee.managerEmailId ||
+          employee.reportingManager ||
+          employee.managerId;
+
         if (managerIdValue) {
           setManagerId(managerIdValue);
           console.log("Manager ID set to:", managerIdValue);
@@ -578,12 +578,12 @@ const EmployeeAnnualReview = () => {
           setCertifications([]);
         }
 
-        const isActuallySubmitted = 
-          reviewData.status !== "DRAFT" || 
-          reviewData.submittedAt || 
-          reviewData.managerRemarks || 
-          reviewData.achievementLevel || 
-          reviewData.potential || 
+        const isActuallySubmitted =
+          reviewData.status !== "DRAFT" ||
+          reviewData.submittedAt ||
+          reviewData.managerRemarks ||
+          reviewData.achievementLevel ||
+          reviewData.potential ||
           reviewData.performance;
 
         if (isActuallySubmitted) {
@@ -682,11 +682,11 @@ const EmployeeAnnualReview = () => {
         setKeyAccomplishment(draft.keyAccomplishment || "");
         setUseNAOption(draft.useNAOption || false);
         setIsDraft(true);
-        
+
         if (draft.managerId) {
           setManagerId(draft.managerId);
         }
-        
+
         let loadedCerts = [];
         if (draft.certifications && draft.certifications.length > 0) {
           const certsWithFiles = draft.certifications.map((cert, index) => ({
@@ -705,7 +705,7 @@ const EmployeeAnnualReview = () => {
         } else {
           setCertifications([]);
         }
-        
+
         let loadedPosh = { file: null, fileName: null, uploaded: false, existingDocId: null, existingFileName: null, isReplaced: false };
         if (draft.id) {
           const poshInfo = await fetchExistingDocuments(draft.id);
@@ -913,11 +913,11 @@ const EmployeeAnnualReview = () => {
         certifications.map((cert) =>
           cert.tempId === tempId
             ? {
-                ...cert,
-                file: file,
-                fileName: file.name,
-                isReplaced: !!cert.existingDocId,
-              }
+              ...cert,
+              file: file,
+              fileName: file.name,
+              isReplaced: !!cert.existingDocId,
+            }
             : cert,
         ),
       );
@@ -969,7 +969,7 @@ const EmployeeAnnualReview = () => {
 
   const handleSaveDraft = async () => {
     if (savingDraft || submitting) return;
-    
+
     if (!managerId) {
       showModal("Error", "Manager ID not found. Please ensure you have a reporting manager assigned.", "error");
       return;
@@ -1251,19 +1251,18 @@ const EmployeeAnnualReview = () => {
       {/* Custom Notification Toast */}
       {notification.show && createPortal(
         <div className="fixed top-5 right-5 z-[9999] animate-slideIn">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md transition-all ${
-            notification.type === "success" ? "bg-green-50/90 border-green-200 text-green-800" :
-            notification.type === "error" ? "bg-red-50/90 border-red-200 text-red-800" :
-            notification.type === "warning" ? "bg-yellow-50/90 border-yellow-200 text-yellow-800" :
-            "bg-blue-50/90 border-blue-200 text-blue-800"
-          }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md transition-all ${notification.type === "success" ? "bg-green-50/90 border-green-200 text-green-800" :
+              notification.type === "error" ? "bg-red-50/90 border-red-200 text-red-800" :
+                notification.type === "warning" ? "bg-yellow-50/90 border-yellow-200 text-yellow-800" :
+                  "bg-blue-50/90 border-blue-200 text-blue-800"
+            }`}>
             {notification.type === "success" && <FaCheckCircle className="text-green-500 text-lg flex-shrink-0" />}
             {notification.type === "error" && <FaExclamationTriangle className="text-red-500 text-lg flex-shrink-0" />}
             {notification.type === "warning" && <FaExclamationTriangle className="text-yellow-500 text-lg flex-shrink-0" />}
             {notification.type === "info" && <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0" />}
             <span className="text-sm font-medium">{notification.message}</span>
-            <button 
-              onClick={() => setNotification(prev => ({ ...prev, show: false }))} 
+            <button
+              onClick={() => setNotification(prev => ({ ...prev, show: false }))}
               className="ml-2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
             >
               &times;
@@ -1272,11 +1271,11 @@ const EmployeeAnnualReview = () => {
         </div>,
         document.body
       )}
-      
+
       {(submitting || savingDraft) && (
         <LoadingOverlay message={submitting ? "Submitting annual review..." : "Saving draft..."} />
       )}
-      
+
       <div className="flex flex-col min-h-screen bg-gray-50">
         <Header />
 
@@ -1286,9 +1285,8 @@ const EmployeeAnnualReview = () => {
             <button
               onClick={() => navigate(-1)}
               disabled={isAnyActionInProgress}
-              className={`flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors mr-4 font-medium ${
-                isAnyActionInProgress ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors mr-4 font-medium ${isAnyActionInProgress ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               <FiArrowLeft size={16} />
               Back
@@ -1296,20 +1294,18 @@ const EmployeeAnnualReview = () => {
             <span className="text-gray-400">/</span>
             <span
               onClick={() => !isAnyActionInProgress && navigate("/dashboard")}
-              className={`cursor-pointer text-gray-600 hover:text-red-500 transition-colors ml-2 ${
-                isAnyActionInProgress ? "pointer-events-none opacity-50" : ""
-              }`}
+              className={`cursor-pointer text-gray-600 hover:text-red-500 transition-colors ml-2 ${isAnyActionInProgress ? "pointer-events-none opacity-50" : ""
+                }`}
             >
               Home
             </span>
             <span className="mx-2 text-gray-400">/</span>
             <span
               onClick={() => !isAnyActionInProgress && navigate("/EmployeeAppraisal")}
-              className={`cursor-pointer text-gray-600 hover:text-red-500 transition-colors ${
-                isAnyActionInProgress ? "pointer-events-none opacity-50" : ""
-              }`}
+              className={`cursor-pointer text-gray-600 hover:text-red-500 transition-colors ${isAnyActionInProgress ? "pointer-events-none opacity-50" : ""
+                }`}
             >
-              My Appraisal
+              My Performance
             </span>
             <span className="mx-2 text-gray-400">/</span>
             <span className="font-semibold text-red-600">
@@ -1409,12 +1405,11 @@ const EmployeeAnnualReview = () => {
                         return (
                           <tr key={quarter} className="hover:bg-gray-50 transition-colors">
                             <td className="px-6 py-4">
-                              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                                quarter === "Q1" ? "bg-green-100 text-green-700" :
-                                quarter === "Q2" ? "bg-blue-100 text-blue-700" :
-                                quarter === "Q3" ? "bg-yellow-100 text-yellow-700" :
-                                "bg-red-100 text-red-700"
-                              }`}>
+                              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${quarter === "Q1" ? "bg-green-100 text-green-700" :
+                                  quarter === "Q2" ? "bg-blue-100 text-blue-700" :
+                                    quarter === "Q3" ? "bg-yellow-100 text-yellow-700" :
+                                      "bg-red-100 text-red-700"
+                                }`}>
                                 {quarter}
                               </span>
                             </td>
@@ -1424,22 +1419,20 @@ const EmployeeAnnualReview = () => {
                             </td>
                             <td className="px-6 py-4 text-center">
                               {hasSelfAssessment ? (
-                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                                  data.selfAssessment >= 80 ? "bg-green-100 text-green-700" :
-                                  data.selfAssessment >= 60 ? "bg-yellow-100 text-yellow-700" :
-                                  "bg-orange-100 text-orange-700"
-                                }`}>
+                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${data.selfAssessment >= 80 ? "bg-green-100 text-green-700" :
+                                    data.selfAssessment >= 60 ? "bg-yellow-100 text-yellow-700" :
+                                      "bg-orange-100 text-orange-700"
+                                  }`}>
                                   {data.selfAssessment}
                                 </span>
                               ) : <span className="text-gray-400 text-sm">Not assessed</span>}
                             </td>
                             <td className="px-6 py-4 text-center">
                               {hasManagerAssessment ? (
-                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                                  data.managerAssessment >= 80 ? "bg-green-100 text-green-700" :
-                                  data.managerAssessment >= 60 ? "bg-yellow-100 text-yellow-700" :
-                                  "bg-orange-100 text-orange-700"
-                                }`}>
+                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${data.managerAssessment >= 80 ? "bg-green-100 text-green-700" :
+                                    data.managerAssessment >= 60 ? "bg-yellow-100 text-yellow-700" :
+                                      "bg-orange-100 text-orange-700"
+                                  }`}>
                                   {data.managerAssessment}
                                 </span>
                               ) : <span className="text-gray-400 text-sm">Not assessed</span>}
@@ -1586,9 +1579,8 @@ const EmployeeAnnualReview = () => {
 
                 {/* NA Option */}
                 <div
-                  className={`mb-6 p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                    useNAOption ? "border-red-500 bg-red-50" : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30"
-                  } ${isAnyActionInProgress ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`mb-6 p-4 rounded-xl border-2 transition-all cursor-pointer ${useNAOption ? "border-red-500 bg-red-50" : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30"
+                    } ${isAnyActionInProgress ? "opacity-50 cursor-not-allowed" : ""}`}
                   onClick={() => { if (!isAnyActionInProgress) handleNAOptionChange(); }}
                 >
                   <div className="flex items-center gap-3">

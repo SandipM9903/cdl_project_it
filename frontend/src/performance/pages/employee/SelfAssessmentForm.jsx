@@ -8,50 +8,50 @@ import { FiArrowLeft } from "react-icons/fi";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee Name";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee Name";
 };
 
 // Helper function to get manager full name
 const getManagerFullName = (managerData) => {
   if (!managerData) return "Manager";
-  
+
   // Check for fullNameAsAadhaar in managerData
   if (managerData.fullNameAsAadhaar && managerData.fullNameAsAadhaar.trim() !== "") {
     return managerData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = managerData.firstName || "";
   const middleName = managerData.middleName || "";
   const lastName = managerData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return managerData.reportingManager || "Manager";
 };
 
@@ -129,7 +129,7 @@ const SelfAssessmentForm = () => {
 
     // Combine all SMART goals (existing + custom)
     const allSmartGoals = [...smartGoals, ...formattedCustomGoals];
-    
+
     // Return in order: Predefined → SMART → Development
     return [...predefinedGoals, ...allSmartGoals, ...developmentGoals];
   };
@@ -189,9 +189,9 @@ const SelfAssessmentForm = () => {
 
       // Merge all goals in correct order with custom goals
       const allGoals = mergeAndOrderGoals(
-        predefinedGoalsList, 
-        smartGoalsList, 
-        developmentGoalsList, 
+        predefinedGoalsList,
+        smartGoalsList,
+        developmentGoalsList,
         customGoals
       );
 
@@ -201,7 +201,7 @@ const SelfAssessmentForm = () => {
         addDebugLog(`SMART goals: ${smartGoalsList.length}`);
         addDebugLog(`Development goals: ${developmentGoalsList.length}`);
         addDebugLog(`Custom SMART goals: ${customGoals.length}`);
-        
+
         setGoals(allGoals);
 
         const editable = {};
@@ -250,7 +250,7 @@ const SelfAssessmentForm = () => {
       setGoals(prevGoals => {
         // Remove any existing custom goals from the list
         const nonCustomGoals = prevGoals.filter(goal => !goal.id?.toString().startsWith("custom-"));
-        
+
         // Convert custom goals to the expected format
         const formattedCustomGoals = customGoals.map(customGoal => ({
           ...customGoal,
@@ -263,10 +263,10 @@ const SelfAssessmentForm = () => {
           selfReviewComments: customGoal.selfReviewComments || "",
           weightage: 0
         }));
-        
+
         // Merge non-custom goals with custom goals
         const allGoals = [...nonCustomGoals, ...formattedCustomGoals];
-        
+
         // Maintain order: Predefined (already in nonCustomGoals) then SMART custom goals
         return allGoals;
       });
@@ -303,13 +303,13 @@ const SelfAssessmentForm = () => {
    */
   const deleteSmartGoalFromBackend = async (goalId) => {
     addDebugLog(`Attempting to delete SMART goal with ID: ${goalId}`);
-    
+
     try {
       const response = await fetch(
         `${BASE_URL_EPMS}/api/goals/smart/${goalId}`,
         {
           method: "DELETE",
-          headers: { 
+          headers: {
             "Content-Type": "application/json"
           },
         }
@@ -341,7 +341,7 @@ const SelfAssessmentForm = () => {
   const handleDeleteSmartGoal = async (goalId) => {
     // Check if it's a custom goal (not yet saved to DB) or an existing SMART goal
     const isCustomGoal = goalId.toString().startsWith("custom-");
-    
+
     if (isCustomGoal) {
       // Remove from customGoals array (frontend-only goal)
       const goalToRemove = customGoals.find(g => g.id === goalId);
@@ -362,28 +362,28 @@ const SelfAssessmentForm = () => {
     try {
       // Call the backend delete API
       await deleteSmartGoalFromBackend(goalId);
-      
+
       // Remove the goal from the goals array
       setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
-      
+
       // Remove from editableGoals
       setEditableGoals((prev) => {
         const updated = { ...prev };
         delete updated[goalId];
         return updated;
       });
-      
+
       // Remove from validation errors if present
       setValidationErrors((prev) => {
         const updated = { ...prev };
         delete updated[goalId];
         return updated;
       });
-      
+
       // Show success message
       alert("SMART goal deleted successfully!");
       addDebugLog(`SMART goal ${goalId} removed from UI state`);
-      
+
     } catch (err) {
       console.error("Error deleting SMART goal:", err);
       addDebugLog(`Failed to delete SMART goal: ${err.message}`);
@@ -402,7 +402,7 @@ const SelfAssessmentForm = () => {
       if (goal.id?.toString().startsWith("custom-")) {
         return;
       }
-      
+
       const goalErrors = {};
 
       if (!editableGoals[goal.id]?.goalDescription?.trim()) {
@@ -509,9 +509,9 @@ const SelfAssessmentForm = () => {
 
       // 2. Update existing SMART goals (those already in the 'goals' array and not custom)
       const smartGoals = goals.filter(
-        (goal) => goal.goalType === "SMART" && 
-        !goal.id?.toString().startsWith("custom-") &&
-        !goal.isCustom
+        (goal) => goal.goalType === "SMART" &&
+          !goal.id?.toString().startsWith("custom-") &&
+          !goal.isCustom
       );
       addDebugLog(`Updating ${smartGoals.length} existing SMART goals`);
 
@@ -720,7 +720,7 @@ const SelfAssessmentForm = () => {
         if (!response.ok || !result.success) {
           throw new Error(
             result.message ||
-              `Failed to create custom goal: ${customGoal.title}`,
+            `Failed to create custom goal: ${customGoal.title}`,
           );
         }
       }
@@ -861,7 +861,7 @@ const SelfAssessmentForm = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Self Assessment</span>
@@ -954,14 +954,13 @@ const SelfAssessmentForm = () => {
                         const isSmartGoal = goal.goalType === "SMART";
                         const isPredefinedGoal = goal.goalType === "PREDEFINED";
                         const isDevelopmentGoal = goal.goalType === "DEVELOPMENT";
-                        
+
                         return (
                           <tr
                             key={goal.id}
                             id={`goal-${goal.id}`}
-                            className={`hover:bg-gray-50 ${
-                              validationErrors[goal.id] ? "bg-red-50" : ""
-                            }`}
+                            className={`hover:bg-gray-50 ${validationErrors[goal.id] ? "bg-red-50" : ""
+                              }`}
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               {isCustomGoal ? (
@@ -983,13 +982,12 @@ const SelfAssessmentForm = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  isSmartGoal
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${isSmartGoal
                                     ? "bg-blue-100 text-blue-800"
                                     : isPredefinedGoal
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-green-100 text-green-800"
+                                  }`}
                               >
                                 {getGoalTypeLabel(goal)}
                                 {isCustomGoal && " (New)"}
@@ -998,8 +996,8 @@ const SelfAssessmentForm = () => {
                             <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
                               <textarea
                                 value={
-                                  isCustomGoal 
-                                    ? goal.goalDescription 
+                                  isCustomGoal
+                                    ? goal.goalDescription
                                     : (editableGoals[goal.id]?.goalDescription || "")
                                 }
                                 onChange={(e) => {
@@ -1018,12 +1016,12 @@ const SelfAssessmentForm = () => {
                                 disabled={deleteInProgress}
                               />
                               {!isCustomGoal && getFieldError(goal.id, "goalDescription")}
-                             </td>
+                            </td>
                             <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
                               <input
                                 value={
-                                  isCustomGoal 
-                                    ? goal.targetKPI 
+                                  isCustomGoal
+                                    ? goal.targetKPI
                                     : (editableGoals[goal.id]?.targetKPI || "")
                                 }
                                 onChange={(e) => {
@@ -1041,17 +1039,17 @@ const SelfAssessmentForm = () => {
                                 disabled={deleteInProgress}
                               />
                               {!isCustomGoal && getFieldError(goal.id, "targetKPI")}
-                             </td>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                               {goal.weightage ? `${goal.weightage}%` : "0%"}
-                             </td>
+                            </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
                               <div>
                                 <textarea
                                   rows="2"
                                   value={
-                                    isCustomGoal 
-                                      ? goal.achievableTarget 
+                                    isCustomGoal
+                                      ? goal.achievableTarget
                                       : (editableGoals[goal.id]?.achievableTarget || "")
                                   }
                                   onChange={(e) => {
@@ -1064,24 +1062,23 @@ const SelfAssessmentForm = () => {
                                       handleGoalEdit(goal.id, "achievableTarget", e.target.value);
                                     }
                                   }}
-                                  className={`w-full px-2 py-1 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${
-                                    !isCustomGoal && validationErrors[goal.id]?.achievableTarget
+                                  className={`w-full px-2 py-1 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${!isCustomGoal && validationErrors[goal.id]?.achievableTarget
                                       ? "border-red-500 bg-red-50"
                                       : "border-gray-300"
-                                  }`}
+                                    }`}
                                   placeholder="Write your achievable target..."
                                   disabled={deleteInProgress}
                                 />
                                 {!isCustomGoal && getFieldError(goal.id, "achievableTarget")}
                               </div>
-                             </td>
+                            </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
                               <div>
                                 <textarea
                                   rows="2"
                                   value={
-                                    isCustomGoal 
-                                      ? goal.selfReviewComments 
+                                    isCustomGoal
+                                      ? goal.selfReviewComments
                                       : (editableGoals[goal.id]?.selfReviewComments || "")
                                   }
                                   onChange={(e) => {
@@ -1099,7 +1096,7 @@ const SelfAssessmentForm = () => {
                                   disabled={deleteInProgress}
                                 />
                               </div>
-                             </td>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               {(isSmartGoal || isCustomGoal) && (
                                 <button
@@ -1145,8 +1142,8 @@ const SelfAssessmentForm = () => {
                             {field === "achievableTarget"
                               ? "Achievable Target"
                               : field === "goalDescription"
-                              ? "Goal Description"
-                              : "Target KPI"}{" "}
+                                ? "Goal Description"
+                                : "Target KPI"}{" "}
                             is required
                           </li>
                         ),
@@ -1221,11 +1218,10 @@ const SelfAssessmentForm = () => {
                           overallRating: null,
                         }));
                     }}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${
-                      modalErrors.overallRating
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${modalErrors.overallRating
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"
-                    }`}
+                      }`}
                   >
                     <option value="">Select rating</option>
                     <option value="1">1 - Poor</option>
@@ -1256,11 +1252,10 @@ const SelfAssessmentForm = () => {
                           overallComment: null,
                         }));
                     }}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${
-                      modalErrors.overallComment
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm ${modalErrors.overallComment
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"
-                    }`}
+                      }`}
                     placeholder="Enter your overall comments for this quarter..."
                   />
                   {modalErrors.overallComment && (

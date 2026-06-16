@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Header from "../../../components/Header";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { useNavigate, useParams } from "react-router-dom";
-import { 
-  FaCheckCircle, 
-  FaSpinner, 
-  FaClock, 
+import {
+  FaCheckCircle,
+  FaSpinner,
+  FaClock,
   FaCheck,
   FaArrowLeft,
   FaExclamationTriangle,
@@ -23,8 +23,8 @@ import {
   FaBookOpen,
   FaTarget
 } from "react-icons/fa";
-import { 
-  FiTarget, 
+import {
+  FiTarget,
   FiBookOpen,
   FiArrowLeft
 } from "react-icons/fi";
@@ -34,28 +34,28 @@ import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee Name";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee Name";
 };
 
@@ -66,7 +66,7 @@ const EmployeeFinalAcceptance = () => {
   const quarter = searchParams.get('quarter');
   const year = searchParams.get('year');
   const employeeId = localStorage.getItem('empId') || empId;
-  
+
   const [employeeData, setEmployeeData] = useState(null);
   const [smartGoals, setSmartGoals] = useState([]);
   const [developmentGoals, setDevelopmentGoals] = useState([]);
@@ -75,10 +75,10 @@ const EmployeeFinalAcceptance = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  
+
   // Add this missing state declaration
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  
+
   const [stats, setStats] = useState({
     totalSmartGoals: 0,
     totalDevGoals: 0,
@@ -165,9 +165,9 @@ const EmployeeFinalAcceptance = () => {
     try {
       const url = `${BASE_URL_EPMS}/api/goals/employee/${employeeId}/${quarter}?year=${year}`;
       console.log("Fetching SMART goals from:", url);
-      
+
       const response = await axios.get(url);
-      
+
       let goalsData = [];
       if (response.data && response.data.data) {
         goalsData = response.data.data;
@@ -176,15 +176,15 @@ const EmployeeFinalAcceptance = () => {
       }
 
       // Filter only goals that are MANAGER_REVIEWED (ready for acceptance)
-      const managerReviewedSmartGoals = goalsData.filter(g => 
+      const managerReviewedSmartGoals = goalsData.filter(g =>
         g.status === "MANAGER_REVIEWED"
       );
-      
+
       setSmartGoals(managerReviewedSmartGoals);
-      
+
       // Get overall data from first SMART goal
       const firstGoal = managerReviewedSmartGoals[0];
-      
+
       setStats(prev => ({
         ...prev,
         totalSmartGoals: goalsData.filter(g => g.goalType === "SMART" || g.goalType === undefined).length,
@@ -204,9 +204,9 @@ const EmployeeFinalAcceptance = () => {
     try {
       const url = `${BASE_URL_EPMS}/api/development-goals/employee/${employeeId}/${quarter}?year=${year}`;
       console.log("Fetching Development goals from:", url);
-      
+
       const response = await axios.get(url);
-      
+
       let devGoalsData = [];
       if (response.data && response.data.data) {
         devGoalsData = response.data.data;
@@ -215,18 +215,18 @@ const EmployeeFinalAcceptance = () => {
       }
 
       // Filter only development goals that are MANAGER_REVIEWED
-      const managerReviewedDevGoals = devGoalsData.filter(g => 
+      const managerReviewedDevGoals = devGoalsData.filter(g =>
         g.status === "MANAGER_REVIEWED"
       );
-      
+
       setDevelopmentGoals(managerReviewedDevGoals);
-      
+
       setStats(prev => ({
         ...prev,
         totalDevGoals: devGoalsData.length,
         devManagerReviewed: managerReviewedDevGoals.length,
-        allManagerReviewed: (prev.smartManagerReviewed === prev.totalSmartGoals || prev.totalSmartGoals === 0) && 
-                           (managerReviewedDevGoals.length === devGoalsData.length || devGoalsData.length === 0)
+        allManagerReviewed: (prev.smartManagerReviewed === prev.totalSmartGoals || prev.totalSmartGoals === 0) &&
+          (managerReviewedDevGoals.length === devGoalsData.length || devGoalsData.length === 0)
       }));
     } catch (err) {
       console.error("Error fetching development goals:", err);
@@ -289,61 +289,61 @@ const EmployeeFinalAcceptance = () => {
   };
 
   const handleAccept = async () => {
-  setSubmitting(true);
-  setError(null);
+    setSubmitting(true);
+    setError(null);
 
-  try {
-    // Accept SMART goals
-    if (smartGoals.length > 0) {
-      const smartUrl = `${BASE_URL_EPMS}/api/goals/employee/accept/${employeeId}/${quarter}?year=${year}`;
-      console.log("Accepting SMART goals with URL:", smartUrl);
-      await axios.put(smartUrl);
-    }
-
-    // Accept Development goals
-    for (const goal of developmentGoals) {
-      const devUrl = `${BASE_URL_EPMS}/api/development-goals/accept/${goal.id}`;
-      console.log("Accepting Development goal:", devUrl);
-      await axios.put(devUrl);
-    }
-    
-    // ✅ ADD EMAIL NOTIFICATION AFTER ACCEPTANCE
     try {
-      const emailPayload = {
-        employeeId: employeeId,
-        managerEmailId: employeeData?.reportingManagerEmailId,
-        employeeName: getEmployeeFullName(employeeData),
-        managerName: employeeData?.reportingManager || "Manager",
-        quarter: quarter,
-        year: year,
-        financialYear: `${year}-${parseInt(year) + 1}`,
-        acceptanceDate: new Date().toLocaleDateString('en-GB'),
-        acceptanceTime: new Date().toLocaleTimeString('en-GB')
-      };
-      
-      // Call backend API to send acceptance notification
-      await axios.post(`${BASE_URL_EPMS}/api/email/acceptance-notification`, emailPayload);
-      console.log("Acceptance email notification sent");
-    } catch (emailErr) {
-      console.error("Failed to send acceptance email:", emailErr);
-      // Don't fail the acceptance if email fails
+      // Accept SMART goals
+      if (smartGoals.length > 0) {
+        const smartUrl = `${BASE_URL_EPMS}/api/goals/employee/accept/${employeeId}/${quarter}?year=${year}`;
+        console.log("Accepting SMART goals with URL:", smartUrl);
+        await axios.put(smartUrl);
+      }
+
+      // Accept Development goals
+      for (const goal of developmentGoals) {
+        const devUrl = `${BASE_URL_EPMS}/api/development-goals/accept/${goal.id}`;
+        console.log("Accepting Development goal:", devUrl);
+        await axios.put(devUrl);
+      }
+
+      // ✅ ADD EMAIL NOTIFICATION AFTER ACCEPTANCE
+      try {
+        const emailPayload = {
+          employeeId: employeeId,
+          managerEmailId: employeeData?.reportingManagerEmailId,
+          employeeName: getEmployeeFullName(employeeData),
+          managerName: employeeData?.reportingManager || "Manager",
+          quarter: quarter,
+          year: year,
+          financialYear: `${year}-${parseInt(year) + 1}`,
+          acceptanceDate: new Date().toLocaleDateString('en-GB'),
+          acceptanceTime: new Date().toLocaleTimeString('en-GB')
+        };
+
+        // Call backend API to send acceptance notification
+        await axios.post(`${BASE_URL_EPMS}/api/email/acceptance-notification`, emailPayload);
+        console.log("Acceptance email notification sent");
+      } catch (emailErr) {
+        console.error("Failed to send acceptance email:", emailErr);
+        // Don't fail the acceptance if email fails
+      }
+
+      setSuccess(true);
+      setShowConfirmModal(false);
+
+      setTimeout(() => {
+        navigate(`/Dashboard`);
+      }, 2000);
+
+    } catch (err) {
+      console.error("Acceptance error:", err);
+      setError(err.response?.data?.message || "Failed to accept the appraisal. Please try again.");
+      setShowConfirmModal(false);
+    } finally {
+      setSubmitting(false);
     }
-    
-    setSuccess(true);
-    setShowConfirmModal(false);
-    
-    setTimeout(() => {
-      navigate(`/Dashboard`);
-    }, 2000);
-    
-  } catch (err) {
-    console.error("Acceptance error:", err);
-    setError(err.response?.data?.message || "Failed to accept the appraisal. Please try again.");
-    setShowConfirmModal(false);
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   // Star rating component
   const StarRating = ({ rating, size = "sm" }) => {
@@ -366,7 +366,7 @@ const EmployeeFinalAcceptance = () => {
 
   const ProgressIndicator = () => {
     if (availableSections.length <= 1) return null;
-    
+
     return (
       <div className="flex items-center justify-center gap-3 mb-6">
         {availableSections.map((section, idx) => (
@@ -376,11 +376,10 @@ const EmployeeFinalAcceptance = () => {
               setActiveSectionIndex(idx);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-              activeSectionIndex === idx
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeSectionIndex === idx
                 ? "bg-red-600 text-white shadow-md"
                 : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+              }`}
           >
             {React.createElement(section.icon, { size: 14 })}
             <span className="text-sm font-medium">{section.name}</span>
@@ -424,20 +423,19 @@ const EmployeeFinalAcceptance = () => {
         <button
           onClick={handlePrevSection}
           disabled={isFirstSection}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${
-            !isFirstSection
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${!isFirstSection
               ? "bg-red-600 text-white hover:bg-red-700"
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
+            }`}
         >
           <FaArrowLeft size={14} />
           Previous
         </button>
-        
+
         <div className="text-sm text-gray-500">
           {activeSectionIndex + 1} of {availableSections.length}
         </div>
-        
+
         {!isLastSection ? (
           <button
             onClick={handleNextSection}
@@ -478,7 +476,7 @@ const EmployeeFinalAcceptance = () => {
       <div className="flex flex-col min-h-screen font-content bg-gray-50">
         <Header />
         <div className="mt-24">
-          <LoadingAnimation message="Loading appraisal details..." />
+          <LoadingAnimation message="Loading Performance Details..." />
         </div>
       </div>
     );
@@ -510,7 +508,7 @@ const EmployeeFinalAcceptance = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Final Acceptance</span>
@@ -604,7 +602,7 @@ const EmployeeFinalAcceptance = () => {
                 </div>
                 <div className="mt-3">
                   <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div 
+                    <div
                       className="bg-green-500 rounded-full h-1.5 transition-all duration-500"
                       style={{ width: `${progressPercent}%` }}
                     />
@@ -650,7 +648,7 @@ const EmployeeFinalAcceptance = () => {
                   <FaComment className="text-red-600" />
                   Overall Assessment
                 </h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {stats.overallSelfComments && (
                     <div>
@@ -663,7 +661,7 @@ const EmployeeFinalAcceptance = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {stats.overallManagerComments && (
                     <div>
                       <div className="flex items-center mb-2">
@@ -692,7 +690,7 @@ const EmployeeFinalAcceptance = () => {
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Review SMART goals and manager's feedback before accepting</p>
                 </div>
-                
+
                 {smartGoals.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -765,7 +763,7 @@ const EmployeeFinalAcceptance = () => {
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">Review development goals and manager's feedback before accepting</p>
                 </div>
-                
+
                 {developmentGoals.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -883,7 +881,7 @@ const EmployeeFinalAcceptance = () => {
                     <span className="text-sm font-medium">Important!</span>
                   </div>
                   <p className="text-sm text-yellow-600 mt-1">
-                    Once accepted, you cannot modify or dispute the assessment. 
+                    Once accepted, you cannot modify or dispute the assessment.
                     This will be the final record for this quarter.
                   </p>
                 </div>

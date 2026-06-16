@@ -52,7 +52,7 @@ const AnnualGoal = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Annual Goals</span>
@@ -70,11 +70,10 @@ const AnnualGoal = () => {
             <div
               key={q}
               onClick={() => setSelectedQuarter(q)}
-              className={`cursor-pointer p-4 rounded-lg text-center font-semibold ${
-                selectedQuarter === q
+              className={`cursor-pointer p-4 rounded-lg text-center font-semibold ${selectedQuarter === q
                   ? "bg-yellow-400 text-white"
                   : "bg-gray-200"
-              }`}
+                }`}
             >
               {q}
             </div>

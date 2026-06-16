@@ -30,32 +30,32 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 // Helper function to get full name with priority to fullNameAsAadhaar
 const getFullName = (data) => {
   if (!data) return null;
-  
+
   // Check for fullNameAsAadhaar
   if (data.fullNameAsAadhaar && data.fullNameAsAadhaar.trim() !== "") {
     return data.fullNameAsAadhaar.trim();
   }
-  
+
   // Check for employeeFullName
   if (data.employeeFullName && data.employeeFullName.trim() !== "") {
     return data.employeeFullName.trim();
   }
-  
+
   // Check for name
   if (data.name && data.name.trim() !== "") {
     return data.name.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = data.firstName || "";
   const middleName = data.middleName || "";
   const lastName = data.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return null;
 };
 
@@ -69,12 +69,12 @@ const getEmployeeFullName = (employeeData) => {
 // Helper function to get manager name from reportingManager field
 const getManagerFullName = (employeeData) => {
   if (!employeeData) return "N/A";
-  
+
   // Check for reportingManager field (which should contain the full name)
   if (employeeData.reportingManager && employeeData.reportingManager.trim() !== "") {
     return employeeData.reportingManager.trim();
   }
-  
+
   // Fallback to reportingManagerEmailId
   if (employeeData.reportingManagerEmailId) {
     const emailName = employeeData.reportingManagerEmailId.split("@")[0];
@@ -82,7 +82,7 @@ const getManagerFullName = (employeeData) => {
       .replace(/[._]/g, " ")
       .replace(/\b\w/g, (l) => l.toUpperCase());
   }
-  
+
   return "N/A";
 };
 
@@ -117,11 +117,11 @@ const EmployeeGoalPreview = () => {
         setLoading(false);
         return;
       }
-      
+
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpId}`);
-      
+
       let employee = null;
-      
+
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
           employee = response.data.fileAndObjectTypeBean.empResDTO;
@@ -131,7 +131,7 @@ const EmployeeGoalPreview = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -284,7 +284,7 @@ const EmployeeGoalPreview = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Goal Preview</span>
@@ -370,11 +370,10 @@ const EmployeeGoalPreview = () => {
         <div className="flex gap-2 mb-6 border-b border-gray-200">
           <button
             onClick={() => setActiveTab("smart")}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${
-              activeTab === "smart"
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${activeTab === "smart"
                 ? "text-red-600 border-b-2 border-red-600 bg-red-50"
                 : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-            }`}
+              }`}
           >
             <FiTarget size={16} />
             SMART Goals
@@ -384,11 +383,10 @@ const EmployeeGoalPreview = () => {
           </button>
           <button
             onClick={() => setActiveTab("development")}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${
-              activeTab === "development"
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${activeTab === "development"
                 ? "text-red-600 border-b-2 border-red-600 bg-red-50"
                 : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-            }`}
+              }`}
           >
             <FiBookOpen size={16} />
             Development Goals
@@ -421,7 +419,7 @@ const EmployeeGoalPreview = () => {
                     <span className="text-white/60 text-sm">/ 100%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5 mt-2">
-                    <div 
+                    <div
                       className={`h-1.5 rounded-full transition-all duration-500 ${isValidWeightage ? "bg-green-400" : "bg-yellow-400"}`}
                       style={{ width: `${weightageProgress}%` }}
                     />

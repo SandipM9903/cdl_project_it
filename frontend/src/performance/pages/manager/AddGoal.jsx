@@ -19,28 +19,28 @@ import { FiArrowLeft } from "react-icons/fi";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee Name";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee Name";
 };
 
@@ -342,9 +342,8 @@ const AddGoal = () => {
         // Success message
         const deletedCount = masterIdsToDelete.length;
         const addedCount = masterIdsToAdd.length;
-        const message = `Successfully updated goals! ${
-          deletedCount > 0 ? `Removed ${deletedCount} goal(s). ` : ""
-        }${addedCount > 0 ? `Added ${addedCount} goal(s).` : ""}`;
+        const message = `Successfully updated goals! ${deletedCount > 0 ? `Removed ${deletedCount} goal(s). ` : ""
+          }${addedCount > 0 ? `Added ${addedCount} goal(s).` : ""}`;
 
         setPopupMessage(message);
         setShowSuccessPopup(true);
@@ -396,7 +395,7 @@ const AddGoal = () => {
       console.error("Error saving goals:", err);
       setError(
         err.response?.data?.message ||
-          "Failed to save goals. Please try again.",
+        "Failed to save goals. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -473,7 +472,7 @@ const AddGoal = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">
@@ -564,11 +563,11 @@ const AddGoal = () => {
                     const selectedInCategory = group.items.filter(
                       (item) => selectedGoals[item.id]
                     ).length;
-                    
+
                     return (
                       <React.Fragment key={group.category}>
                         {/* Category Header - Clickable to expand/collapse */}
-                        <tr 
+                        <tr
                           className="bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
                           onClick={() => toggleCategory(group.category)}
                         >

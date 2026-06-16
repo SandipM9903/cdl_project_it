@@ -108,7 +108,7 @@ const ManagerGoalsView = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Assigned Goals</span>

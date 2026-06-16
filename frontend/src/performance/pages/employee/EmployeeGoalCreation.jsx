@@ -235,11 +235,10 @@ const DevelopmentGoalModal = ({
               <select
                 value={devGoalForm.title}
                 onChange={(e) => handleChange("title", e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${
-                  devErrors.title
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.title
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300"
-                }`}
+                  }`}
               >
                 <option value="">Select Title</option>
                 {titleOptions.map((option) => (
@@ -267,11 +266,10 @@ const DevelopmentGoalModal = ({
               <select
                 value={devGoalForm.trainingName}
                 onChange={(e) => handleChange("trainingName", e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${
-                  devErrors.trainingName
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.trainingName
                     ? "border-red-500 bg-red-50"
                     : "border-gray-300"
-                }`}
+                  }`}
               >
                 <option value="">Select Training Name</option>
                 {trainingNameOptions.map((option) => (
@@ -300,11 +298,10 @@ const DevelopmentGoalModal = ({
               onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Describe your development plan, learning objectives, and expected outcomes..."
               rows="3"
-              className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none ${
-                devErrors.description
+              className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none ${devErrors.description
                   ? "border-red-500 bg-red-50"
                   : "border-gray-300"
-              }`}
+                }`}
             />
             {devErrors.description && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
@@ -445,9 +442,9 @@ const EmployeeGoalCreation = () => {
 
       // Corrected API endpoint - using BASE_URL_EPMS_EMP with the storedEmpCode
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpCode}`);
-      
+
       let employee = null;
-      
+
       // Extract employee data from response
       if (response.data) {
         // Check for nested structure
@@ -459,7 +456,7 @@ const EmployeeGoalCreation = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -998,34 +995,33 @@ const EmployeeGoalCreation = () => {
                         <p className="text-sm font-medium text-gray-800">
                           {goal.title}
                         </p>
-                       </td>
+                      </td>
                       <td className="px-4 py-3">
                         <p className="text-sm text-gray-600">
                           {goal.trainingName}
                         </p>
-                       </td>
+                      </td>
                       <td className="px-4 py-3">
                         <p className="text-sm text-gray-600 line-clamp-2">
                           {goal.description}
                         </p>
-                       </td>
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
-                            goal.status === "APPROVED"
+                          className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${goal.status === "APPROVED"
                               ? "bg-green-100 text-green-700"
                               : goal.status === "PENDING_APPROVAL"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : goal.status === "SELF_REVIEWED"
-                              ? "bg-purple-100 text-purple-700"
-                              : goal.status === "MANAGER_REVIEWED"
-                              ? "bg-indigo-100 text-indigo-700"
-                              : "bg-gray-100 text-gray-700"
-                          }`}
+                                ? "bg-yellow-100 text-yellow-700"
+                                : goal.status === "SELF_REVIEWED"
+                                  ? "bg-purple-100 text-purple-700"
+                                  : goal.status === "MANAGER_REVIEWED"
+                                    ? "bg-indigo-100 text-indigo-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }`}
                         >
                           {goal.status?.replace(/_/g, " ") || "Draft"}
                         </span>
-                       </td>
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
@@ -1043,11 +1039,11 @@ const EmployeeGoalCreation = () => {
                             <FaTrash size={16} />
                           </button>
                         </div>
-                       </td>
-                     </tr>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
-               </table>
+              </table>
             </div>
           )}
         </div>
@@ -1115,7 +1111,7 @@ const EmployeeGoalCreation = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Create Goals</span>
@@ -1233,9 +1229,8 @@ const EmployeeGoalCreation = () => {
                 <p className="text-white text-xs">Total Weightage</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span
-                    className={`text-2xl font-bold ${
-                      isWeightageValid ? "text-green-400" : "text-yellow-400"
-                    }`}
+                    className={`text-2xl font-bold ${isWeightageValid ? "text-green-400" : "text-yellow-400"
+                      }`}
                   >
                     {totalWeightage}%
                   </span>
@@ -1243,9 +1238,8 @@ const EmployeeGoalCreation = () => {
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-1.5 mt-2">
                   <div
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      isWeightageValid ? "bg-green-400" : "bg-yellow-400"
-                    }`}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${isWeightageValid ? "bg-green-400" : "bg-yellow-400"
+                      }`}
                     style={{ width: `${weightageProgress}%` }}
                   />
                 </div>
@@ -1300,11 +1294,10 @@ const EmployeeGoalCreation = () => {
                         handleGoalChange(index, "title", e.target.value)
                       }
                       placeholder="e.g., Increase customer satisfaction score"
-                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all ${
-                        errors[index]?.title
+                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all ${errors[index]?.title
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
-                      }`}
+                        }`}
                     />
                     {errors[index]?.title && (
                       <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
@@ -1360,11 +1353,10 @@ const EmployeeGoalCreation = () => {
                         placeholder="0"
                         min="0"
                         max="100"
-                        className={`w-28 px-4 py-2.5 border rounded-xl text-center focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all ${
-                          errors[index]?.weightage
+                        className={`w-28 px-4 py-2.5 border rounded-xl text-center focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all ${errors[index]?.weightage
                             ? "border-red-500 bg-red-50"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       />
                       <span className="text-gray-500">out of 100</span>
                     </div>

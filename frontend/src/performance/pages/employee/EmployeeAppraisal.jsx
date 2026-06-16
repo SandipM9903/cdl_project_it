@@ -1044,7 +1044,7 @@ const EmployeeAppraisal = () => {
       <div className="flex flex-col min-h-screen font-content bg-gray-50">
         <Header />
         <div className="mt-24">
-          <LoadingAnimation message="Loading appraisal details..." />
+          <LoadingAnimation message="Loading Performance Details..." />
         </div>
       </div>
     );

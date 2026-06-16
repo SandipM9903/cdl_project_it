@@ -36,32 +36,32 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 // Helper function to get full name with priority to fullNameAsAadhaar
 const getFullName = (data) => {
   if (!data) return null;
-  
+
   // Check for fullNameAsAadhaar
   if (data.fullNameAsAadhaar && data.fullNameAsAadhaar.trim() !== "") {
     return data.fullNameAsAadhaar.trim();
   }
-  
+
   // Check for employeeFullName
   if (data.employeeFullName && data.employeeFullName.trim() !== "") {
     return data.employeeFullName.trim();
   }
-  
+
   // Check for name
   if (data.name && data.name.trim() !== "") {
     return data.name.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = data.firstName || "";
   const middleName = data.middleName || "";
   const lastName = data.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return null;
 };
 
@@ -151,23 +151,23 @@ const StartSelfReview = () => {
   const [submitting, setSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState(yearParam || new Date().getFullYear().toString());
   const [selectedQuarter, setSelectedQuarter] = useState(quarterParam || "Q1");
-  
+
   // Self review data for SMART goals only
   const [selfReviews, setSelfReviews] = useState({});
-  
+
   // Overall rating and comment (popup)
   const [showOverallModal, setShowOverallModal] = useState(false);
   const [overallRating, setOverallRating] = useState(0);
   const [overallComment, setOverallComment] = useState("");
   const [hoveredRating, setHoveredRating] = useState(0);
-  
+
   // Modal state
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModal, setInfoModal] = useState({ title: "", message: "", type: "info", onConfirm: null });
 
   // Active section for review
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  
+
   const hasSmartGoals = smartGoals.length > 0;
   const hasDevelopmentGoals = developmentGoals.length > 0;
 
@@ -223,10 +223,10 @@ const StartSelfReview = () => {
     try {
       const storedEmpId = empId;
       if (!storedEmpId) return;
-      
+
       // Corrected API endpoint - using BASE_URL_EPMS_EMP with the storedEmpId
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpId}`);
-      
+
       let employee = null;
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
@@ -237,7 +237,7 @@ const StartSelfReview = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -265,7 +265,7 @@ const StartSelfReview = () => {
 
       const approvedGoals = goalsData.filter(goal => goal.status === "APPROVED");
       setSmartGoals(approvedGoals);
-      
+
       const initialReviews = {};
       approvedGoals.forEach(goal => {
         initialReviews[goal.id] = {
@@ -444,11 +444,10 @@ const StartSelfReview = () => {
             className="focus:outline-none transition-transform hover:scale-110"
           >
             <FiStar
-              className={`${starSizes[size]} ${
-                star <= (hoveredRating || rating)
+              className={`${starSizes[size]} ${star <= (hoveredRating || rating)
                   ? "text-yellow-400 fill-yellow-400"
                   : "text-gray-300"
-              } transition-colors`}
+                } transition-colors`}
             />
           </button>
         ))}
@@ -460,18 +459,17 @@ const StartSelfReview = () => {
 
   const ProgressIndicator = () => {
     if (availableSections.length <= 1) return null;
-    
+
     return (
       <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
         {availableSections.map((section, idx) => (
           <button
             key={section.key}
             onClick={() => handleSectionClick(idx)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-              activeSectionIndex === idx
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${activeSectionIndex === idx
                 ? "bg-red-600 text-white shadow-md"
                 : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+              }`}
           >
             <section.icon size={14} />
             <span className="text-sm font-medium">{section.name}</span>
@@ -506,20 +504,19 @@ const StartSelfReview = () => {
         <button
           onClick={handlePrevSection}
           disabled={isFirstSection}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${
-            !isFirstSection
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${!isFirstSection
               ? "bg-gray-600 text-white hover:bg-gray-700"
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
+            }`}
         >
           <FiChevronLeft size={18} />
           Previous
         </button>
-        
+
         <div className="text-sm text-gray-500">
           {activeSectionIndex + 1} of {availableSections.length}
         </div>
-        
+
         {!isLastSection ? (
           <button
             onClick={handleNextSection}
@@ -579,7 +576,7 @@ const StartSelfReview = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Self Review</span>
@@ -866,7 +863,7 @@ const StartSelfReview = () => {
                             <p className="text-sm font-medium">Information</p>
                           </div>
                           <p className="text-sm text-blue-600 mt-1">
-                            Development goals are for tracking your training and skill development. 
+                            Development goals are for tracking your training and skill development.
                             No self-assessment score is required. Your progress will be reviewed by your manager.
                           </p>
                         </div>
@@ -905,7 +902,7 @@ const StartSelfReview = () => {
             <p className="text-sm text-blue-700 flex items-start gap-2">
               <FiInfo className="mt-0.5 flex-shrink-0" />
               <span>
-                <strong>SMART Goals:</strong> Add remarks and self assessment scores (0-100). 
+                <strong>SMART Goals:</strong> Add remarks and self assessment scores (0-100).
                 <strong> Development Goals:</strong> Review only - no self assessment score required.
               </span>
             </p>
@@ -958,7 +955,7 @@ const StartSelfReview = () => {
                   Please rate your overall performance for {selectedQuarter} {selectedYear}
                 </p>
                 <div className="flex justify-center">
-                  <StarRating 
+                  <StarRating
                     rating={overallRating}
                     onRatingChange={setOverallRating}
                     onHoverChange={setHoveredRating}

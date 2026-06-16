@@ -1055,7 +1055,7 @@ const ManagerAnnualReview = () => {
     if (data.matrixRatingDescription)
       setMatrixRatingDescription(data.matrixRatingDescription);
     if (data.managerRemarks) setManagerRemarks(data.managerRemarks);
-    
+
     setInitialState({
       achievementLevel: data.achievementLevel || "",
       potential: data.potential || "",
@@ -1119,7 +1119,7 @@ const ManagerAnnualReview = () => {
         "error",
         "Error",
         error.response?.data?.message ||
-          "Failed to save manager draft. Please try again.",
+        "Failed to save manager draft. Please try again.",
       );
     } finally {
       setSaving(false);
@@ -1209,8 +1209,8 @@ const ManagerAnnualReview = () => {
           "error",
           "Error",
           error.response?.data?.message ||
-            error.response?.data?.error ||
-            `Failed to submit annual review. Server error: ${error.response.status}`,
+          error.response?.data?.error ||
+          `Failed to submit annual review. Server error: ${error.response.status}`,
         );
       } else if (error.request) {
         console.error("Error request:", error.request);
@@ -1440,7 +1440,7 @@ const ManagerAnnualReview = () => {
               onClick={() => navigate("/AppraisalList")}
               className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
             >
-              Appraisal List
+              Performance List
             </span>
             <span className="mx-2 text-gray-400">/</span>
             <span className="font-semibold text-red-600">Annual Review</span>
@@ -1465,11 +1465,10 @@ const ManagerAnnualReview = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === tab
+                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab
                       ? "border-red-500 text-red-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-red-300"
-                  }`}
+                    }`}
                 >
                   {tabLabels[tab]}
                 </button>
@@ -1485,11 +1484,10 @@ const ManagerAnnualReview = () => {
                 {tabOrder.map((tab, index) => (
                   <div
                     key={tab}
-                    className={`h-2 w-8 rounded-full transition-all ${
-                      tabOrder.indexOf(activeTab) >= index
+                    className={`h-2 w-8 rounded-full transition-all ${tabOrder.indexOf(activeTab) >= index
                         ? "bg-red-500"
                         : "bg-gray-300"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -1661,18 +1659,17 @@ const ManagerAnnualReview = () => {
                             cert.certificateDocId &&
                             openDocument(cert.certificateDocId)
                           }
-                          className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                            cert.certificateDocId
+                          className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${cert.certificateDocId
                               ? "bg-gray-50 border-gray-200 cursor-pointer hover:bg-gray-100"
                               : "bg-gray-50 border-gray-200"
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             {cert.fileName?.toLowerCase().endsWith(".pdf") ? (
                               <FaFilePdf className="text-red-500 text-2xl" />
                             ) : cert.fileName
-                                ?.toLowerCase()
-                                .endsWith(".xlsx") ||
+                              ?.toLowerCase()
+                              .endsWith(".xlsx") ||
                               cert.fileName?.toLowerCase().endsWith(".xls") ? (
                               <FaFileExcel className="text-green-600 text-2xl" />
                             ) : cert.fileName?.toLowerCase().endsWith(".doc") ||
@@ -1728,11 +1725,10 @@ const ManagerAnnualReview = () => {
                   onChange={(e) => setManagerRemarks(e.target.value)}
                   rows={8}
                   placeholder="Enter your detailed remarks about the employee's performance, achievements, areas of improvement, and overall assessment..."
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-red-500 focus:border-red-500 resize-none ${
-                    validationErrors.managerRemarks
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-red-500 focus:border-red-500 resize-none ${validationErrors.managerRemarks
                       ? "border-red-300 bg-red-50"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 />
                 {validationErrors.managerRemarks && (
                   <p className="mt-2 text-sm text-red-600">
@@ -1812,11 +1808,10 @@ const ManagerAnnualReview = () => {
                       onChange={(e) =>
                         handleAchievementLevelChange(e.target.value)
                       }
-                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 ${
-                        validationErrors.achievementLevel
+                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 ${validationErrors.achievementLevel
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
-                      }`}
+                        }`}
                     >
                       <option value="">Select Achievement Level</option>
                       {achievementLevelOptions.map((option) => (
@@ -1837,11 +1832,10 @@ const ManagerAnnualReview = () => {
                     <select
                       value={potential}
                       onChange={(e) => handlePotentialChange(e.target.value)}
-                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${
-                        validationErrors.potential
+                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${validationErrors.potential
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
-                      }`}
+                        }`}
                       disabled={!achievementLevel}
                     >
                       <option value="">Select Potential</option>
@@ -1868,11 +1862,10 @@ const ManagerAnnualReview = () => {
                     <select
                       value={performance}
                       onChange={(e) => handlePerformanceChange(e.target.value)}
-                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${
-                        validationErrors.performance
+                      className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${validationErrors.performance
                           ? "border-red-500 bg-red-50"
                           : "border-gray-300"
-                      }`}
+                        }`}
                       disabled={!achievementLevel}
                     >
                       <option value="">Select Performance</option>
@@ -1984,11 +1977,10 @@ const ManagerAnnualReview = () => {
             <button
               onClick={goToPreviousTab}
               disabled={tabOrder.indexOf(activeTab) === 0}
-              className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${
-                tabOrder.indexOf(activeTab) === 0
+              className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${tabOrder.indexOf(activeTab) === 0
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-gray-600 text-white hover:bg-gray-700"
-              }`}
+                }`}
             >
               <FaArrowLeftIcon size={14} />
               Previous
@@ -1998,9 +1990,8 @@ const ManagerAnnualReview = () => {
               <button
                 onClick={handleSave}
                 disabled={saving || !isFormModified()}
-                className={`px-6 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-2 ${
-                  saving || !isFormModified() ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-6 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-2 ${saving || !isFormModified() ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
                 Save Draft
@@ -2010,11 +2001,10 @@ const ManagerAnnualReview = () => {
                 <button
                   onClick={handleSubmitToEmployee}
                   disabled={submitting || !isSubmitEnabled}
-                  className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 ${
-                    isSubmitEnabled
+                  className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 ${isSubmitEnabled
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   {submitting ? (
                     <FaSpinner className="animate-spin" />
@@ -2027,11 +2017,10 @@ const ManagerAnnualReview = () => {
                 <button
                   onClick={goToNextTab}
                   disabled={!canProceedToNext()}
-                  className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${
-                    canProceedToNext()
+                  className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${canProceedToNext()
                       ? "bg-red-500 text-white hover:bg-red-600"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   Next
                   <FaArrowRight size={14} />

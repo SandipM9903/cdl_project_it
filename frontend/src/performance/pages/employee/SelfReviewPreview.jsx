@@ -38,7 +38,7 @@ const SelfReviewPreview = () => {
     console.log("Full URL:", window.location.href);
     console.log("Pathname:", window.location.pathname);
     console.log("Search params string:", window.location.search);
-    
+
     setDebugInfo({
       empIdFromUrl: empId,
       quarterFromQuery: quarter,
@@ -83,7 +83,7 @@ const SelfReviewPreview = () => {
 
       setLoading(true);
       setError(null);
-      
+
       try {
         // Use the determined employeeId (either from URL or localStorage)
         const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`;
@@ -94,30 +94,30 @@ const SelfReviewPreview = () => {
         console.log("Year:", year);
         console.log("View mode:", empId ? "Manager viewing employee's preview" : "Employee viewing own preview");
         console.log("========================================");
-        
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch goals: ${response.status} ${response.statusText}`);
         }
-        
+
         const result = await response.json();
         console.log("API Response:", result);
-        
+
         if (result.success && Array.isArray(result.data)) {
           setGoals(result.data);
           console.log("Goals fetched successfully. Count:", result.data.length);
-          
+
           // Get overall assessment data from the first goal (all goals have same overall data)
           const firstGoal = result.data[0];
-          
+
           // Get the most recent submission date
           const submissionDates = result.data
             .map(goal => goal.selfReviewSubmittedDate)
             .filter(date => date != null)
             .sort()
             .reverse();
-          
+
           setPreviewData({
             overallSelfAssessmentRating: firstGoal?.overallSelfAssessmentRating || 0,
             overallSelfReviewComments: firstGoal?.overallSelfReviewComments || "",
@@ -166,9 +166,9 @@ const SelfReviewPreview = () => {
       'ACCEPTED_BY_EMPLOYEE': { text: 'Accepted', color: 'bg-teal-100 text-teal-800' },
       'FINAL_SUBMITTED_TO_HR': { text: 'Final Submitted', color: 'bg-indigo-100 text-indigo-800' }
     };
-    
+
     const config = statusConfig[status] || { text: status, color: 'bg-gray-100 text-gray-800' };
-    
+
     return (
       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${config.color}`}>
         {config.text}
@@ -185,9 +185,8 @@ const SelfReviewPreview = () => {
           {[1, 2, 3, 4, 5].map((star) => (
             <svg
               key={star}
-              className={`w-5 h-5 ${
-                star <= rating ? 'text-yellow-400' : 'text-gray-300'
-              }`}
+              className={`w-5 h-5 ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                }`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -202,7 +201,7 @@ const SelfReviewPreview = () => {
   const handleGoBack = () => {
     // Determine where to go back based on view mode
     if (empId && quarter && year) {
-      // Manager is viewing employee's preview - go back to appraisal list
+      // Manager is viewing employee's preview - go back to Performance List
       navigate('/AppraisalList');
     } else if (quarter && year) {
       // Employee is viewing their own preview - go back to their goals
@@ -245,7 +244,7 @@ const SelfReviewPreview = () => {
         <div className="mt-24 px-6 max-w-7xl mx-auto w-full">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <p className="text-red-600 font-medium mb-4">Error: {error}</p>
-            
+
             {/* Debug Information */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <h3 className="text-sm font-medium text-gray-700 mb-2">Debug Information:</h3>
@@ -269,15 +268,15 @@ const SelfReviewPreview = () => {
                 <li><span className="font-mono bg-gray-100 px-2 py-1 rounded">/employee/appraisal/preview/9085499?year=2025&quarter=Q1</span> (Manager view)</li>
                 <li><span className="font-mono bg-gray-100 px-2 py-1 rounded">/employee/appraisal/preview?year=2025&quarter=Q1</span> (Employee self view)</li>
               </ul>
-              
+
               <div className="flex space-x-4 mt-4">
-                <button 
+                <button
                   onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm"
                 >
                   Retry
                 </button>
-                <button 
+                <button
                   onClick={handleGoBack}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
                 >
@@ -317,7 +316,7 @@ const SelfReviewPreview = () => {
             onClick={() => navigate(empId ? "/AppraisalList" : "/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            {empId ? "Appraisal List" : "My Appraisal"}
+            {empId ? "Performance List" : "My Performance"}
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Self Review Preview</span>
@@ -393,7 +392,7 @@ const SelfReviewPreview = () => {
               <p className="text-sm text-gray-500 mt-1">No goals found for this employee</p>
             )}
           </div>
-          
+
           {goals.length > 0 && (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">

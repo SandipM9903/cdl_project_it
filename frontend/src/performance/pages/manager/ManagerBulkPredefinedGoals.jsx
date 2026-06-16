@@ -41,9 +41,9 @@ const ManagerBulkPredefinedGoals = () => {
   const quarter = queryParams.get("quarter") || quarterParam || "Q1";
   const yearParam = queryParams.get("year") || "";
   const empCodesParam = queryParams.get("empCodes") || "";
-  
+
   const { selectedEmployees: stateSelectedEmployees, showSuccess: stateShowSuccess, message: stateMessage } = location.state || {};
-  
+
   const [employeesData, setEmployeesData] = useState([]);
   const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -133,11 +133,11 @@ const ManagerBulkPredefinedGoals = () => {
     const fetchEmployeesFromCodes = async () => {
       if (empCodesParam) {
         const empCodesList = empCodesParam.split(',').filter(code => code.trim());
-        
+
         try {
           const response = await axios.get(BASE_URL_EPMS_EMP);
           const allEmployees = response.data;
-          
+
           const employees = empCodesList.map(code => {
             const employee = allEmployees.find(emp => emp.empCode?.toString() === code.toString());
             if (employee) {
@@ -159,7 +159,7 @@ const ManagerBulkPredefinedGoals = () => {
               designation: "Not Available",
             };
           });
-          
+
           setSelectedEmployees(employees);
         } catch (error) {
           console.error("Error fetching employee details:", error);
@@ -181,7 +181,7 @@ const ManagerBulkPredefinedGoals = () => {
         setLoading(false);
       }
     };
-    
+
     fetchEmployeesFromCodes();
   }, [empCodesParam, stateSelectedEmployees]);
 
@@ -211,7 +211,7 @@ const ManagerBulkPredefinedGoals = () => {
 
   const fetchAllEmployeesGoals = async () => {
     setLoading(true);
-    
+
     const yearToUse = yearParam || activeCycle?.year || new Date().getFullYear().toString();
     const employeesGoals = [];
 
@@ -225,11 +225,11 @@ const ManagerBulkPredefinedGoals = () => {
 
         if (response.data && response.data.success) {
           const fetchedGoals = response.data.data || [];
-          
+
           const anySubmitted = fetchedGoals.some(
             (goal) => goal.submittedToEmployeeAt !== null && goal.submittedToEmployeeAt !== undefined
           );
-          
+
           let submittedDate = null;
           if (anySubmitted) {
             const submissionDates = fetchedGoals
@@ -241,16 +241,16 @@ const ManagerBulkPredefinedGoals = () => {
           }
 
           const { groupedGoals, selectedCategories } = groupGoalsByCategory(fetchedGoals);
-          
+
           // Calculate redistributed weightages based on selected categories
           const redistributedWeights = calculateRedistributedWeightage(selectedCategories);
-          
+
           // Apply redistributed weights to grouped goals
           const groupedWithWeights = groupedGoals.map(goal => ({
             ...goal,
             weightage: redistributedWeights[goal.category] || 0
           }));
-          
+
           employeesGoals.push({
             employee: employee,
             goals: fetchedGoals,
@@ -283,7 +283,7 @@ const ManagerBulkPredefinedGoals = () => {
     }
 
     setEmployeesData(employeesGoals);
-    
+
     // Initialize bulk goals data with the first employee's goals
     if (employeesGoals.length > 0 && employeesGoals[0].groupedGoals.length > 0) {
       const initialBulkData = employeesGoals[0].groupedGoals.map(goal => ({
@@ -294,19 +294,19 @@ const ManagerBulkPredefinedGoals = () => {
       setBulkGoalsData(initialBulkData);
       setOriginalWeightages(calculateRedistributedWeightage(employeesGoals[0].selectedCategories));
     }
-    
+
     setLoading(false);
   };
 
   const groupGoalsByCategory = (goals) => {
     if (!goals || goals.length === 0) return { groupedGoals: [], selectedCategories: [] };
-    
+
     const grouped = {};
     const selectedCategoriesSet = new Set();
-    
+
     goals.forEach((goal) => {
       let category = goal.goalCategory || "Other";
-      
+
       // Format category for display
       const formatCategory = (cat) => {
         if (!cat) return "Other";
@@ -318,7 +318,7 @@ const ManagerBulkPredefinedGoals = () => {
           )
           .join(" ");
       };
-      
+
       const displayCategory = formatCategory(category);
       selectedCategoriesSet.add(displayCategory);
 
@@ -333,14 +333,14 @@ const ManagerBulkPredefinedGoals = () => {
       const combinedGoalDescription = categoryGoals.length === 1
         ? categoryGoals[0].goalDescription || `Complete ${categoryGoals[0].title} training`
         : categoryGoals.map((g, idx) => {
-            const desc = g.goalDescription || `Complete ${g.title} training`;
-            return idx === 0 ? desc : `and ${desc.toLowerCase()}`;
-          }).join(" ");
-      
+          const desc = g.goalDescription || `Complete ${g.title} training`;
+          return idx === 0 ? desc : `and ${desc.toLowerCase()}`;
+        }).join(" ");
+
       const combinedTargetKPI = categoryGoals.length === 1
         ? categoryGoals[0].targetKPI || "100% completion"
         : categoryGoals.map((g) => g.targetKPI || "100% completion").join(" and ");
-      
+
       const allTimelines = categoryGoals.flatMap((g) =>
         g.timeline ? (Array.isArray(g.timeline) ? g.timeline : [g.timeline]) : [quarter]
       );
@@ -364,12 +364,12 @@ const ManagerBulkPredefinedGoals = () => {
   // Handle bulk field changes - updates all employees with automatic weightage recalculation
   const handleBulkFieldChange = (groupIndex, field, value) => {
     if (!bulkGoalsData) return;
-    
+
     // Update bulk template
     const updatedBulk = [...bulkGoalsData];
     updatedBulk[groupIndex][field] = value;
     setBulkGoalsData(updatedBulk);
-    
+
     // Update all employees with the new bulk data, preserving weightages
     setEmployeesData(prevData => {
       const newData = [...prevData];
@@ -395,20 +395,20 @@ const ManagerBulkPredefinedGoals = () => {
 
   const handleBulkTimelineToggle = (groupIndex, quarterValue) => {
     if (!bulkGoalsData) return;
-    
+
     const updatedBulk = [...bulkGoalsData];
     const currentTimeline = updatedBulk[groupIndex].timeline || [];
-    
+
     let newTimeline;
     if (currentTimeline.includes(quarterValue)) {
       newTimeline = currentTimeline.filter((q) => q !== quarterValue);
     } else {
       newTimeline = [...currentTimeline, quarterValue];
     }
-    
+
     updatedBulk[groupIndex].timeline = newTimeline;
     setBulkGoalsData(updatedBulk);
-    
+
     // Update all employees with the new timeline
     setEmployeesData(prevData => {
       const newData = [...prevData];
@@ -447,14 +447,14 @@ const ManagerBulkPredefinedGoals = () => {
       const newData = [...prevData];
       const updatedGrouped = [...newData[employeeIndex].groupedGoals];
       const currentTimeline = updatedGrouped[groupIndex].timeline || [];
-      
+
       let newTimeline;
       if (currentTimeline.includes(quarterValue)) {
         newTimeline = currentTimeline.filter((q) => q !== quarterValue);
       } else {
         newTimeline = [...currentTimeline, quarterValue];
       }
-      
+
       updatedGrouped[groupIndex].timeline = newTimeline;
       newData[employeeIndex].groupedGoals = updatedGrouped;
       return newData;
@@ -469,7 +469,7 @@ const ManagerBulkPredefinedGoals = () => {
         originalGoalIds: goal.originalGoals?.map(og => og.id) || []
       }));
       setBulkGoalsData(copiedData);
-      
+
       // Apply to all employees
       setEmployeesData(prevData => {
         const newData = [...prevData];
@@ -484,7 +484,7 @@ const ManagerBulkPredefinedGoals = () => {
         }
         return newData;
       });
-      
+
       setPopupMessage("Copied goals from current employee to all employees!");
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 3000);
@@ -493,19 +493,19 @@ const ManagerBulkPredefinedGoals = () => {
 
   const validateForm = (groupedGoals) => {
     if (!groupedGoals || groupedGoals.length === 0) return "No goals configured";
-    
+
     const totalWeightage = groupedGoals.reduce((sum, goal) => sum + (goal.weightage || 0), 0);
     if (Math.abs(totalWeightage - 100) > 0.01) return `Total weightage must be 100%. Current: ${totalWeightage.toFixed(2)}%`;
-    
+
     const hasZeroWeightage = groupedGoals.some((goal) => goal.weightage === 0);
     if (hasZeroWeightage) return "All goals must have weightage greater than 0";
-    
+
     for (const goal of groupedGoals) {
       if (!goal.goalDescription?.trim()) return "Goal description is required for all categories";
       if (!goal.targetKPI?.trim()) return "Target/KPI is required for all categories";
       if (!goal.timeline || goal.timeline.length === 0) return "At least one timeline quarter must be selected for all categories";
     }
-    
+
     return null;
   };
 
@@ -519,21 +519,21 @@ const ManagerBulkPredefinedGoals = () => {
         }
       }
     }
-    
+
     if (errors.length > 0) {
       setErrorPopupMessage(errors.join("\n"));
       setShowErrorPopup(true);
       setTimeout(() => setShowErrorPopup(false), 5000);
       return;
     }
-    
+
     setShowConfirmPopup(true);
   };
 
   const handleConfirmedSubmit = async () => {
     setShowConfirmPopup(false);
     setSaving(true);
-    
+
     const yearToUse = yearParam || activeCycle?.year || new Date().getFullYear().toString();
     let successCount = 0;
     let errorCount = 0;
@@ -542,24 +542,24 @@ const ManagerBulkPredefinedGoals = () => {
 
     for (const empData of employeesData) {
       if (empData.isSubmitted) continue;
-      
+
       try {
         // Prepare goals for submission with redistributed weightages
         // This follows the same pattern as ManagerPredefinedGoals
         const allOriginalGoals = [];
-        
+
         // Recalculate weightages for this employee based on their categories
         const selectedCategories = empData.groupedGoals.map(g => g.category);
         const redistributedWeights = calculateRedistributedWeightage(selectedCategories);
-        
+
         empData.groupedGoals.forEach((group) => {
           if (group.originalGoals && group.originalGoals.length > 0) {
             const groupWeightage = redistributedWeights[group.category] || 0;
-            
+
             // Distribute weightage among individual goals within the category
             const goalCount = group.originalGoals.length;
             let remainingWeightage = groupWeightage;
-            
+
             group.originalGoals.forEach((og, idx) => {
               let individualWeightage;
               if (idx === goalCount - 1) {
@@ -570,7 +570,7 @@ const ManagerBulkPredefinedGoals = () => {
                 individualWeightage = Math.floor(groupWeightage / goalCount);
                 remainingWeightage -= individualWeightage;
               }
-              
+
               allOriginalGoals.push({
                 id: og.id,
                 goalDescription: group.goalDescription,
@@ -581,13 +581,13 @@ const ManagerBulkPredefinedGoals = () => {
             });
           }
         });
-        
+
         if (allOriginalGoals.length === 0) {
           errors.push(`${empData.employee.firstName} ${empData.employee.lastName} (${empData.employee.empCode}): No goals to submit`);
           errorCount++;
           continue;
         }
-        
+
         // STEP 1: Update goals - Same payload as ManagerPredefinedGoals
         const payload = {
           employeeId: empData.employee.empCode || empData.employee.id,
@@ -595,24 +595,24 @@ const ManagerBulkPredefinedGoals = () => {
           year: parseInt(yearToUse),
           goals: allOriginalGoals,
         };
-        
+
         console.log(`Updating goals for employee ${empData.employee.empCode} with payload:`, payload);
-        
+
         const response = await axios.put(
           `${BASE_URL_EPMS}/api/goals/update-predefined`,
           payload
         );
-        
+
         console.log(`Update response for ${empData.employee.empCode}:`, response.data);
-        
+
         if (response.data && response.data.success) {
           // STEP 2: Submit to employee - Same as ManagerPredefinedGoals
           console.log(`Submitting to employee: ${empData.employee.empCode}`);
-          
+
           await axios.put(
             `${BASE_URL_EPMS}/api/goals/manager/submit-to-employee/${managerId}/${empData.employee.empCode}/${quarter}`
           );
-          
+
           // STEP 3: Trigger Email to the Employee using DB Template - Same as ManagerPredefinedGoals
           if (empData.employee.emailId) {
             try {
@@ -630,7 +630,7 @@ const ManagerBulkPredefinedGoals = () => {
               // Don't fail the whole submission if email fails
             }
           }
-          
+
           successCount++;
         } else {
           errorCount++;
@@ -648,19 +648,19 @@ const ManagerBulkPredefinedGoals = () => {
         }
       }
     }
-    
+
     setSaving(false);
-    
+
     if (successCount > 0) {
       setPopupMessage(`Successfully submitted goals for ${successCount} employee(s). ${errorCount > 0 ? `${errorCount} failed.` : ""}`);
       setShowSuccessPopup(true);
-      
+
       setTimeout(() => {
         setShowSuccessPopup(false);
-        // Navigate back to appraisal list
+        // Navigate back to Performance List
         navigate("/ManagerGoalConfigPerformance", {
-          state: { 
-            showSuccess: true, 
+          state: {
+            showSuccess: true,
             message: `Successfully submitted goals for ${successCount} employee(s)`
           }
         });
@@ -804,7 +804,7 @@ const ManagerBulkPredefinedGoals = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Bulk Predefined Goals</span>
@@ -891,24 +891,22 @@ const ManagerBulkPredefinedGoals = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setBulkMode(true)}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                  bulkMode ? "bg-red-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${bulkMode ? "bg-red-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
               >
                 <FaUsers />
                 Bulk Edit Mode
               </button>
               <button
                 onClick={() => setBulkMode(false)}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                  !bulkMode ? "bg-red-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${!bulkMode ? "bg-red-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
               >
                 <FaUser />
                 Individual Edit Mode
               </button>
             </div>
-            
+
             {!bulkMode && employeesData.length > 0 && (
               <div className="flex items-center gap-3">
                 <button
@@ -950,13 +948,12 @@ const ManagerBulkPredefinedGoals = () => {
             {employeesData.map((emp, idx) => {
               const isValid = !emp.isSubmitted && validateForm(emp.groupedGoals) === null;
               const totalWeight = !emp.isSubmitted ? getTotalWeightage(emp.groupedGoals) : 100;
-              
+
               return (
                 <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      emp.isSubmitted ? "bg-green-500" : isValid ? "bg-yellow-500" : "bg-red-500"
-                    }`} />
+                    <div className={`w-2 h-2 rounded-full ${emp.isSubmitted ? "bg-green-500" : isValid ? "bg-yellow-500" : "bg-red-500"
+                      }`} />
                     <span className="text-sm text-gray-700">
                       {emp.employee.firstName} {emp.employee.lastName}
                     </span>
@@ -1072,9 +1069,9 @@ const ManagerBulkPredefinedGoals = () => {
             </div>
             <GoalsTable
               groupedGoals={currentEmployee.groupedGoals}
-              onFieldChange={() => {}}
-              onWeightageChange={() => {}}
-              onTimelineToggle={() => {}}
+              onFieldChange={() => { }}
+              onWeightageChange={() => { }}
+              onTimelineToggle={() => { }}
               isSubmitted={true}
               timelineOptions={timelineOptions}
               openDropdownIndices={openDropdownIndices}
@@ -1094,7 +1091,7 @@ const ManagerBulkPredefinedGoals = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-2">No goals found</h3>
             <p className="text-gray-500">
               The selected employees don't have any goals configured.
-              Please add goals first using the "Add Goals" option in the appraisal list.
+              Please add goals first using the "Add Goals" option in the Performance List.
             </p>
           </div>
         )}
@@ -1197,7 +1194,7 @@ const GoalsTable = ({ groupedGoals, onFieldChange, onWeightageChange, onTimeline
               const isWeightageZero = group.weightage === 0;
               const originalWeight = getOriginalWeight(group.category);
               const isRedistributed = isWeightageAutoCalculated && originalWeight !== group.weightage && groupedGoals.length !== 5;
-              
+
               return (
                 <tr key={group.category} className="hover:bg-gray-50">
                   <td className="px-6 py-4 font-medium text-gray-900 align-top bg-gray-50/50 w-48">
@@ -1248,13 +1245,12 @@ const GoalsTable = ({ groupedGoals, onFieldChange, onWeightageChange, onTimeline
                       </div>
                     ) : (
                       <div
-                        className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${
-                          isRedistributed
+                        className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${isRedistributed
                             ? "border-red-300 bg-red-50 text-red-700"
                             : isWeightageZero
-                            ? "border-orange-300 bg-orange-50 text-orange-700"
-                            : "border-gray-200 bg-gray-50 text-gray-900"
-                        }`}
+                              ? "border-orange-300 bg-orange-50 text-orange-700"
+                              : "border-gray-200 bg-gray-50 text-gray-900"
+                          }`}
                       >
                         {group.weightage.toFixed(2)}%
                       </div>
@@ -1295,7 +1291,7 @@ const GoalsTable = ({ groupedGoals, onFieldChange, onWeightageChange, onTimeline
                                   <input
                                     type="checkbox"
                                     checked={group.timeline?.includes(option.value)}
-                                    onChange={() => {}}
+                                    onChange={() => { }}
                                     className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
                                     onClick={(e) => e.stopPropagation()}
                                   />

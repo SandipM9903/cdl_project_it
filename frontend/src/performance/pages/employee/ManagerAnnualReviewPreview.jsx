@@ -29,44 +29,44 @@ import { simpleEncrypt } from "../../../simpleEncrypt";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee Name";
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee Name";
 };
 
 // Helper function to get manager full name with priority to fullNameAsAadhaar
 const getManagerFullName = (managerData) => {
   if (!managerData) return "Manager";
-  
+
   // Check for fullNameAsAadhaar in managerData
   if (managerData.fullNameAsAadhaar && managerData.fullNameAsAadhaar.trim() !== "") {
     return managerData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = managerData.firstName || "";
   const middleName = managerData.middleName || "";
   const lastName = managerData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Manager";
 };
 
@@ -76,7 +76,7 @@ const ManagerAnnualReviewPreview = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const yearParam = queryParams.get("year");
-  
+
   const [loading, setLoading] = useState(true);
   const [reviewData, setReviewData] = useState(null);
   const [employeeData, setEmployeeData] = useState(null);
@@ -142,7 +142,7 @@ const ManagerAnnualReviewPreview = () => {
     try {
       if (!empCode) return null;
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${empCode}`);
-      
+
       let employee = null;
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
@@ -166,35 +166,35 @@ const ManagerAnnualReviewPreview = () => {
     try {
       const storedEmpId = empId || localStorage.getItem("empId");
       const year = yearParam || new Date().getFullYear().toString();
-      
+
       if (!storedEmpId) {
         setError("Employee ID not found");
         setLoading(false);
         return;
       }
-      
+
       // Fetch the annual review data
       const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${storedEmpId}/${year}`;
       console.log("Fetching annual review from:", annualReviewUrl);
-      
+
       const annualReviewResponse = await axios.get(annualReviewUrl);
-      
+
       if (!annualReviewResponse.data) {
         setError("No review data found");
         setLoading(false);
         return;
       }
-      
+
       const reviewDataObj = annualReviewResponse.data;
       setReviewData(reviewDataObj);
-      
+
       // Fetch employee details directly using storedEmpId
       const employee = await fetchEmployeeDetails(storedEmpId);
-      
+
       if (employee) {
         setEmployeeData(employee);
         console.log("Employee found:", employee);
-        
+
         // Find manager details using managerId from review data or reportingManagerId from employee
         const managerIdToFetch = reviewDataObj.managerId || employee.reportingManagerId;
         let manager = null;
@@ -205,14 +205,14 @@ const ManagerAnnualReviewPreview = () => {
             console.log("Manager found:", manager);
           }
         }
-        
+
         // Update allEmployees state for any potential backward compatibility
         const fetchedEmployees = [employee, manager].filter(Boolean);
         setAllEmployees(fetchedEmployees);
       } else {
         console.warn("Employee not found with ID:", storedEmpId);
       }
-      
+
     } catch (err) {
       console.error("Error fetching preview data:", err);
       if (err.response && err.response.status === 404) {
@@ -232,7 +232,7 @@ const ManagerAnnualReviewPreview = () => {
   };
 
   const getRatingColor = (rating) => {
-    switch(rating) {
+    switch (rating) {
       case 'A+': return 'text-purple-600 bg-purple-100';
       case 'A': return 'text-blue-600 bg-blue-100';
       case 'B+': return 'text-green-600 bg-green-100';
@@ -243,7 +243,7 @@ const ManagerAnnualReviewPreview = () => {
   };
 
   const getRatingLabel = (rating) => {
-    switch(rating) {
+    switch (rating) {
       case 'A+': return 'OUTSTANDING CONTRIBUTOR';
       case 'A': return 'EXCEEDS EXPECTATIONS';
       case 'B+': return 'MEETS EXPECTATIONS';
@@ -324,39 +324,39 @@ const ManagerAnnualReviewPreview = () => {
     if (managerData) {
       return getManagerFullName(managerData);
     }
-    
+
     // If we have employee data with reporting manager info
     if (employeeData) {
       // Check if reportingManagerName is directly available
       if (employeeData.reportingManagerName && employeeData.reportingManagerName.trim() !== "") {
         return employeeData.reportingManagerName;
       }
-      
+
       // Check if fullNameAsAadhaar is available in reportingManager object
       if (employeeData.reportingManager?.fullNameAsAadhaar) {
         return employeeData.reportingManager.fullNameAsAadhaar;
       }
-      
+
       // Try to find manager from all employees using reportingManagerId
       if (employeeData.reportingManagerId && allEmployees.length > 0) {
-        const foundManager = allEmployees.find(emp => 
+        const foundManager = allEmployees.find(emp =>
           emp.empCode?.toString() === employeeData.reportingManagerId?.toString()
         );
         if (foundManager) {
           return getManagerFullName(foundManager);
         }
       }
-      
+
       // Try using reportingManager email to find the manager
       if (employeeData.reportingManager && allEmployees.length > 0) {
-        const foundManager = allEmployees.find(emp => 
+        const foundManager = allEmployees.find(emp =>
           emp.emailId?.toLowerCase() === employeeData.reportingManager?.toLowerCase()
         );
         if (foundManager) {
           return getManagerFullName(foundManager);
         }
       }
-      
+
       // If we have the email but couldn't find the manager, return a formatted name from email
       if (employeeData.reportingManager) {
         // Extract name from email (e.g., john.doe@company.com -> John Doe)
@@ -367,16 +367,16 @@ const ManagerAnnualReviewPreview = () => {
         return formattedName;
       }
     }
-    
+
     // Fallback to review data
     if (reviewData?.managerName) {
       return reviewData.managerName;
     }
-    
+
     if (reviewData?.managerId) {
       // Try to find manager from all employees by managerId
       if (allEmployees.length > 0) {
-        const foundManager = allEmployees.find(emp => 
+        const foundManager = allEmployees.find(emp =>
           emp.empCode?.toString() === reviewData.managerId?.toString()
         );
         if (foundManager) {
@@ -385,7 +385,7 @@ const ManagerAnnualReviewPreview = () => {
       }
       return reviewData.managerId;
     }
-    
+
     return "Not Assigned";
   };
 
@@ -456,13 +456,6 @@ const ManagerAnnualReviewPreview = () => {
             Home
           </span>
           <span className="mx-2 text-gray-400">/</span>
-          <span
-            onClick={() => navigate("/AppraisalList")}
-            className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
-          >
-            Appraisal List
-          </span>
-          <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Annual Review Preview</span>
         </nav>
 
@@ -519,18 +512,17 @@ const ManagerAnnualReviewPreview = () => {
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Review Status</p>
                   <p className="font-medium text-gray-800">
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                      reviewData.status === "SUBMITTED_TO_R1" ? "bg-blue-100 text-blue-700" :
-                      reviewData.status === "SUBMITTED_TO_HR" ? "bg-purple-100 text-purple-700" :
-                      reviewData.status === "COMPLETED" ? "bg-green-100 text-green-700" :
-                      reviewData.status === "SUBMITTED_TO_EMPLOYEE" ? "bg-yellow-100 text-yellow-700" :
-                      "bg-gray-100 text-gray-600"
-                    }`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${reviewData.status === "SUBMITTED_TO_R1" ? "bg-blue-100 text-blue-700" :
+                        reviewData.status === "SUBMITTED_TO_HR" ? "bg-purple-100 text-purple-700" :
+                          reviewData.status === "COMPLETED" ? "bg-green-100 text-green-700" :
+                            reviewData.status === "SUBMITTED_TO_EMPLOYEE" ? "bg-yellow-100 text-yellow-700" :
+                              "bg-gray-100 text-gray-600"
+                      }`}>
                       {reviewData.status === "SUBMITTED_TO_EMPLOYEE" ? "Pending Employee Response" :
-                       reviewData.status === "SUBMITTED_TO_R1" ? "Manager Review Completed" :
-                       reviewData.status === "SUBMITTED_TO_HR" ? "Submitted to HR" :
-                       reviewData.status === "COMPLETED" ? "Completed" :
-                       reviewData.status || "Draft"}
+                        reviewData.status === "SUBMITTED_TO_R1" ? "Manager Review Completed" :
+                          reviewData.status === "SUBMITTED_TO_HR" ? "Submitted to HR" :
+                            reviewData.status === "COMPLETED" ? "Completed" :
+                              reviewData.status || "Draft"}
                     </span>
                   </p>
                 </div>
@@ -617,10 +609,10 @@ const ManagerAnnualReviewPreview = () => {
             )}
 
             {(!reviewData.selectedAccomplishments || reviewData.selectedAccomplishments.length === 0) &&
-             (!reviewData.additionalAccomplishments || reviewData.additionalAccomplishments.length === 0) &&
-             !reviewData.keyAccomplishment && (
-              <p className="text-gray-500 text-center py-4">No accomplishments recorded</p>
-            )}
+              (!reviewData.additionalAccomplishments || reviewData.additionalAccomplishments.length === 0) &&
+              !reviewData.keyAccomplishment && (
+                <p className="text-gray-500 text-center py-4">No accomplishments recorded</p>
+              )}
           </div>
         </div>
 
@@ -816,11 +808,11 @@ const ManagerAnnualReviewPreview = () => {
                 <p className="text-xs text-gray-500 mb-1">Status</p>
                 <p className="font-medium text-gray-800">
                   {reviewData.status === "SUBMITTED_TO_EMPLOYEE" ? "Submitted to Employee" :
-                   reviewData.status === "SUBMITTED_TO_R1" ? "Manager Review Completed" :
-                   reviewData.status === "SUBMITTED_TO_HR" ? "Submitted to HR" :
-                   reviewData.status === "COMPLETED" ? "Completed" :
-                   reviewData.status === "ACCEPTED_BY_EMPLOYEE" ? "Accepted by Employee" :
-                   reviewData.status === "DRAFT" ? "Draft" : reviewData.status || "N/A"}
+                    reviewData.status === "SUBMITTED_TO_R1" ? "Manager Review Completed" :
+                      reviewData.status === "SUBMITTED_TO_HR" ? "Submitted to HR" :
+                        reviewData.status === "COMPLETED" ? "Completed" :
+                          reviewData.status === "ACCEPTED_BY_EMPLOYEE" ? "Accepted by Employee" :
+                            reviewData.status === "DRAFT" ? "Draft" : reviewData.status || "N/A"}
                 </p>
               </div>
               {reviewData.submittedAt && (

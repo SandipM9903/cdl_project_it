@@ -150,9 +150,8 @@ const EmployeeManagerReviewPreview = () => {
           {[1, 2, 3, 4, 5].map((star) => (
             <svg
               key={star}
-              className={`w-5 h-5 ${
-                star <= rating ? "text-yellow-400" : "text-gray-300"
-              }`}
+              className={`w-5 h-5 ${star <= rating ? "text-yellow-400" : "text-gray-300"
+                }`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -236,7 +235,7 @@ const EmployeeManagerReviewPreview = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">
@@ -272,32 +271,32 @@ const EmployeeManagerReviewPreview = () => {
         {/* Manager Overall Assessment Section */}
         {(managerData.managerOverallSelfAssessmentRating > 0 ||
           managerData.managerOverallSelfReviewComments) && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
-              Manager's Overall Assessment
-            </h2>
-            <div className="space-y-4">
-              {managerData.managerOverallSelfAssessmentRating > 0 && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Overall Rating</p>
-                  {getRatingStars(
-                    managerData.managerOverallSelfAssessmentRating,
-                  )}
-                </div>
-              )}
-              {managerData.managerOverallSelfReviewComments && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Overall Comments</p>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-700">
-                      {managerData.managerOverallSelfReviewComments}
-                    </p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">
+                Manager's Overall Assessment
+              </h2>
+              <div className="space-y-4">
+                {managerData.managerOverallSelfAssessmentRating > 0 && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Overall Rating</p>
+                    {getRatingStars(
+                      managerData.managerOverallSelfAssessmentRating,
+                    )}
                   </div>
-                </div>
-              )}
+                )}
+                {managerData.managerOverallSelfReviewComments && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-2">Overall Comments</p>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <p className="text-gray-700">
+                        {managerData.managerOverallSelfReviewComments}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Goals Table - Without Achievement, Performance, Potential, Resource, Self Rating columns */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">

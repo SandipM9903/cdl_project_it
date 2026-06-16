@@ -219,9 +219,8 @@ const RatingStars = ({ rating, size = "md" }) => {
       {[...Array(5)].map((_, i) => (
         <FaStar
           key={i}
-          className={`${starSize} ${
-            i < rating ? "text-yellow-400" : "text-gray-300"
-          }`}
+          className={`${starSize} ${i < rating ? "text-yellow-400" : "text-gray-300"
+            }`}
         />
       ))}
       <span className="ml-2 text-sm text-gray-600">({rating}/5)</span>
@@ -920,19 +919,18 @@ const AnnualReviewPreview = () => {
     <>
       {notification.show && createPortal(
         <div className="fixed top-5 right-5 z-50 animate-slideIn">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md transition-all ${
-            notification.type === "success" ? "bg-green-50/90 border-green-200 text-green-800" :
-            notification.type === "error" ? "bg-red-50/90 border-red-200 text-red-800" :
-            notification.type === "warning" ? "bg-yellow-50/90 border-yellow-200 text-yellow-800" :
-            "bg-blue-50/90 border-blue-200 text-blue-800"
-          }`}>
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md transition-all ${notification.type === "success" ? "bg-green-50/90 border-green-200 text-green-800" :
+              notification.type === "error" ? "bg-red-50/90 border-red-200 text-red-800" :
+                notification.type === "warning" ? "bg-yellow-50/90 border-yellow-200 text-yellow-800" :
+                  "bg-blue-50/90 border-blue-200 text-blue-800"
+            }`}>
             {notification.type === "success" && <FaCheckCircle className="text-green-500 text-lg flex-shrink-0" />}
             {notification.type === "error" && <FaExclamationTriangle className="text-red-500 text-lg flex-shrink-0" />}
             {notification.type === "warning" && <FaExclamationTriangle className="text-yellow-500 text-lg flex-shrink-0" />}
             {notification.type === "info" && <FaInfoCircle className="text-blue-500 text-lg flex-shrink-0" />}
             <span className="text-sm font-medium">{notification.message}</span>
-            <button 
-              onClick={() => setNotification(prev => ({ ...prev, show: false }))} 
+            <button
+              onClick={() => setNotification(prev => ({ ...prev, show: false }))}
               className="ml-2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
             >
               &times;
@@ -966,7 +964,7 @@ const AnnualReviewPreview = () => {
               onClick={() => navigate("/EmployeeAppraisal")}
               className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
             >
-              My Appraisal
+              My Performance
             </span>
             <span className="mx-2 text-gray-400">/</span>
             <span className="font-semibold text-red-600">Annual Review Preview</span>
@@ -1052,60 +1050,60 @@ const AnnualReviewPreview = () => {
               {(reviewData?.submittedAt ||
                 reviewData?.managerAnnualReviewSubmissionDate ||
                 reviewData?.submittedToHrDate) && (
-                <div className="mb-8 bg-gray-50 rounded-xl p-5 border border-gray-200">
-                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <FaClock className="text-red-500" /> Review Timeline
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {reviewData?.submittedAt && (
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            Submitted to R1
-                          </p>
-                          <p className="text-sm font-medium">
-                            {formatDateTime(reviewData.submittedAt)}
-                          </p>
+                  <div className="mb-8 bg-gray-50 rounded-xl p-5 border border-gray-200">
+                    <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <FaClock className="text-red-500" /> Review Timeline
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {reviewData?.submittedAt && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
+                          <div>
+                            <p className="text-xs text-gray-500">
+                              Submitted to R1
+                            </p>
+                            <p className="text-sm font-medium">
+                              {formatDateTime(reviewData.submittedAt)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {reviewData?.managerAnnualReviewSubmissionDate && (
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-green-500"></div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            Manager Reviewed
-                          </p>
-                          <p className="text-sm font-medium">
-                            {formatDateTime(
-                              reviewData.managerAnnualReviewSubmissionDate,
-                            )}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            By:{" "}
-                            {reviewData?.submittedToHrBy ||
-                              getReportingManagerName()}
-                          </p>
+                      )}
+                      {reviewData?.managerAnnualReviewSubmissionDate && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 mt-2 rounded-full bg-green-500"></div>
+                          <div>
+                            <p className="text-xs text-gray-500">
+                              Manager Reviewed
+                            </p>
+                            <p className="text-sm font-medium">
+                              {formatDateTime(
+                                reviewData.managerAnnualReviewSubmissionDate,
+                              )}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              By:{" "}
+                              {reviewData?.submittedToHrBy ||
+                                getReportingManagerName()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {reviewData?.submittedToHrDate && (
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-purple-500"></div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            Submitted to HR
-                          </p>
-                          <p className="text-sm font-medium">
-                            {formatDateTime(reviewData.submittedToHrDate)}
-                          </p>
+                      )}
+                      {reviewData?.submittedToHrDate && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 mt-2 rounded-full bg-purple-500"></div>
+                          <div>
+                            <p className="text-xs text-gray-500">
+                              Submitted to HR
+                            </p>
+                            <p className="text-sm font-medium">
+                              {formatDateTime(reviewData.submittedToHrDate)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Key Information Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

@@ -755,7 +755,7 @@ const fetchManagerDetails = async (managerId) => {
             onClick={() => !submitting && navigate("/EmployeeAppraisal?type=annual")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Submit to HR</span>

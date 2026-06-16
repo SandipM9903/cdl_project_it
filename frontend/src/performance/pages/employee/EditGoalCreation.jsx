@@ -199,9 +199,8 @@ const DevelopmentGoalModal = ({ isOpen, onClose, onSave, editingGoal, devGoalFor
               <select
                 value={devGoalForm.title}
                 onChange={(e) => handleChange("title", e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${
-                  devErrors.title ? "border-red-500 bg-red-50" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.title ? "border-red-500 bg-red-50" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select Title</option>
                 {titleOptions.map((option) => (
@@ -222,9 +221,8 @@ const DevelopmentGoalModal = ({ isOpen, onClose, onSave, editingGoal, devGoalFor
               <select
                 value={devGoalForm.trainingName}
                 onChange={(e) => handleChange("trainingName", e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${
-                  devErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select Training Name</option>
                 {trainingNameOptions.map((option) => (
@@ -246,9 +244,8 @@ const DevelopmentGoalModal = ({ isOpen, onClose, onSave, editingGoal, devGoalFor
               onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Describe your development plan, learning objectives, and expected outcomes..."
               rows="3"
-              className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none ${
-                devErrors.description ? "border-red-500 bg-red-50" : "border-gray-300"
-              }`}
+              className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none ${devErrors.description ? "border-red-500 bg-red-50" : "border-gray-300"
+                }`}
             />
             {devErrors.description && <p className="text-xs text-red-500 mt-1"><FaInfoCircle className="inline mr-1" /> {devErrors.description}</p>}
           </div>
@@ -318,9 +315,9 @@ const EditGoalCreation = () => {
 
       // Corrected API endpoint - using BASE_URL_EPMS_EMP with the storedEmpCode
       const response = await axios.get(`${BASE_URL_EPMS_EMP}/${storedEmpCode}`);
-      
+
       let employee = null;
-      
+
       // Extract employee data from response
       if (response.data) {
         if (response.data.fileAndObjectTypeBean?.empResDTO) {
@@ -331,7 +328,7 @@ const EditGoalCreation = () => {
           employee = response.data;
         }
       }
-      
+
       if (employee && employee.empCode) {
         console.log("Employee found:", {
           fullNameAsAadhaar: employee.fullNameAsAadhaar,
@@ -352,7 +349,7 @@ const EditGoalCreation = () => {
       const storedEmpId = localStorage.getItem("empId") || empId;
       const url = `${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
-      
+
       let existingGoals = [];
       if (response.data && response.data.data) existingGoals = response.data.data;
       else if (Array.isArray(response.data)) existingGoals = response.data;
@@ -365,7 +362,7 @@ const EditGoalCreation = () => {
         weightage: goal.weightage?.toString() || "",
         status: goal.status,
       }));
-      
+
       setGoals(formattedGoals);
       if (formattedGoals.length === 0) {
         setGoals([{ id: null, title: "", targetOperator: "=", weightage: "", status: "DRAFT" }]);
@@ -383,7 +380,7 @@ const EditGoalCreation = () => {
       const storedEmpId = localStorage.getItem("empId") || empId;
       const url = `${BASE_URL_EPMS}/api/development-goals/employee/${storedEmpId}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
-      
+
       let devGoals = [];
       if (response.data && response.data.data) devGoals = response.data.data;
       else if (Array.isArray(response.data)) devGoals = response.data;
@@ -571,28 +568,28 @@ const EditGoalCreation = () => {
   const saveGoal = async (goal) => {
     const storedEmpId = localStorage.getItem("empId") || empId;
     const managerId = employeeData?.reportingManagerEmailId || "";
-    
+
     const weightageValue = parseInt(goal.weightage);
     if (isNaN(weightageValue)) {
-        throw new Error("Weightage must be a valid number");
+      throw new Error("Weightage must be a valid number");
     }
-    
+
     const payload = {
-        employeeId: storedEmpId,
-        managerId: managerId,
-        title: goal.title,
-        target: goal.targetOperator,
-        weightage: weightageValue,
+      employeeId: storedEmpId,
+      managerId: managerId,
+      title: goal.title,
+      target: goal.targetOperator,
+      weightage: weightageValue,
     };
 
     console.log("Saving goal payload:", payload);
 
     if (goal.id) {
-        return await axios.put(`${BASE_URL_EPMS}/api/goals/draft/${goal.id}`, payload);
+      return await axios.put(`${BASE_URL_EPMS}/api/goals/draft/${goal.id}`, payload);
     } else {
-        return await axios.post(`${BASE_URL_EPMS}/api/goals/draft/${selectedQuarter}`, payload);
+      return await axios.post(`${BASE_URL_EPMS}/api/goals/draft/${selectedQuarter}`, payload);
     }
-};
+  };
 
   const handleSaveAsDraft = async () => {
     if (goals.length === 0) {
@@ -621,45 +618,45 @@ const EditGoalCreation = () => {
 
   const handleSubmitForApproval = async () => {
     if (!validateGoals()) {
-        showModal("Validation Error", "Please fill all required fields and ensure total weightage is 100%", "error");
-        return;
+      showModal("Validation Error", "Please fill all required fields and ensure total weightage is 100%", "error");
+      return;
     }
 
     console.log("Goals before submission:", goals.map(g => ({
-        id: g.id,
-        title: g.title,
-        weightage: g.weightage,
-        targetOperator: g.targetOperator
+      id: g.id,
+      title: g.title,
+      weightage: g.weightage,
+      targetOperator: g.targetOperator
     })));
 
     showModal("Confirm Submission", "Are you sure you want to submit these goals for manager approval?", "warning", async () => {
-        setSubmitting(true);
-        try {
-            const storedEmpId = localStorage.getItem("empId") || empId;
-            
-            for (const goal of goals) {
-                console.log(`Saving goal: ${goal.title} with weightage ${goal.weightage}`);
-                await saveGoal(goal);
-            }
-            
-            console.log("Submitting all draft goals via bulk endpoint");
-            await axios.post(`${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/submit-all/${selectedQuarter}?year=${selectedYear}`);
-            
-            showModal("Success", "SMART Goals submitted for manager approval successfully!", "success", () => {
-                closeModal();
-                navigate(`/EmployeeAppraisal?year=${selectedYear}&quarter=${selectedQuarter}&type=quarterly`);
-            });
-        } catch (err) {
-            console.error("Error submitting goals:", err);
-            console.error("Error response data:", err.response?.data);
-            console.error("Error response status:", err.response?.status);
-            const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to submit goals. Please try again.";
-            showModal("Error", errorMsg, "error");
-        } finally {
-            setSubmitting(false);
+      setSubmitting(true);
+      try {
+        const storedEmpId = localStorage.getItem("empId") || empId;
+
+        for (const goal of goals) {
+          console.log(`Saving goal: ${goal.title} with weightage ${goal.weightage}`);
+          await saveGoal(goal);
         }
+
+        console.log("Submitting all draft goals via bulk endpoint");
+        await axios.post(`${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/submit-all/${selectedQuarter}?year=${selectedYear}`);
+
+        showModal("Success", "SMART Goals submitted for manager approval successfully!", "success", () => {
+          closeModal();
+          navigate(`/EmployeeAppraisal?year=${selectedYear}&quarter=${selectedQuarter}&type=quarterly`);
+        });
+      } catch (err) {
+        console.error("Error submitting goals:", err);
+        console.error("Error response data:", err.response?.data);
+        console.error("Error response status:", err.response?.status);
+        const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to submit goals. Please try again.";
+        showModal("Error", errorMsg, "error");
+      } finally {
+        setSubmitting(false);
+      }
     });
-};
+  };
 
   const handleCancel = () => navigate(-1);
   const getQuarterDates = (quarter, year) => {
@@ -720,20 +717,19 @@ const EditGoalCreation = () => {
                       <td className="px-4 py-3"><p className="text-sm text-gray-600">{goal.trainingName}</p></td>
                       <td className="px-4 py-3"><p className="text-sm text-gray-600 line-clamp-2">{goal.description}</p></td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
-                          goal.status === "APPROVED" ? "bg-green-100 text-green-700" :
-                          goal.status === "PENDING_APPROVAL" ? "bg-yellow-100 text-yellow-700" :
-                          goal.status === "SELF_REVIEWED" ? "bg-purple-100 text-purple-700" :
-                          goal.status === "MANAGER_REVIEWED" ? "bg-indigo-100 text-indigo-700" :
-                          "bg-gray-100 text-gray-700"
-                        }`}>{goal.status?.replace(/_/g, " ") || "Draft"}</span>
+                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${goal.status === "APPROVED" ? "bg-green-100 text-green-700" :
+                            goal.status === "PENDING_APPROVAL" ? "bg-yellow-100 text-yellow-700" :
+                              goal.status === "SELF_REVIEWED" ? "bg-purple-100 text-purple-700" :
+                                goal.status === "MANAGER_REVIEWED" ? "bg-indigo-100 text-indigo-700" :
+                                  "bg-gray-100 text-gray-700"
+                          }`}>{goal.status?.replace(/_/g, " ") || "Draft"}</span>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex gap-2 justify-center">
                           <button onClick={() => handleOpenDevModal(goal)} className="text-blue-600 hover:text-blue-800 transition-colors" title="Edit"><FaEdit size={16} /></button>
                           <button onClick={() => deleteDevelopmentGoal(goal.id)} className="text-red-600 hover:text-red-800 transition-colors" title="Delete"><FaTrash size={16} /></button>
                         </div>
-                       </td>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -794,7 +790,7 @@ const EditGoalCreation = () => {
             onClick={() => navigate("/EmployeeAppraisal")}
             className="cursor-pointer text-gray-600 hover:text-red-500 transition-colors"
           >
-            My Appraisal
+            My Performance
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Edit Draft Goals</span>

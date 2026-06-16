@@ -8,23 +8,23 @@ import { FiArrowLeft } from "react-icons/fi";
 const ManagerReviewPreview = () => {
   const navigate = useNavigate();
   const params = useParams();
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   console.log("All URL params:", params);
-  
+
   // Try to get employee ID from various possible parameter names
   const employeeIdFromParams = params.empId || params.employeeId || params.id;
-  
+
   const [searchParams] = useState(new URLSearchParams(window.location.search));
   const quarter = searchParams.get('quarter');
   const year = searchParams.get('year');
-  
+
   // ALWAYS use employeeId from URL for manager view - never from localStorage
   const employeeId = employeeIdFromParams;
-  
+
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,7 +51,7 @@ const ManagerReviewPreview = () => {
     console.log("Full URL:", window.location.href);
     console.log("Pathname:", window.location.pathname);
     console.log("Search params string:", window.location.search);
-    
+
     setDebugInfo({
       allParams: params,
       empIdFromUrl: params.empId,
@@ -98,7 +98,7 @@ const ManagerReviewPreview = () => {
 
       setLoading(true);
       setError(null);
-      
+
       try {
         // ALWAYS use employeeId from URL for manager view
         const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`;
@@ -108,20 +108,20 @@ const ManagerReviewPreview = () => {
         console.log("Quarter:", quarter);
         console.log("Year:", year);
         console.log("========================================");
-        
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch goals: ${response.status} ${response.statusText}`);
         }
-        
+
         const result = await response.json();
         console.log("API Response:", result);
-        
+
         if (result.success && Array.isArray(result.data)) {
           setGoals(result.data);
           console.log("Goals fetched successfully. Count:", result.data.length);
-          
+
           // Get manager review data from the first goal
           const firstGoal = result.data[0];
           setManagerData({
@@ -174,9 +174,9 @@ const ManagerReviewPreview = () => {
       'ACCEPTED_BY_EMPLOYEE': { text: 'Accepted', color: 'bg-teal-100 text-teal-800' },
       'FINAL_SUBMITTED_TO_HR': { text: 'Final Submitted', color: 'bg-indigo-100 text-indigo-800' }
     };
-    
+
     const config = statusConfig[status] || { text: status, color: 'bg-gray-100 text-gray-800' };
-    
+
     return (
       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${config.color}`}>
         {config.text}
@@ -193,9 +193,8 @@ const ManagerReviewPreview = () => {
           {[1, 2, 3, 4, 5].map((star) => (
             <svg
               key={star}
-              className={`w-5 h-5 ${
-                star <= rating ? 'text-yellow-400' : 'text-gray-300'
-              }`}
+              className={`w-5 h-5 ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                }`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -266,7 +265,7 @@ const ManagerReviewPreview = () => {
 
   const getEmployeeCategoryBadge = (category) => {
     if (!category) return <span className="px-4 py-2 inline-flex text-sm font-semibold rounded-full bg-gray-100 text-gray-800">Not Specified</span>;
-    
+
     const colors = {
       'High Performer - High Potential': 'bg-green-100 text-green-800',
       'High Performer - Medium Potential': 'bg-red-100 text-red-800',
@@ -278,7 +277,7 @@ const ManagerReviewPreview = () => {
       'Question Mark': 'bg-yellow-100 text-yellow-800',
       'Problem Employee': 'bg-red-100 text-red-800'
     };
-    
+
     return (
       <span className={`px-4 py-2 inline-flex text-sm font-semibold rounded-full ${colors[category] || 'bg-gray-100 text-gray-800'}`}>
         {category}
@@ -289,11 +288,11 @@ const ManagerReviewPreview = () => {
   // Calculate overall metrics from all goals
   const calculateOverallMetrics = () => {
     if (!goals.length) return null;
-    
+
     // Get the most common or most relevant values
     // For simplicity, we'll take the values from the first goal
     const firstGoal = goals[0];
-    
+
     return {
       achievementLevel: firstGoal?.achievementLevel,
       performance: firstGoal?.performance,
@@ -327,7 +326,7 @@ const ManagerReviewPreview = () => {
         <div className="mt-24 px-6 max-w-7xl mx-auto w-full">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <p className="text-red-600 font-medium mb-4">Error: {error}</p>
-            
+
             {/* Debug Information */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <h3 className="text-sm font-medium text-gray-700 mb-2">Debug Information:</h3>
@@ -354,13 +353,13 @@ const ManagerReviewPreview = () => {
               </ul>
               <p className="text-sm text-gray-600 mt-2">Check your route configuration in App.js or router file. The parameter name in the route should match what we're looking for.</p>
               <div className="flex space-x-4 pt-4">
-                <button 
+                <button
                   onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm"
                 >
                   Retry
                 </button>
-                <button 
+                <button
                   onClick={handleGoBack}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
                 >
@@ -400,7 +399,7 @@ const ManagerReviewPreview = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors font-medium"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Performance Appraisal Report</span>
@@ -414,7 +413,7 @@ const ManagerReviewPreview = () => {
               You are viewing the performance appraisal report for Employee ID: <span className="font-mono font-bold text-red-900">{employeeId}</span>
             </p>
           </div>
-          
+
           <h1 className="text-3xl font-semibold text-gray-800">
             Quarter {quarter} · {year}
           </h1>
@@ -521,7 +520,7 @@ const ManagerReviewPreview = () => {
               <p className="text-sm text-gray-500 mt-1">No goals found for this employee</p>
             )}
           </div>
-          
+
           {goals.length > 0 && (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">

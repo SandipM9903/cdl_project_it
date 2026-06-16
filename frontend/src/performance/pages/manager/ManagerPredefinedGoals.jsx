@@ -76,7 +76,7 @@ const ManagerPredefinedGoals = () => {
     if (location.state?.showSuccess) {
       setShowSuccessPopup(true);
       setPopupMessage(location.state.message || "Goals assigned successfully!");
-      
+
       // Auto close after 3 seconds
       setTimeout(() => {
         setShowSuccessPopup(false);
@@ -185,7 +185,7 @@ const ManagerPredefinedGoals = () => {
   // Helper function to format combined target KPI without duplicates
   const getCombinedTargetKPI = (categoryGoals) => {
     const kpis = categoryGoals.map(g => g.targetKPI || "100% completion");
-    
+
     // Remove duplicates while preserving order
     const uniqueKPIs = [];
     for (const kpi of kpis) {
@@ -193,7 +193,7 @@ const ManagerPredefinedGoals = () => {
         uniqueKPIs.push(kpi);
       }
     }
-    
+
     // Join unique KPIs
     if (uniqueKPIs.length === 1) {
       return uniqueKPIs[0];
@@ -206,16 +206,16 @@ const ManagerPredefinedGoals = () => {
   const getCombinedGoalDescription = (categoryGoals) => {
     if (categoryGoals.length === 1) {
       return categoryGoals[0].goalDescription ||
-             categoryGoals[0].description ||
-             `Complete ${categoryGoals[0].title} training`;
+        categoryGoals[0].description ||
+        `Complete ${categoryGoals[0].title} training`;
     }
 
     // Get unique descriptions
     const descriptions = [];
     for (const goal of categoryGoals) {
-      const desc = goal.goalDescription || 
-                   goal.description || 
-                   `Complete ${goal.title} training`;
+      const desc = goal.goalDescription ||
+        goal.description ||
+        `Complete ${goal.title} training`;
       if (!descriptions.includes(desc)) {
         descriptions.push(desc);
       }
@@ -225,7 +225,7 @@ const ManagerPredefinedGoals = () => {
     if (descriptions.length === 1) {
       return descriptions[0];
     } else {
-      return descriptions.map((desc, idx) => 
+      return descriptions.map((desc, idx) =>
         idx === 0 ? desc : `and ${desc.toLowerCase()}`
       ).join(" ");
     }
@@ -489,7 +489,7 @@ const ManagerPredefinedGoals = () => {
       if (response.data && response.data.success) {
         // STEP 2: Submit to employee
         const managerId = localStorage.getItem("empId");
-        
+
         console.log("Submitting to employee with:", { managerId, employeeId: empId, quarter });
 
         await axios.put(
@@ -507,7 +507,7 @@ const ManagerPredefinedGoals = () => {
                 firstName: employeeData.firstName || "Employee"
               }
             };
-            
+
             // Calling the email endpoint
             await axios.post(`${BASE_URL_EPMS}/api/email/send`, emailPayload);
             console.log("Email notification sent successfully to", employeeData.emailId);
@@ -520,12 +520,12 @@ const ManagerPredefinedGoals = () => {
         // Update the success message to reflect the email
         setPopupMessage("Successfully Submitted and Notified Employee!");
         setShowSuccessPopup(true);
-        
+
         // Auto close success popup after 3 seconds
         setTimeout(() => {
           setShowSuccessPopup(false);
         }, 3000);
-        
+
         setIsSubmitted(true);
         setSubmittedDate(new Date());
 
@@ -724,7 +724,7 @@ const ManagerPredefinedGoals = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600 cursor-default">
@@ -981,11 +981,11 @@ const ManagerPredefinedGoals = () => {
                               </span>
                             </div>
                           )}
-                         </td>
+                        </td>
                         {/* DEFINITION (PARAMETERS) */}
                         <td className="px-6 py-4 text-sm text-gray-600 align-top w-80">
                           {group.combinedTitle}
-                         </td>
+                        </td>
                         {/* GOAL DESCRIPTION */}
                         <td className="px-6 py-4 w-80">
                           {isSubmitted ? (
@@ -1008,7 +1008,7 @@ const ManagerPredefinedGoals = () => {
                               disabled={isSubmitted}
                             />
                           )}
-                         </td>
+                        </td>
                         {/* TARGET / KPI */}
                         <td className="px-6 py-4 w-64">
                           {isSubmitted ? (
@@ -1030,17 +1030,16 @@ const ManagerPredefinedGoals = () => {
                               disabled={isSubmitted}
                             />
                           )}
-                         </td>
+                        </td>
                         {/* WEIGHTAGE - READ ONLY */}
                         <td className="px-6 py-4 w-32">
                           <div
-                            className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${
-                              isRedistributed && !isSubmitted
+                            className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${isRedistributed && !isSubmitted
                                 ? "border-red-300 bg-red-50 text-red-700"
                                 : isWeightageZero && !isSubmitted
-                                ? "border-orange-300 bg-orange-50 text-orange-700"
-                                : "border-gray-200 bg-gray-50 text-gray-900"
-                            }`}
+                                  ? "border-orange-300 bg-orange-50 text-orange-700"
+                                  : "border-gray-200 bg-gray-50 text-gray-900"
+                              }`}
                           >
                             {group.weightage.toFixed(2)}%
                           </div>
@@ -1049,7 +1048,7 @@ const ManagerPredefinedGoals = () => {
                               (Auto-calculated)
                             </div>
                           )}
-                         </td>
+                        </td>
                         {/* TIMELINE */}
                         <td className="px-6 py-4 w-48">
                           {isSubmitted ? (
@@ -1065,20 +1064,18 @@ const ManagerPredefinedGoals = () => {
                                 disabled={isSubmitted}
                               >
                                 <span
-                                  className={`text-sm ${
-                                    group.timeline?.length
+                                  className={`text-sm ${group.timeline?.length
                                       ? "text-gray-900"
                                       : "text-gray-400"
-                                  }`}
+                                    }`}
                                 >
                                   {getSelectedTimelineText(group.timeline)}
                                 </span>
                                 <FaChevronDown
-                                  className={`text-gray-400 transition-transform ${
-                                    openDropdownIndices[groupIndex]
+                                  className={`text-gray-400 transition-transform ${openDropdownIndices[groupIndex]
                                       ? "rotate-180"
                                       : ""
-                                  }`}
+                                    }`}
                                 />
                               </button>
                               {openDropdownIndices[groupIndex] && !isSubmitted && (
@@ -1104,18 +1101,17 @@ const ManagerPredefinedGoals = () => {
                                           checked={group.timeline?.includes(
                                             option.value,
                                           )}
-                                          onChange={() => {}}
+                                          onChange={() => { }}
                                           className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
                                           onClick={(e) => e.stopPropagation()}
                                         />
                                         <span
-                                          className={`text-sm ${
-                                            group.timeline?.includes(
-                                              option.value,
-                                            )
+                                          className={`text-sm ${group.timeline?.includes(
+                                            option.value,
+                                          )
                                               ? "font-medium text-red-600"
                                               : "text-gray-600"
-                                          }`}
+                                            }`}
                                         >
                                           {option.label}
                                         </span>
@@ -1126,7 +1122,7 @@ const ManagerPredefinedGoals = () => {
                               )}
                             </div>
                           )}
-                         </td>
+                        </td>
                       </tr>
                     );
                   })}
@@ -1149,11 +1145,10 @@ const ManagerPredefinedGoals = () => {
                       Total Weightage:
                     </span>
                     <span
-                      className={`text-lg font-bold ${
-                        Math.abs(totalWeightage - 100) <= 0.01
+                      className={`text-lg font-bold ${Math.abs(totalWeightage - 100) <= 0.01
                           ? "text-red-600"
                           : "text-red-600"
-                      }`}
+                        }`}
                     >
                       {totalWeightage.toFixed(2)}%
                     </span>
@@ -1181,11 +1176,10 @@ const ManagerPredefinedGoals = () => {
                   <button
                     onClick={handleSubmitClick}
                     disabled={isSubmitDisabled}
-                    className={`px-6 py-3 rounded-lg min-w-[120px] transition-colors ${
-                      isSubmitDisabled
+                    className={`px-6 py-3 rounded-lg min-w-[120px] transition-colors ${isSubmitDisabled
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-red-600 hover:bg-red-700"
-                    } text-white`}
+                      } text-white`}
                   >
                     {submitting ? (
                       <FaSpinner className="animate-spin inline mr-2" />

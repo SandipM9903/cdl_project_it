@@ -47,22 +47,22 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 const getEmployeeFullName = (employee) => {
   if (!employee) return "Employee Name";
-  
+
   // Check for fullNameAsAadhaar in employee
   if (employee.fullNameAsAadhaar && employee.fullNameAsAadhaar.trim() !== "") {
     return employee.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employee.firstName || "";
   const middleName = employee.middleName || "";
   const lastName = employee.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim().replace(/\s+/g, ' ');
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   // Ultimate fallback to employee code if nothing else
   return employee.empCode || "Employee Name";
 };
@@ -174,9 +174,8 @@ const QuarterProgressCard = ({ quarter, data, onViewDetails }) => {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
-            className={`rounded-full h-2 transition-all duration-500 ${
-              data.completed ? "bg-green-500" : "bg-red-500"
-            }`}
+            className={`rounded-full h-2 transition-all duration-500 ${data.completed ? "bg-green-500" : "bg-red-500"
+              }`}
             style={{ width: data.completed ? "100%" : "0%" }}
           />
         </div>
@@ -309,55 +308,55 @@ const PreviewModal = ({ isOpen, onClose, reviewData, employeeName }) => {
             reviewData?.potential ||
             reviewData?.performance ||
             reviewData?.talentResource) && (
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <FiBarChart2 className="text-red-500" />
-                Talent Assessment
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {reviewData?.achievementLevel && (
-                  <div>
-                    <p className="text-xs text-gray-500">Achievement Level</p>
-                    <p className="font-medium text-gray-800">
-                      {reviewData.achievementLevel}
-                    </p>
-                  </div>
-                )}
-                {reviewData?.potential && (
-                  <div>
-                    <p className="text-xs text-gray-500">Potential</p>
-                    <p className="font-medium text-gray-800">
-                      {reviewData.potential}
-                    </p>
-                  </div>
-                )}
-                {reviewData?.performance && (
-                  <div>
-                    <p className="text-xs text-gray-500">Performance</p>
-                    <p className="font-medium text-gray-800">
-                      {reviewData.performance}
-                    </p>
-                  </div>
-                )}
-                {reviewData?.talentResource && (
-                  <div>
-                    <p className="text-xs text-gray-500">Talent Status</p>
-                    <p className="font-medium text-gray-800">
-                      {reviewData.talentResource}
+              <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <FiBarChart2 className="text-red-500" />
+                  Talent Assessment
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {reviewData?.achievementLevel && (
+                    <div>
+                      <p className="text-xs text-gray-500">Achievement Level</p>
+                      <p className="font-medium text-gray-800">
+                        {reviewData.achievementLevel}
+                      </p>
+                    </div>
+                  )}
+                  {reviewData?.potential && (
+                    <div>
+                      <p className="text-xs text-gray-500">Potential</p>
+                      <p className="font-medium text-gray-800">
+                        {reviewData.potential}
+                      </p>
+                    </div>
+                  )}
+                  {reviewData?.performance && (
+                    <div>
+                      <p className="text-xs text-gray-500">Performance</p>
+                      <p className="font-medium text-gray-800">
+                        {reviewData.performance}
+                      </p>
+                    </div>
+                  )}
+                  {reviewData?.talentResource && (
+                    <div>
+                      <p className="text-xs text-gray-500">Talent Status</p>
+                      <p className="font-medium text-gray-800">
+                        {reviewData.talentResource}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {reviewData?.matrixCategory && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-xs text-gray-500">Matrix Category</p>
+                    <p className="font-semibold text-red-700">
+                      {reviewData.matrixCategory}
                     </p>
                   </div>
                 )}
               </div>
-              {reviewData?.matrixCategory && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">Matrix Category</p>
-                  <p className="font-semibold text-red-700">
-                    {reviewData.matrixCategory}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+            )}
           {reviewData?.managerRemarks && (
             <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -642,43 +641,43 @@ const AppraisalList = () => {
   };
 
   const fetchEmployees = async () => {
-  try {
-    setLoading(true);
-    const storedEmpCode = localStorage.getItem('empId');
-    let response;
     try {
-      response = await axios.get(`https://mycdl.cms.co.in/employee/team/hierarchy/${storedEmpCode}`);
-    } catch (err) {
-      console.warn("Hierarchy endpoint failed, falling back to team endpoint:", err);
-      // response = await axios.get(`https://mycdl.cms.co.in/employee/team/${storedEmpCode}`);
+      setLoading(true);
+      const storedEmpCode = localStorage.getItem('empId');
+      let response;
+      try {
+        response = await axios.get(`https://mycdl.cms.co.in/employee/team/hierarchy/${storedEmpCode}`);
+      } catch (err) {
+        console.warn("Hierarchy endpoint failed, falling back to team endpoint:", err);
+        // response = await axios.get(`https://mycdl.cms.co.in/employee/team/${storedEmpCode}`);
+      }
+
+      const rawData = response.data?.teamList || response.data;
+
+      if (rawData && Array.isArray(rawData)) {
+        // Extract employee DTO from each item in the response
+        const employeesData = rawData.map(item => {
+          // Check if the data is wrapped in fileAndObjectTypeBean.empResDTO
+          if (item.fileAndObjectTypeBean?.empResDTO) {
+            return item.fileAndObjectTypeBean.empResDTO;
+          }
+          // Check for hierarchy wrapper
+          if (item.empHierarchyResDTO) {
+            return item.empHierarchyResDTO;
+          }
+          // Fallback: if it's already a flat structure
+          return item;
+        });
+
+        console.log("Extracted employees:", employeesData);
+        setEmployees(employeesData);
+      }
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      setLoading(false);
     }
-    
-    const rawData = response.data?.teamList || response.data;
-    
-    if (rawData && Array.isArray(rawData)) {
-      // Extract employee DTO from each item in the response
-      const employeesData = rawData.map(item => {
-        // Check if the data is wrapped in fileAndObjectTypeBean.empResDTO
-        if (item.fileAndObjectTypeBean?.empResDTO) {
-          return item.fileAndObjectTypeBean.empResDTO;
-        }
-        // Check for hierarchy wrapper
-        if (item.empHierarchyResDTO) {
-          return item.empHierarchyResDTO;
-        }
-        // Fallback: if it's already a flat structure
-        return item;
-      });
-      
-      console.log("Extracted employees:", employeesData);
-      setEmployees(employeesData);
-    }
-  } catch (error) {
-    console.error("Error fetching employees:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const fetchAllStatuses = async () => {
     const year = quarterData.year.split("-")[0];
@@ -769,9 +768,9 @@ const AppraisalList = () => {
         else if (allApproved) approvalStatus = "Approved";
         else if (goals.some((g) => g.status === "APPROVED"))
           approvalStatus = "Partially Approved";
-        const approvalDate = goals.find((g) => g.approvedAt)?.approvedAt || 
-                             goals.find((g) => g.status === "APPROVED")?.updatedAt ||
-                             goals.find((g) => g.status === "SELF_REVIEWED" || g.status === "MANAGER_REVIEWED" || g.status === "ACCEPTED_BY_EMPLOYEE")?.updatedAt;
+        const approvalDate = goals.find((g) => g.approvedAt)?.approvedAt ||
+          goals.find((g) => g.status === "APPROVED")?.updatedAt ||
+          goals.find((g) => g.status === "SELF_REVIEWED" || g.status === "MANAGER_REVIEWED" || g.status === "ACCEPTED_BY_EMPLOYEE")?.updatedAt;
         statusMap[empCode] = {
           status: approvalStatus,
           hasPendingApproval: hasPendingApproval,
@@ -954,8 +953,8 @@ const AppraisalList = () => {
             status: allAccepted
               ? "COMPLETED"
               : hasSubmittedGoals
-              ? "IN_PROGRESS"
-              : "NOT_STARTED",
+                ? "IN_PROGRESS"
+                : "NOT_STARTED",
           };
         } catch (error) {
           console.error(
@@ -985,17 +984,17 @@ const AppraisalList = () => {
 
   const filterEmployees = () => {
     if (!managerEmail) {
-    setFilteredEmployees([]);
-    return;
-  }
+      setFilteredEmployees([]);
+      return;
+    }
 
-  let filtered = employees.filter((emp) => {
-    const reportingEmail = emp.reportingManagerEmailId;
-    return (
-      !reportingEmail ||
-      reportingEmail.toLowerCase().trim() === managerEmail.toLowerCase().trim()
-    );
-  });
+    let filtered = employees.filter((emp) => {
+      const reportingEmail = emp.reportingManagerEmailId;
+      return (
+        !reportingEmail ||
+        reportingEmail.toLowerCase().trim() === managerEmail.toLowerCase().trim()
+      );
+    });
 
     if (searchTerm.trim() !== "") {
       const term = searchTerm.toLowerCase().trim();
@@ -1061,7 +1060,7 @@ const AppraisalList = () => {
   };
 
   const getEmployeeCode = (employee) => employee.empCode || employee.id;
-  
+
   const getDesignation = (employee) =>
     employee?.designationResDTO?.designationName || employee?.designationName || employee?.designation || "Software Engineer";
 
@@ -1146,16 +1145,14 @@ const AppraisalList = () => {
 
   const handleConductAnnualReview = (employee) => {
     navigate(
-      `/manager/annual-review/${getEmployeeCode(employee)}?year=${
-        annualData.year
+      `/manager/annual-review/${getEmployeeCode(employee)}?year=${annualData.year
       }`,
     );
   };
 
   const handleViewAnnualReview = (employee) => {
     navigate(
-      `/manager/annual-review/preview/${getEmployeeCode(employee)}?year=${
-        annualData.year
+      `/manager/annual-review/preview/${getEmployeeCode(employee)}?year=${annualData.year
       }`,
     );
   };
@@ -1172,8 +1169,7 @@ const AppraisalList = () => {
 
   const handleViewQuarterGoals = (employee, quarter) => {
     navigate(
-      `/manager/goal/preview/${getEmployeeCode(employee)}?year=${
-        annualData.year
+      `/manager/goal/preview/${getEmployeeCode(employee)}?year=${annualData.year
       }&quarter=${quarter}`,
     );
   };
@@ -1456,11 +1452,10 @@ const AppraisalList = () => {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                    currentPage === page
+                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page
                       ? "bg-red-600 text-white"
                       : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   {page}
                 </button>
@@ -1501,8 +1496,8 @@ const AppraisalList = () => {
             {!managerEmail
               ? "Manager email not found."
               : searchTerm
-              ? "Try adjusting your search criteria"
-              : "No employees are reporting to you"}
+                ? "Try adjusting your search criteria"
+                : "No employees are reporting to you"}
           </p>
         </div>
       );
@@ -1592,13 +1587,12 @@ const AppraisalList = () => {
                             onClick={() =>
                               handleViewQuarterGoals(employee, quarter)
                             }
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-                              isCompleted
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${isCompleted
                                 ? "bg-green-100 text-green-700 hover:bg-green-200"
                                 : qData.goalsCount > 0
-                                ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                            }`}
+                                  ? "bg-red-100 text-red-700 hover:bg-red-200"
+                                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                              }`}
                           >
                             {isCompleted ? (
                               <FiCheckCircle size={12} />
@@ -1608,15 +1602,15 @@ const AppraisalList = () => {
                             {isCompleted
                               ? "Completed"
                               : qData.goalsCount > 0
-                              ? "In Progress"
-                              : "Not Started"}
+                                ? "In Progress"
+                                : "Not Started"}
                           </button>
                         </td>
                       );
                     })}
                     <td className="px-4 py-3 text-center">
                       {annualStatus === "COMPLETED" ||
-                      annualStatus === "SUBMITTED_TO_HR" ? (
+                        annualStatus === "SUBMITTED_TO_HR" ? (
                         <button
                           onClick={() => handleViewAnnualReview(employee)}
                           className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 transition-all duration-200 hover:scale-105"
@@ -1717,14 +1711,14 @@ const AppraisalList = () => {
                         )}
                         {(annualStatus === "COMPLETED" ||
                           annualStatus === "SUBMITTED_TO_HR") && (
-                          <button
-                            onClick={() => handlePreviewAnnualReview(employee)}
-                            className="p-2 rounded-md text-green-600 bg-green-50 hover:bg-green-100 transition-all duration-200 hover:scale-110"
-                            title="View Completed Review"
-                          >
-                            <FiCheck size={18} />
-                          </button>
-                        )}
+                            <button
+                              onClick={() => handlePreviewAnnualReview(employee)}
+                              className="p-2 rounded-md text-green-600 bg-green-50 hover:bg-green-100 transition-all duration-200 hover:scale-110"
+                              title="View Completed Review"
+                            >
+                              <FiCheck size={18} />
+                            </button>
+                          )}
                         {annualStatus === "SUBMITTED_TO_EMPLOYEE" && (
                           <button
                             onClick={() => handlePreviewAnnualReview(employee)}
@@ -1769,8 +1763,8 @@ const AppraisalList = () => {
             {!managerEmail
               ? "Manager email not found."
               : searchTerm
-              ? "Try adjusting your search criteria"
-              : "No employees are reporting to you"}
+                ? "Try adjusting your search criteria"
+                : "No employees are reporting to you"}
           </p>
         </div>
       );
@@ -1882,7 +1876,7 @@ const AppraisalList = () => {
       <div className="w-full min-h-screen bg-gray-50">
         <Header />
         <div className="mt-24">
-          <LoadingAnimation message="Loading appraisal details..." />
+          <LoadingAnimation message="Loading Performance Details..." />
         </div>
       </div>
     );
@@ -1920,7 +1914,7 @@ const AppraisalList = () => {
             Home
           </span>
           <span className="mx-2 text-gray-400">/</span>
-          <span className="font-semibold text-red-600">Appraisal List</span>
+          <span className="font-semibold text-red-600">Performance List</span>
         </nav>
 
         <div className="mb-6">
@@ -2090,26 +2084,26 @@ const AppraisalList = () => {
                       </div>
                       {annualReviewData[getEmployeeCode(selectedEmployee)]
                         ?.managerAnnualReviewSubmissionDate && (
-                        <div className="flex items-center gap-2">
-                          <FiCalendar className="text-gray-400" />
-                          <span className="text-gray-600">
-                            Manager Submitted:
-                          </span>
-                          <span className="text-sm">
-                            {new Date(
-                              annualReviewData[
-                                getEmployeeCode(selectedEmployee)
-                              ].managerAnnualReviewSubmissionDate,
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        </div>
-                      )}
+                          <div className="flex items-center gap-2">
+                            <FiCalendar className="text-gray-400" />
+                            <span className="text-gray-600">
+                              Manager Submitted:
+                            </span>
+                            <span className="text-sm">
+                              {new Date(
+                                annualReviewData[
+                                  getEmployeeCode(selectedEmployee)
+                                ].managerAnnualReviewSubmissionDate,
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                        )}
                     </div>
                     <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
                       <button

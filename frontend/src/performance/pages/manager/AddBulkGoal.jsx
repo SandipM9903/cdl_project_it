@@ -28,28 +28,28 @@ import { FiArrowLeft } from "react-icons/fi";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employee) => {
   if (!employee) return "Employee Name";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employee
   if (employee.fullNameAsAadhaar && employee.fullNameAsAadhaar.trim() !== "") {
     return employee.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employee.firstName || "";
   const middleName = employee.middleName || "";
   const lastName = employee.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee Name";
 };
 
@@ -61,12 +61,12 @@ const AddBulkGoal = () => {
   const quarter = queryParams.get("quarter") || quarterParam || "Q1";
   const yearParam = queryParams.get("year") || "";
   const empCodesParam = queryParams.get("empCodes") || "";
-  
+
   const managerId = localStorage.getItem("empId");
-  
+
   // Get selected employees from location state or from URL params
   const { selectedEmployees: stateSelectedEmployees, quarterData } = location.state || {};
-  
+
   const [goalMasterData, setGoalMasterData] = useState([]);
   const [groupedGoals, setGroupedGoals] = useState({});
   const [loading, setLoading] = useState(true);
@@ -89,11 +89,11 @@ const AddBulkGoal = () => {
     const fetchEmployeesFromCodes = async () => {
       if (empCodesParam) {
         const empCodesList = empCodesParam.split(',').filter(code => code.trim());
-        
+
         try {
           const response = await axios.get(BASE_URL_EPMS_EMP);
           const allEmployees = response.data;
-          
+
           const employees = empCodesList.map(code => {
             const employee = allEmployees.find(emp => emp.empCode?.toString() === code.toString());
             if (employee) {
@@ -120,7 +120,7 @@ const AddBulkGoal = () => {
               designation: "Not Available",
             };
           });
-          
+
           setSelectedEmployees(employees);
           setEmployeeDetails(employees);
         } catch (error) {
@@ -146,7 +146,7 @@ const AddBulkGoal = () => {
         setError("No employees selected. Please go back and select employees.");
       }
     };
-    
+
     fetchEmployeesFromCodes();
   }, [empCodesParam, stateSelectedEmployees]);
 
@@ -195,24 +195,24 @@ const AddBulkGoal = () => {
     setError(null);
     try {
       const response = await axios.get(`${BASE_URL_EPMS}/api/goal-master/grouped`);
-      
+
       if (response.data && response.data.success) {
         const groupedData = response.data.data;
         setGoalMasterData(groupedData);
-        
+
         const grouped = {};
         groupedData.forEach((group) => {
           grouped[group.category] = group.items;
         });
         setGroupedGoals(grouped);
-        
+
         // Initialize expanded sections - ALL COLLAPSED by default
         const initialExpanded = {};
         groupedData.forEach((group) => {
           initialExpanded[group.category] = false; // Set to false for collapsed by default
         });
         setExpandedSections(initialExpanded);
-        
+
         // Initialize selected goals
         const initialSelected = {};
         groupedData.forEach((group) => {
@@ -235,7 +235,7 @@ const AddBulkGoal = () => {
     if (!yearToUse) return;
 
     const statusMap = {};
-    
+
     for (const employee of selectedEmployees) {
       const empCode = employee.empCode || employee.id;
       try {
@@ -249,7 +249,7 @@ const AddBulkGoal = () => {
           const hasSubmittedGoals = response.data.data.some(
             (goal) => goal.submittedToEmployeeAt !== null
           );
-          
+
           statusMap[empCode] = {
             hasGoals,
             hasSubmittedGoals,
@@ -274,7 +274,7 @@ const AddBulkGoal = () => {
         };
       }
     }
-    
+
     setEmployeeStatus(statusMap);
   };
 
@@ -288,22 +288,22 @@ const AddBulkGoal = () => {
   const handleSelectAll = (category, items) => {
     const newSelected = { ...selectedGoals };
     const allSelected = items.every((item) => selectedGoals[item.id]);
-    
+
     items.forEach((item) => {
       newSelected[item.id] = !allSelected;
     });
-    
+
     setSelectedGoals(newSelected);
   };
 
   const handleSelectAllGoals = () => {
     const allSelected = Object.values(selectedGoals).every(Boolean);
     const newSelected = { ...selectedGoals };
-    
+
     Object.keys(newSelected).forEach((id) => {
       newSelected[id] = !allSelected;
     });
-    
+
     setSelectedGoals(newSelected);
   };
 
@@ -325,7 +325,7 @@ const AddBulkGoal = () => {
     }
 
     const yearToUse = yearParam || activeCycle?.year;
-    
+
     if (!yearToUse) {
       setError("Year is not available. Please try again.");
       return;
@@ -357,7 +357,7 @@ const AddBulkGoal = () => {
     setShowConfirmDialog(false);
     setSaving(true);
     setError(null);
-    
+
     try {
       const { selectedItems, eligibleEmployees, yearToUse } = confirmData;
 
@@ -397,15 +397,15 @@ const AddBulkGoal = () => {
       if (successCount > 0) {
         setPopupMessage(`Successfully added goals to ${successCount} employee(s). ${errorCount > 0 ? `${errorCount} failed.` : ""}`);
         setShowSuccessPopup(true);
-        
+
         // Build URL with empCodes for redirect to bulk predefined goals page
         const empCodes = selectedEmployees.map(e => e.empCode || e.id).join(',');
-        
+
         // Redirect to ManagerBulkPredefinedGoals page where they can edit and submit goals
         setTimeout(() => {
           navigate(`/manager/bulk-predefined-goals/${quarter}?year=${yearToUse}&empCodes=${empCodes}`, {
-            state: { 
-              showSuccess: true, 
+            state: {
+              showSuccess: true,
               message: `Successfully added goals to ${successCount} employee(s). You can now edit and submit them.`,
               selectedEmployees: selectedEmployees,
               quarterData: quarterData,
@@ -490,9 +490,9 @@ const AddBulkGoal = () => {
             <FaCheckCircle className="text-green-500 text-xl flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-green-800 font-medium">{popupMessage}</p>
-              <p className="text-green-600 text-sm mt-1">Redirecting to appraisal list...</p>
+              <p className="text-green-600 text-sm mt-1">Redirecting to Performance List...</p>
             </div>
-            <button 
+            <button
               onClick={() => setShowSuccessPopup(false)}
               className="text-green-600 hover:text-green-800"
             >
@@ -509,7 +509,7 @@ const AddBulkGoal = () => {
             <div className="border-b border-gray-200 px-6 py-4">
               <h3 className="text-xl font-semibold text-gray-900">Confirm Goal Assignment</h3>
             </div>
-            
+
             <div className="p-6">
               <div className="flex items-start gap-3 mb-4">
                 <FaExclamationTriangle className="text-yellow-500 text-xl mt-0.5" />
@@ -581,7 +581,7 @@ const AddBulkGoal = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Bulk Add Goals</span>
@@ -651,27 +651,25 @@ const AddBulkGoal = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {selectedEmployees.map((employee) => {
                 const empCode = employee.empCode || employee.id;
                 const status = employeeStatus[empCode];
                 const isEligible = status?.status !== "Submitted";
-                
+
                 return (
                   <div
                     key={empCode}
-                    className={`border rounded-lg p-4 transition-all ${
-                      isEligible
+                    className={`border rounded-lg p-4 transition-all ${isEligible
                         ? "border-gray-200 hover:border-green-300 hover:shadow-md"
                         : "border-gray-200 bg-gray-50 opacity-75"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        isEligible ? "bg-green-100" : "bg-gray-200"
-                      }`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isEligible ? "bg-green-100" : "bg-gray-200"
+                        }`}>
                         <FaUser className={isEligible ? "text-green-600" : "text-gray-500"} />
                       </div>
                       <div className="flex-1">
@@ -686,13 +684,12 @@ const AddBulkGoal = () => {
                         </div>
                         {status && (
                           <div className="mt-2">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                              status.status === "Submitted"
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${status.status === "Submitted"
                                 ? "bg-green-100 text-green-700"
                                 : status.status === "Has Goals"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-gray-100 text-gray-600"
-                            }`}>
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-gray-100 text-gray-600"
+                              }`}>
                               {status.status === "Submitted" ? (
                                 <FaCheckCircle size={10} />
                               ) : status.status === "Has Goals" ? (
@@ -718,7 +715,7 @@ const AddBulkGoal = () => {
                 );
               })}
             </div>
-            
+
             {eligibleEmployees.length < selectedEmployees.length && (
               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
@@ -822,7 +819,7 @@ const AddBulkGoal = () => {
                           const sno = goalMasterData
                             .slice(0, groupIndex)
                             .reduce((acc, g) => acc + g.items.length, 0) + itemIndex + 1;
-                          
+
                           return (
                             <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                               <td className="px-6 py-4 text-sm text-gray-500">
@@ -910,7 +907,7 @@ const AddBulkGoal = () => {
             <div>
               <h4 className="text-sm font-semibold text-blue-800 mb-1">Bulk Goal Assignment</h4>
               <p className="text-xs text-blue-600">
-                All selected goals will be added to the employees listed above. 
+                All selected goals will be added to the employees listed above.
                 Employees who already have submitted goals will be automatically skipped.
                 You can review individual employee goals after assignment.
               </p>

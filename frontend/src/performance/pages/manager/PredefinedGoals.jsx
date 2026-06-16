@@ -25,28 +25,28 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee";
-  
+
   // Check localStorage first for EmployeeFullName
   const localStorageFullName = localStorage.getItem("EmployeeFullName");
   if (localStorageFullName && localStorageFullName.trim() !== "") {
     return localStorageFullName.trim();
   }
-  
+
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
   }
-  
+
   // Fallback to firstName, middleName, lastName
   const firstName = employeeData.firstName || "";
   const middleName = employeeData.middleName || "";
   const lastName = employeeData.lastName || "";
   const fullName = `${firstName} ${middleName} ${lastName}`.trim();
-  
+
   if (fullName && fullName !== "") {
     return fullName;
   }
-  
+
   return "Employee";
 };
 
@@ -206,7 +206,7 @@ const PredefinedGoals = () => {
   const totalWeightage = predefinedGoals.reduce((sum, goal) => sum + (goal.weightage || 0), 0);
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'NOT_STARTED': return 'bg-gray-100 text-gray-800 border-gray-200';
       case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'SUBMITTED': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -232,7 +232,7 @@ const PredefinedGoals = () => {
       <div className="flex flex-col min-h-screen font-content bg-gray-50">
         <Header />
         <div className="mt-24">
-          <LoadingAnimation message="Loading appraisal details..." />
+          <LoadingAnimation message="Loading Performance Details..." />
         </div>
       </div>
     );
@@ -264,7 +264,7 @@ const PredefinedGoals = () => {
             onClick={() => navigate("/AppraisalList")}
             className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors font-medium"
           >
-            Appraisal List
+            Performance List
           </span>
           <span className="mx-2 text-gray-400">/</span>
           <span className="font-semibold text-red-600">Appraisal Details</span>
@@ -396,11 +396,10 @@ const PredefinedGoals = () => {
               <button
                 onClick={handleViewAllGoals}
                 disabled={predefinedGoals.length === 0 || goalsLoading}
-                className={`font-medium py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm ${
-                  predefinedGoals.length === 0 || goalsLoading
+                className={`font-medium py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm ${predefinedGoals.length === 0 || goalsLoading
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
+                  }`}
               >
                 <FaEye /> View Details
               </button>

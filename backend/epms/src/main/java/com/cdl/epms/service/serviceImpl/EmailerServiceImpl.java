@@ -1026,7 +1026,7 @@ public class EmailerServiceImpl implements EmailerService {
                     employeeId, financialYear, System.currentTimeMillis());
 
             EmailRequest emailRequest = new EmailRequest();
-            emailRequest.setTemplateId(13L);
+            emailRequest.setTemplateId(10L);
             emailRequest.setTo(employeeEmail);
             emailRequest.setUniqueKey(uniqueKey);
             emailRequest.setReminderType("MANAGER_REVIEW_COMPLETED_TO_EMPLOYEE");
@@ -1078,7 +1078,7 @@ public class EmailerServiceImpl implements EmailerService {
                     employeeId, financialYear, System.currentTimeMillis());
 
             EmailRequest emailRequest = new EmailRequest();
-            emailRequest.setTemplateId(14L);
+            emailRequest.setTemplateId(17L);
             emailRequest.setTo(employeeEmail);
             emailRequest.setUniqueKey(uniqueKey);
             emailRequest.setReminderType("HR_SUBMISSION_CONFIRMATION_TO_EMPLOYEE");
@@ -1134,7 +1134,7 @@ public class EmailerServiceImpl implements EmailerService {
                     employeeId, financialYear, System.currentTimeMillis(), attemptCount);
 
             EmailRequest emailRequest = new EmailRequest();
-            emailRequest.setTemplateId(isLastAttempt ? 16L : 15L);
+            emailRequest.setTemplateId(isLastAttempt ? 15L : 13L);
             emailRequest.setTo(managerEmail);
             emailRequest.setUniqueKey(uniqueKey);
             emailRequest.setReminderType("ANNUAL_REVIEW_SENT_BACK_TO_MANAGER");
@@ -1143,11 +1143,15 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("managerName", managerName != null ? managerName : "Manager");
             variables.put("employeeName", employeeName);
             variables.put("employeeId", employeeId);
+            variables.put("employeeCode", employeeId);
             variables.put("financialYear", financialYear);
             variables.put("remarks", remarks != null ? remarks : "No remarks provided");
             variables.put("attemptNumber", String.valueOf(attemptCount));
             variables.put("sendBackDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("sendBackTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("submissionDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("submittedOn", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
 
             String[] years = financialYear.split("-");
             String year = years[0];
@@ -1189,8 +1193,10 @@ public class EmailerServiceImpl implements EmailerService {
             String uniqueKey = String.format("send_back_employee_%s_%s_%d_attempt_%d",
                     employeeId, financialYear, System.currentTimeMillis(), attemptCount);
 
+            boolean isLastAttempt = attemptCount >= 2;
+
             EmailRequest emailRequest = new EmailRequest();
-            emailRequest.setTemplateId(17L);
+            emailRequest.setTemplateId(isLastAttempt ? 16L : 14L);
             emailRequest.setTo(employeeEmail);
             emailRequest.setUniqueKey(uniqueKey);
             emailRequest.setReminderType("ANNUAL_REVIEW_SENT_BACK_CONFIRMATION_TO_EMPLOYEE");
@@ -1203,6 +1209,10 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("attemptNumber", String.valueOf(attemptCount));
             variables.put("sendBackDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("sendBackTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("submissionDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("employeeCode", employeeId);
+            variables.put("submittedOn", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
 
             String[] years = financialYear.split("-");
             String year = years[0];
@@ -1253,7 +1263,7 @@ public class EmailerServiceImpl implements EmailerService {
                     employeeId, year, System.currentTimeMillis(), attemptCount);
 
             EmailRequest emailRequest = new EmailRequest();
-            emailRequest.setTemplateId(isLastAttempt ? 16L : 15L);
+            emailRequest.setTemplateId(isLastAttempt ? 15L : 13L);
             emailRequest.setTo(managerEmail);
             emailRequest.setUniqueKey(uniqueKey);
             emailRequest.setReminderType("ANNUAL_REVIEW_SENT_BACK_TO_MANAGER");
@@ -1262,12 +1272,16 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("managerName", managerName != null ? managerName : "Manager");
             variables.put("employeeName", employeeName);
             variables.put("employeeId", employeeId);
+            variables.put("employeeCode", employeeId);
             variables.put("financialYear", financialYear);
             variables.put("remarks", remarks != null ? remarks : "No remarks provided");
             variables.put("attemptNumber", String.valueOf(attemptCount));
             variables.put("isLastAttempt", String.valueOf(isLastAttempt));
             variables.put("sendBackDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("sendBackTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("submissionDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
+            variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+            variables.put("submittedOn", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("reviewUrl", frontendUrl + managerAnnualReviewPath + "/" + employeeId + "?year=" + year);
 
             emailRequest.setVariables(variables);
