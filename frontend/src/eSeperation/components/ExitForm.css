@@ -1,0 +1,26 @@
+.exit-dashboard {
+  display: flex;
+  justify-content: center;
+}
+
+.exit-menu {
+  display: flex;
+}
+
+.exit-button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.exit-button:hover {
+  background-color: #45a049; /* Darker Green */
+}

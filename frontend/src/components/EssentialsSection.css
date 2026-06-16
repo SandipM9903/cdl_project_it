@@ -1,0 +1,71 @@
+/* =========================
+   Scrollbar Hiding (Cross-browser)
+   ========================= */
+.no-scrollbar {
+  overflow-x: auto;              /* Keep horizontal scroll */
+  overflow-y: hidden;            /* Hide vertical scroll if needed */
+  -ms-overflow-style: none;      /* IE and Edge */
+  scrollbar-width: none;         /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                 /* Chrome, Safari, Opera */
+}
+
+/* =========================
+   Dropdown fix (z-index)
+   ========================= */
+.quicklink-item {
+  position: relative;
+  z-index: 10;
+}
+
+/* =========================
+   3D Flip Card Styles
+   ========================= */
+.perspective,
+.flip-container {
+  perspective: 1000px;
+}
+
+.flipper {
+  transition: 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+
+.bg-essentials {
+  background-image: url('../assets/4886c01d0b422664995a7e114b461b0a56581cae.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-milestone {
+  background-image: url('../assets/47a47ffbecfe0d63c375f698c34a0cef2e1f39bd.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.welcome{
+  
+}

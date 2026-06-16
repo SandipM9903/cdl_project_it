@@ -1,0 +1,32 @@
+{
+  "ideas": [
+    {
+      "text": "Add more team-building activities",
+      "likes": 6,
+      "comments": 0,
+      "id": "808c"
+    },
+    {
+      "text": "Upgrade the coffee machine",
+      "likes": 3,
+      "comments": 0,
+      "id": "39d1"
+    },
+    {
+      "id": "ce13",
+      "text": "Punch Machine is not working",
+      "likes": 0,
+      "comments": 0
+    }
+  ],
+  "suggestions": [
+    {
+      "text": "Provide mental wellness sessions",
+      "id": "ab15"
+    },
+    {
+      "text": "Improve air conditioning on 2nd floor",
+      "id": "a4ed"
+    }
+  ]
+}

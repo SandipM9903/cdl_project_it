@@ -1,0 +1,53 @@
+/* Breadcrumb.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
+.breadcrumb {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  color: #7A7A7A;
+
+  
+}
+
+/* Base dot styling */
+.slick-dots {
+  bottom: 10px;
+  z-index: 20;
+  display: flex !important;
+  justify-content: center;
+}
+
+.slick-dots li button:before {
+  color: white;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.slick-dots li.slick-active button:before {
+  opacity: 1;
+  color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .slick-dots li button:before {
+    font-size: 8px;
+  }
+
+  .slick-dots {
+    bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slick-dots li button:before {
+    font-size: 6px;
+  }
+
+  .slick-dots {
+    bottom: 6px;
+  }
+}

@@ -1,0 +1,81 @@
+/* TestimonialPopup.css */
+ 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+ 
+.testimonial-card {
+  background-color: white;
+  color: red;
+  transform: scale(0.95);
+}
+ 
+.testimonial-description {
+  color: rgb(48, 48, 48);
+ 
+  max-height: 10rem; /* max height for scrolling */
+  overflow-y: hidden;
+  padding-right: 0.5rem;
+  transition: overflow 0.3s;
+}
+ 
+.testimonial-card:hover {
+  background-color: #e53935; /* red */
+  color: white;
+  transform: scale(1);
+}
+ 
+.testimonial-card:hover .testimonial-description {
+  color: white;
+ 
+  overflow-y: auto; /* Show scrollbar only on hover */
+}
+ 
+.designation {
+  color: black;
+  transition: color 0.3s ease;
+}
+ 
+.testimonial-card:hover .designation {
+  color: white;
+}
+ 
+/* TestimonialPopup.css */
+.testimonial-description::-webkit-scrollbar {
+  /* display: none; */
+   width: 0;
+  background: transparent;
+}
+.testimonial-description {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+ 
+ 
+/* On hover – show scrollbar */
+.testimonial-card:hover .testimonial-description {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+ 
+ 
+.testimonial-description::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+ 
+ 
+/* On hover – show scrollbar for WebKit */
+.testimonial-card:hover .testimonial-description::-webkit-scrollbar {
+  width: 6px;
+}
+.testimonial-card:hover .testimonial-description::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+ 
+ 

@@ -1,0 +1,5 @@
+/* Override the default selected tab bottom border */
+.react-tabs__tab--selected {
+    border-bottom: none !important;
+  }
+  

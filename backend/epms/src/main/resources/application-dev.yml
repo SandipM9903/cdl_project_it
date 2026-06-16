@@ -1,0 +1,137 @@
+server:
+  port: 9009
+
+spring:
+  application:
+    name: epms
+
+  datasource:
+    url: jdbc:postgresql://43.205.24.208:5432/epms
+    username: postgres
+    password: pgadmin
+    driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1GB
+      max-request-size: 1GB
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true  # Enable SQL logging
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true  # Format SQL for better readability
+        use_sql_comments: true  # Show comments in SQL
+
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: cdladmin@cms.co.in
+    password: Info##5253
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 30000
+          timeout: 30000
+          writetimeout: 30000
+          maxconnections: 10
+          connectionpoolsize: 10
+    from: cdladmin@cms.co.in
+
+# Email configuration for MAPI rate limiting
+email:
+  delay:
+    between:
+      emails:
+        ms: 1500
+  retry:
+    max:
+      attempts: 3
+  batch:
+    size: 20
+    delay:
+      ms: 2000
+  parallel:
+    threads: 3
+
+file:
+  encryption:
+    simpleEncSecret: 8F3dK9@Q!2zL7X#A
+
+document:
+  upload:
+    API: http://43.205.24.208:9023/documents/upload/
+    directory: root-epms
+  access:
+    API: http://43.205.24.208:9023/documents/access
+  delete:
+    API: http://43.205.24.208:9023/documents
+
+employee:
+  api:
+    url: http://43.205.24.208:9020/employee
+    base:
+      url: http://43.205.24.208:9020
+    search:
+      api: http://43.205.24.208:9020/employee/search
+    emails:
+      api: http://43.205.24.208:9020/api/v1/employees/emails
+  fetch:
+    eCode:
+      API: http://43.205.24.208:9020/employee/eCode
+    email:
+      API: http://43.205.24.208:9020/employee/by/email
+
+# ==================== LOGGING CONFIGURATION ====================
+logging:
+  # Log levels for different packages
+  level:
+    root: INFO
+    com.cdl.epms: DEBUG
+    com.cdl.epms.controller: DEBUG
+    com.cdl.epms.service: DEBUG
+    com.cdl.epms.service.serviceImpl: DEBUG
+    com.cdl.epms.repository: DEBUG
+    org.hibernate: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet: DEBUG
+    org.springframework.boot: INFO
+    org.apache.catalina: INFO
+    org.apache.tomcat: INFO
+
+  # Log file configuration
+  file:
+    name: logs/epms-application.log  # Log file path
+    max-size: 10MB  # Max size per log file
+    max-history: 30  # Keep 30 days of logs
+
+  # Log pattern configuration
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+
+  # Logback specific configuration
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 100MB
+
+# Application URLs (Frontend) - Local Environment
+app:
+  frontend:
+    url: http://43.205.24.208:9008
+    paths:
+      manager-goal-setting: /manager/goal-setting
+      manager-dashboard: /manager/dashboard
+      manager-annual-review: /manager/annual-review
+      employee-annual-review: /employee/annual-review
+      employee-dashboard: /employee/dashboard

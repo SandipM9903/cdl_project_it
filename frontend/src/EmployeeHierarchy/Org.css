@@ -1,0 +1,115 @@
+/* --- Global CSS for Org Chart Lines --- */
+/* Add this block to your main CSS file (e.g., index.css) */
+
+.org-tree-root, .org-tree-children {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+/* Base styles for all lines */
+.org-tree-root > li::before,
+.org-tree-children > li::before,
+.org-tree-children > li::after {
+    content: '';
+    position: absolute;
+    background-color: #A0AEC0; /* Tailwind gray-400 */
+}
+
+/* Line connecting the very first node (root) from its implied parent */
+.org-tree-root > li::before {
+    top: -20px; /* Adjust if the root node starts higher */
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    transform: translateX(-50%);
+}
+
+/* Vertical lines connecting children nodes to their parent's horizontal line */
+.org-tree-children > li::before {
+    top: -20px; /* Position above the child node */
+    left: 50%;
+    width: 2px;
+    height: 20px; /* Length of the vertical line segment */
+    transform: translateX(-50%);
+    z-index: 1; /* Ensure lines are behind nodes */
+}
+
+/* Horizontal line extending from the left of a child node (for siblings) */
+.org-tree-children > li:not(:first-child)::after {
+    top: -20px; /* Aligns with the vertical line connection point */
+    left: 0;
+    height: 2px;
+    width: 50%; /* Halfway to meet the common horizontal line */
+    z-index: 1;
+}
+
+/* Horizontal line extending from the right of a child node (for siblings) */
+.org-tree-children > li:not(:last-child)::after {
+    top: -20px; /* Aligns with the vertical line connection point */
+    right: 0;
+    height: 2px;
+    width: 50%; /* Halfway to meet the common horizontal line */
+    transform: translateX(0%); /* No transform needed for right:0 */
+    z-index: 1;
+}
+
+/* Container for children (the horizontal row of siblings) */
+.org-tree-children {
+    position: relative;
+    padding-top: 30px; /* Space for the vertical line from parent + horizontal line */
+    margin-top: 15px; /* Spacing below the parent node */
+}
+
+/* Vertical line descending from the parent node to the common horizontal line */
+.org-tree-children::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 30px; /* Length of the vertical line from parent */
+    background-color: #A0AEC0; /* Tailwind gray-400 */
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Main horizontal line connecting all children */
+.org-tree-children::after {
+    content: '';
+    position: absolute;
+    top: 30px; /* Position at the end of the vertical parent line */
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #A0AEC0; /* Tailwind gray-400 */
+    z-index: 1;
+}
+
+/* Specific styling for list items containing nodes */
+.org-tree-children > li {
+    position: relative;
+    padding-top: 30px; /* Create space for the connection lines */
+    flex-shrink: 0; /* Prevent items from shrinking if many children */
+}
+
+/* Ensures the node boxes sit above the lines */
+.org-tree-root > li > div,
+.org-tree-children > li > div {
+    position: relative;
+    z-index: 2; /* Higher z-index to appear above lines */
+}
+
+/* Special rule for single child: prevents drawing the horizontal line part if only one child */
+.org-tree-children > li:first-child:last-child::after {
+    content: none !important;
+}
+
+/* Adjustments for spacing and alignment */
+.org-tree-children > li:not(:first-child)::before {
+    left: 50%;
+}
+.org-tree-children > li:not(:last-child)::before {
+    left: 50%;
+}

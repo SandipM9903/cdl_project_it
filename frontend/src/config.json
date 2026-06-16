@@ -1,0 +1,12 @@
+{
+    "build": "local",
+
+    "local": {
+        "apiURLQuiz": "http://43.205.24.208:8082",
+        "apiURLLogin":"http://43.205.24.208:8082"
+    },
+    "dev": {
+        "apiURLQuiz": "http://43.205.24.208:8082",
+        "apiURLLogin":"http://43.205.24.208:8082"
+    }
+}

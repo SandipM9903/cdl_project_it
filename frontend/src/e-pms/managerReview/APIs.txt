@@ -1,0 +1,23 @@
+APIs USED:
+    ("http://43.205.24.208:9031/api/getBySelfAsmAll")
+    ("http://43.205.24.208:9031/api/getByDevGoals/1")
+    ("http://43.205.24.208:9031/api/getByProfile/1")
+    ("http://43.205.24.208:9031/api/postByDg", addDevGoals)
+    ("http://43.205.24.208:9031/api/getBySelfAsmDraft/10")
+    ("http://43.205.24.208:9031/api/getBySelfAsm/10")
+    ("http://43.205.24.208:9031/api/postBySelfAsmDraft", AllDraftRatingComments)
+    ("http://43.205.24.208:9031/api/getBySelfAsmDraft/10")
+    ("http://43.205.24.208:9031/api/postBySelfAsm", AllSubmitRatingComments)
+    ("http://43.205.24.208:9031/api/getBySelfAsm/10")
+
+
+
+
+  ('http://43.205.24.208:9031/api/getByEmployeeStatus')
+  ("http://43.205.24.208:9031/api/getBySelfAsm/10")
+  ("http://43.205.24.208:9031/api/getByManagerAsm/20")
+
+
+
+
+

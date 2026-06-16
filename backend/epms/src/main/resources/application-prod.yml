@@ -1,0 +1,138 @@
+server:
+  port: 9009
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+
+spring:
+  application:
+    name: epms
+
+  datasource:
+    url: jdbc:postgresql://172.19.63.180:5432/epms
+    username: postgres
+    password: pgadmin
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1GB
+      max-request-size: 1GB
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        use_sql_comments: false
+
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: cdladmin@cms.co.in
+    password: hrbxlsskgstdgmkh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 30000
+          timeout: 30000
+          writetimeout: 30000
+          maxconnections: 10
+          connectionpoolsize: 10
+    from: cdladmin@cms.co.in
+
+# Email configuration
+email:
+  batch:
+    size: 100
+    delay:
+      ms: 1000
+  retry:
+    max:
+      attempts: 3
+  parallel:
+    threads: 5
+  delay:
+    between:
+      emails:
+        ms: 500
+
+file:
+  encryption:
+    simpleEncSecret: 8F3dK9@Q!2zL7X#A
+
+document:
+  upload:
+    API: http://172.19.63.182:9023/documents/upload/
+    directory: root-epms
+  access:
+    API: http://172.19.63.182:9023/documents/access
+  delete:
+    API: http://172.19.63.182:9023/documents
+
+employee:
+  api:
+    url: http://172.19.63.182:9020/employee
+    base:
+      url: http://172.19.63.182:9020
+    search:
+      api: http://172.19.63.182:9020/employee/search
+    emails:
+      api: http://172.19.63.182:9020/api/v1/employees/emails
+  fetch:
+    eCode:
+      API: http://172.19.63.182:9020/employee/eCode
+    email:
+      API: http://172.19.63.182:9020/employee/by/email
+
+# ==================== PRODUCTION LOGGING ====================
+logging:
+  level:
+    root: WARN
+    com.cdl.epms: INFO
+    org.hibernate: WARN
+    org.springframework.web: WARN
+
+  file:
+    name: logs/epms-application.log
+    max-size: 100MB
+    max-history: 90
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 90
+      total-size-cap: 5GB
+
+# Application URLs
+app:
+  frontend:
+    url: http://172.19.63.182:9008
+    paths:
+      manager-goal-setting: /manager/goal-setting
+      manager-dashboard: /manager/dashboard
+      manager-annual-review: /manager/annual-review
+      employee-annual-review: /employee/annual-review
+      employee-dashboard: /employee/dashboard
+
+# Disable Swagger in PROD
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

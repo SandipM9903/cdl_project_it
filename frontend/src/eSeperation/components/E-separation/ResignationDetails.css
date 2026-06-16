@@ -1,0 +1,14 @@
+.Dropdown-control{
+    padding: 4px 52px 4px 10px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.Dropdown-arrow{
+    border-width: 8px 7px 0 !important;
+    border-color: gray transparent transparent !important;
+}
+
+.is-open .Dropdown-arrow {
+    border-color: gray transparent #999;
+}

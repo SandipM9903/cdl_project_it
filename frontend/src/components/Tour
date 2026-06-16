@@ -1,0 +1,53 @@
+// types.ts
+export interface Tour {
+    id: string;
+    employeeId: string;
+    purposeOfTour?: string;
+    createdAt?: string;
+    approvedDate?: string;
+    cb_tour_request_status?: string;
+    fromDate?: string;
+    toDate?: string;
+    noOfDays?: number;
+    scheduledDepartureDatetime?: string;
+    scheduledDepartureReason?: string;
+    scheduledArrivalDatetime?: string;
+    scheduledArrivalReason?: string;
+    tourName?: string;
+    designationId?: string;
+    deptId?: string;
+    leaveStartDate?: string;
+    leaveEndDate?: string;
+    leaveDays?: number;
+    leaveType?: string;
+}
+
+export interface Itinerary {
+    journeyDate?: string;
+    fromCity?: string;
+    toCity?: string;
+    flightTrainNo?: string;
+    travelMode?: string;
+    departureDatetime?: string;
+    arrivalDatetime?: string;
+    travelClass?: string;
+    ticketPrice?: number;
+}
+
+export interface Attachment {
+    id: string;
+    fileName?: string;
+    fileSize?: number;
+}
+
+export interface TourItem {
+    tour: Tour;
+    itineraries?: Itinerary[];
+    attachments?: Attachment[];
+}
+
+export interface Employee {
+    id: string;
+    name: string;
+    tours: TourItem[];
+}

@@ -1,0 +1,93 @@
+/* .App {
+  text-align: center;
+  margin: auto;
+  background: #717171;
+  height: 700px;
+} */
+.botIcon {
+   width: 50px;
+   height: 50px;
+   border-radius: 25px;
+   border-color: black;
+   position: fixed;
+   bottom: 45px;
+   z-index: 9999;
+   right: 40px;
+   cursor: pointer;
+
+}
+.app-chatbot-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: #c7d3d4ff;
+  border: none;
+  position: fixed;
+  bottom: 45px;
+  z-index: 9999;
+  right: 40px;
+  cursor: pointer;
+ 
+}
+.react-chatbot-kit-chat-container {
+  position: fixed;
+  bottom: 100px;
+  z-index: 9999;
+  right: 40px;
+}
+
+.react-chatbot-kit-chat-message-container {
+  background: rgb(211, 211, 211);
+}
+
+.react-chatbot-kit-chat-header {
+  background: rgb(206, 19, 28);
+  color: white;
+}
+
+.react-chatbot-kit-chat-input-form {
+  background: rgb(207, 207, 207);
+  color: rgb(3, 3, 3);
+  border-radius: 10px;
+}
+.react-chatbot-kit-chat-btn-send-icon {
+  width: 24px;
+}
+
+
+
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #ee3838;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

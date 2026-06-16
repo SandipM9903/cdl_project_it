@@ -1,0 +1,113 @@
+/* Disable class */
+.disabled {
+  pointer-events: none;
+}
+
+/* Modal backdrop transparency */
+.MuiBackdrop-root.MuiModal-backdrop.css-i9fmh8-MuiBackdrop-root-MuiModal-backdrop {
+  opacity: 0.6 !important;
+}
+
+/* Wrapper to align label and dropdown */
+.custom-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Label style */
+.custom-dropdown-label {
+  font-size: 14px;
+  color: #374151; /* Tailwind gray-700 */
+  font-weight: 500;
+}
+
+/* Dropdown root */
+.Dropdown-root {
+  width: 120px !important;
+  font-size: 14px !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Dropdown control box (input field) */
+.Dropdown-control,
+.custom-dropdown-control {
+  width: 100% !important;
+  border: 1px solid #d1d5db !important; /* Tailwind gray-300 */
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  border-radius: 6px !important;
+  background-color: #fff !important;
+  color: #111827 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: border 0.2s ease-in-out;
+}
+
+/* Arrow style */
+.Dropdown-arrow {
+  border-color: #1f2937 transparent transparent !important; /* dark gray */
+  border-width: 6px 6px 0 !important;
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when open */
+.Dropdown-root.is-open .Dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Control hover/focus */
+.Dropdown-control:hover,
+.Dropdown-control:focus {
+  border-color: #2563eb !important; /* Tailwind blue-600 */
+}
+
+/* Dropdown menu (the list of options) */
+.Dropdown-menu,
+.custom-dropdown-menu {
+  width: 120px !important;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 4px;
+  margin-left: 12px;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 14px;
+}
+
+/* Options */
+.Dropdown-option {
+  padding: 8px 12px;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Option hover */
+.Dropdown-option:hover {
+  background-color: #eff6ff;
+}
+
+/* Selected option */
+.Dropdown-option.is-selected {
+  background-color: #dbeafe;
+  font-weight: 600 !important;
+}
+
+/* Selected value in control */
+.Dropdown-placeholder.is-selected {
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+/* Tab border fix */
+.css-1bs57xn {
+  border: 0px !important;
+}

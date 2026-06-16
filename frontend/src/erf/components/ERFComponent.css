@@ -1,0 +1,18 @@
+body {
+  background-color: rgba(220, 228, 227, 0.3);
+}
+.sc-dmlpXa.llZSKG {
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+}
+
+.Dropdown-control {
+  background-color: transparent !important;
+  padding: 4px 20px 4px 20px !important;
+  border: none !important;
+  margin-left: 10px;
+}
+
+.Dropdown-root {
+  position: relative;
+}
