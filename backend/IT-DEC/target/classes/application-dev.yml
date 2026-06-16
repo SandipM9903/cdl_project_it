@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: IT-DEC
+  datasource:
+    url: jdbc:postgresql://43.205.24.208:5432/it_declaration
+    username: postgres
+    password: pgadmin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  webflux:
+    client:
+      max-in-memory-size: 400MB
+      connection-timeout: 5000ms
+  codec:
+    max-in-memory-size: 400MB
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+server:
+  port: 9026
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      empService:
+        failure-rate-threshold: 50
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        wait-duration-in-open-state: 10s
+  timelimiter:
+    instances:
+      empService:
+        timeout-duration: 60s
+
+document:
+  upload:
+    API: http://43.205.24.208:9023/documents/upload/
+    directory: root-it_declaration
+  access:
+    API: http://43.205.24.208:9023/documents/access
+
+employee:
+  fetch:
+    API: http://172.19.63.182:9020/employee/
+    by:
+      empCode:
+        API: http://172.19.63.182:9020/employee/eCode/
+
+location:
+  fetch:
+    API: http://172.19.63.182:9021/location/
+
+file:
+  encryption:
+    simpleEncSecret: 8F3dK9@Q!2zL7X#A
+
