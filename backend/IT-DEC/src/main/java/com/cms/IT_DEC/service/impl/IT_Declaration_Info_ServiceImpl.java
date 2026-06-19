@@ -46,6 +46,10 @@ public class IT_Declaration_Info_ServiceImpl implements IT_Declaration_Info_Serv
 
     @Override
     @Transactional
+    @CacheEvict(value = {"employeeReports", "employeeReportByYear",
+            "decInfoByEidAndFinYr", "saveStatusForSec80c",
+            "decAmtForSec80c", "saveStatusForSec80d", "decAmtForSec80d"},
+            allEntries = true)
     public List<IT_Declaration_InfoDTO> createDeclarationInfo(List<IT_Declaration_InfoCO> itDeclarationInfoCOList) {
         List<IT_Declaration_Info> itDeclarationInfoList = itDeclarationInfoMapper.coListToEntityList(itDeclarationInfoCOList);
         itDeclarationInfoList = itDeclarationInfoRepo.saveAll(itDeclarationInfoList);

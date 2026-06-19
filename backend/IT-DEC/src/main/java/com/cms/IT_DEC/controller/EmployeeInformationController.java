@@ -92,14 +92,17 @@ public class EmployeeInformationController {
             EmployeeInformation updated =
                     employeeInformationService.updateLandlordDetails(empCode, empInfo);
 
-            return ResponseEntity.ok(Map.of(
-                    "landlordName", updated.getLandlordName(),
-                    "landlordPanNumber", updated.getLandlordPanNumber(),
-                    "message", "Landlord details updated successfully"
-            ));
+            Map<String, Object> responseMap = new java.util.HashMap<>();
+            responseMap.put("landlordName", updated.getLandlordName());
+            responseMap.put("landlordPanNumber", updated.getLandlordPanNumber());
+            responseMap.put("message", "Landlord details updated successfully");
+
+            return ResponseEntity.ok(responseMap);
         } catch (Exception e) {
+            Map<String, Object> errorMap = new java.util.HashMap<>();
+            errorMap.put("error", "Failed to update landlord details: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to update landlord details: " + e.getMessage()));
+                    .body(errorMap);
         }
     }
 

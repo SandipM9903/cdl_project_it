@@ -25,7 +25,12 @@ public class CacheConfig {
                 "allEmployees",
                 "employeeAddress",
                 "employeeReports",
-                "employeeReportByYear"
+                "employeeReportByYear",
+                "decInfoByEidAndFinYr",
+                "saveStatusForSec80c",
+                "decAmtForSec80c",
+                "saveStatusForSec80d",
+                "decAmtForSec80d"
         );
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
@@ -47,7 +52,12 @@ public class CacheConfig {
                 "allEmployees",
                 "employeeAddress",
                 "employeeReports",
-                "employeeReportByYear"
+                "employeeReportByYear",
+                "decInfoByEidAndFinYr",
+                "saveStatusForSec80c",
+                "decAmtForSec80c",
+                "saveStatusForSec80d",
+                "decAmtForSec80d"
         );
     }
 }

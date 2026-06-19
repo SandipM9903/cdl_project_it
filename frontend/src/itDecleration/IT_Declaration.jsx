@@ -235,7 +235,7 @@ function IT_Declaration() {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL_EMP}:9020/employee/eCode/${empCode}`)
+      .get(`${BASE_URL_EMP}/employee/eCode/${empCode}`)
       .then((res) => {
         setParticularEmployeeDetails(res?.data);
       })

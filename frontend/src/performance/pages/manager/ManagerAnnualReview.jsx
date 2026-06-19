@@ -895,28 +895,68 @@ const ManagerAnnualReview = () => {
 
   const fetchManagerDetails = async (managerId) => {
     try {
-      const storedEmpCode = localStorage.getItem("empId");
-      let response;
-      try {
-        response = await axios.get(
-          `https://mycdl.cms.co.in/employee/team/hierarchy/${storedEmpCode}`,
-        );
-      } catch (err) {
-        console.warn("Hierarchy endpoint failed, falling back to team endpoint:", err);
-        response = await axios.get(
-          `https://mycdl.cms.co.in/employee/team/${storedEmpCode}`,
-        );
+      const response = await axios.get(
+        `https://mycdl.cms.co.in/employee/${managerId}`,
+      );
+
+      let manager = null;
+      if (Array.isArray(response.data)) {
+        manager = response.data
+          .map((item) => item.fileAndObjectTypeBean?.empResDTO || item.empResDTO || item)
+          .find((emp) => emp?.empCode?.toString() === managerId?.toString());
+      } else if (response.data && typeof response.data === "object") {
+        if (response.data.fileAndObjectTypeBean?.empResDTO) {
+          manager = response.data.fileAndObjectTypeBean.empResDTO;
+        } else if (response.data.empResDTO) {
+          manager = response.data.empResDTO;
+        } else {
+          manager = response.data;
+        }
       }
 
-      const employees = extractEmployeesFromResponse(response.data);
-
-      const manager = employees.find(
-        (emp) => emp.empCode?.toString() === managerId?.toString(),
-      );
-      if (manager) setManagerData(manager);
+      if (manager) {
+        setManagerData(manager);
+      }
     } catch (err) {
       console.error("Error fetching manager details:", err);
     }
+  };
+
+  const getReportingManagerName = () => {
+    // 1. If managerData is fetched and available
+    if (managerData) {
+      const managerName = getManagerFullName(managerData);
+      if (managerName && managerName !== "Manager") {
+        return managerName;
+      }
+    }
+
+    // 2. If review data has managerName
+    if (annualReviewData?.managerName) {
+      return annualReviewData.managerName;
+    }
+
+    // 3. If employee data has reportingManager name that is NOT "Manager"
+    if (
+      employeeData?.reportingManager &&
+      employeeData.reportingManager !== "Manager" &&
+      typeof employeeData.reportingManager === "string"
+    ) {
+      return employeeData.reportingManager;
+    }
+
+    // 4. Try from localStorage as the logged-in user is the manager
+    const localFullName = localStorage.getItem("EmployeeFullName") || localStorage.getItem("EmployeeName");
+    if (localFullName && localFullName !== "Manager") {
+      return localFullName;
+    }
+
+    // 5. Fallback to managerData name if it is "Manager"
+    if (managerData) {
+      return getManagerFullName(managerData);
+    }
+
+    return "N/A";
   };
 
   const fetchEmployeeDetails = async (employeeId) => {
@@ -1552,9 +1592,7 @@ const ManagerAnnualReview = () => {
                       Reporting Manager
                     </p>
                     <p className="font-medium text-gray-800">
-                      {employeeData?.reportingManager ||
-                        getManagerFullName(managerData) ||
-                        "N/A"}
+                      {getReportingManagerName()}
                     </p>
                   </div>
                   <div>

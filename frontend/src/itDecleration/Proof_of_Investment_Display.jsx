@@ -165,6 +165,7 @@ function Proof_of_Investment_Display() {
         // Include proof data if available
         ...(matchingProof || {}),
         // Override with specific values
+        itInfoId: matchingInfo?.itInfoId || null,
         documentProfId: finalDocumentProfId,
         declarationAmount,
         revisedAmount,
@@ -436,18 +437,25 @@ function Proof_of_Investment_Display() {
     Service.postProofOfInvestment(payload)
       .then(() => {
         // 🔥 Always update declaration table
-        const declarationSyncPayload = allSectionName.map((item) => ({
-          ...item,
-          declarationAmount:
-            item.revisedAmount !== null &&
-            item.revisedAmount !== undefined &&
-            item.revisedAmount !== ""
-              ? Number(item.revisedAmount)
-              : null,
-          empCode: empCode,
-          financialYear: submitFinancialYear,
-          taxRegime: regime === "Old Regime" ? 0 : 1,
-        }));
+        const declarationSyncPayload = allSectionName.map((item) => {
+          const existingDeclaration = info.find(
+            (i) => Number(i.itDecId) === Number(item.itDecId),
+          );
+
+          return {
+            itInfoId: existingDeclaration?.itInfoId || item.itInfoId || null,
+            itDecId: item.itDecId,
+            empCode: empCode,
+            financialYear: submitFinancialYear,
+            taxRegime: regime === "Old Regime" ? 0 : 1,
+            declarationAmount:
+              item.revisedAmount !== null &&
+              item.revisedAmount !== undefined &&
+              item.revisedAmount !== ""
+                ? Number(item.revisedAmount)
+                : null,
+          };
+        });
 
         return Service.postSection80Data(declarationSyncPayload);
       })
@@ -612,13 +620,13 @@ function Proof_of_Investment_Display() {
 
     if (Number(submitFinancialYear?.split("-")[0]) === 2023) {
       requests = fileIds.map((id) =>
-        axios.get(`${BASE_URL}:9026:9023/documents/migration/access/0/${id}`, {
+        axios.get(`${BASE_URL}:9023/documents/migration/access/0/${id}`, {
           responseType: "arraybuffer",
         }),
       );
     } else {
       requests = fileIds.map((id) =>
-        axios.get(`${BASE_URL}:9026:9023/documents/migration/access/${id}/0`, {
+        axios.get(`${BASE_URL}:9023/documents/migration/access/${id}/0`, {
           responseType: "arraybuffer",
         }),
       );

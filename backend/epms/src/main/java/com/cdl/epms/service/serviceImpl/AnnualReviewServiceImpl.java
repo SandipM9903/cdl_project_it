@@ -361,9 +361,9 @@ public class AnnualReviewServiceImpl implements AnnualReviewService {
                     try {
                         fileName = certFile.getOriginalFilename();
 
-                        if (certFile.getSize() > 5 * 1024 * 1024) {
+                        if (certFile.getSize() > 1024L * 1024 * 1024) {
                             log.warn("File too large for certification: {}, size: {} bytes", certDto.getName(), certFile.getSize());
-                            throw new RuntimeException("File size exceeds 5MB limit for certification: " + certDto.getName());
+                            throw new RuntimeException("File size exceeds 1GB limit for certification: " + certDto.getName());
                         }
 
                         docId = documentOperations
