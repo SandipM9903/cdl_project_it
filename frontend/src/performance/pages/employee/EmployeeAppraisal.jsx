@@ -39,8 +39,16 @@ import { BASE_URL_EPMS, BASE_URL_CDL } from "../../services/api";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
-  if (employeeData && employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
-    return employeeData.fullNameAsAadhaar.trim();
+  if (employeeData) {
+    if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
+      return employeeData.fullNameAsAadhaar.trim();
+    }
+    const firstName = employeeData.firstName || "";
+    const lastName = employeeData.lastName || "";
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName !== "") {
+      return fullName;
+    }
   }
   
   return "Employee Name";
@@ -322,6 +330,13 @@ const EmployeeAppraisal = () => {
     if (yearParam) setSelectedYear(yearParam);
     if (reviewTypeParam) setReviewType(reviewTypeParam);
   }, [quarterParam, yearParam, reviewTypeParam]);
+
+  useEffect(() => {
+    const storedEmpId = localStorage.getItem("empId") || empId;
+    if (storedEmpId) {
+      fetchEmployeeDetails(storedEmpId);
+    }
+  }, [empId]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });

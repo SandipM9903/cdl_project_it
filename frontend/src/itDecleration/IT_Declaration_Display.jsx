@@ -63,7 +63,7 @@ function IT_Declaration_Display() {
 
   // Data states
   const [allSectionName, setAllSectionName] = useState([]);
-  
+
   // Landlord details state for Section 80E
   const [landlordDetails, setLandlordDetails] = useState({
     name: "",
@@ -130,7 +130,7 @@ function IT_Declaration_Display() {
   // Fetch landlord details
   const fetchLandlordDetails = async () => {
     if (!empCode) return;
-    
+
     setLoadingLandlord(true);
     try {
       const response = await Service.getLandlordDetails(empCode);
@@ -177,34 +177,43 @@ function IT_Declaration_Display() {
     }
   }, [saveStatus80e]);
 
-  // Function to check if any of sections 12, 13, 14 have values
-  const hasAnySectionValue = (sections) => {
+  // Function to check if section 12 (House Rent Exemption Section 10(13A)) has a value
+  // const hasAnySectionValue = (sections) => {
+  //   return sections.some(
+  //     section => section.itDecId === 12 && 
+  //     section.declarationAmount && 
+  //     String(section.declarationAmount).trim() !== "" &&
+  //     parseFloat(section.declarationAmount) > 0
+  //   );
+  // };
+  const isRentFilled = (sections) => {
     return sections.some(
-      section => [12, 13, 14].includes(section.itDecId) && 
-      section.declarationAmount && 
-      String(section.declarationAmount).trim() !== "" &&
-      parseFloat(section.declarationAmount) > 0
+      section =>
+        Number(section.itDecId) === 12 &&
+        section.declarationAmount &&
+        Number(section.declarationAmount) > 0
     );
   };
 
   // Function to clear landlord details in backend
-  const clearLandlordDetailsInBackend = async () => {
-    try {
-      const payload = {
-        landlordName: null,
-        landlordPanNumber: null
-      };
-      await Service.updateLandlordDetails(empCode, payload);
-      console.log("Landlord details cleared in backend");
-    } catch (error) {
-      console.error("Error clearing landlord details:", error);
-      // Don't throw the error, just log it
-    }
-  };
+  // const clearLandlordDetailsInBackend = async () => {
+  //   try {
+  //     const payload = {
+  //       landlordName: null,
+  //       landlordPanNumber: null
+  //     };
+  //     await Service.updateLandlordDetails(empCode, payload);
+  //     console.log("Landlord details cleared in backend");
+  //   } catch (error) {
+  //     console.error("Error clearing landlord details:", error);
+  //     // Don't throw the error, just log it
+  //   }
+  // };
 
   // Function to clear landlord details
   const clearLandlordDetails = () => {
-    setLandlordDetails({ name: "", panNumber: "" });
+    // only UI reset, backend controlled
+    setLandlordDetails(prev => prev);
   };
 
   // Fetch initial data
@@ -224,18 +233,18 @@ function IT_Declaration_Display() {
 
             return userSection
               ? {
-                  ...section,
-                  itInfoId: userSection.itInfoId,
-                  declarationAmount: userSection.declarationAmount,
-                  empCode: userSection.empCode,
-                  financialYear: userSection.financialYear,
-                  taxRegime: userSection.taxRegime,
-                }
+                ...section,
+                itInfoId: userSection.itInfoId,
+                declarationAmount: userSection.declarationAmount,
+                empCode: userSection.empCode,
+                financialYear: userSection.financialYear,
+                taxRegime: userSection.taxRegime,
+              }
               : section;
           });
           setAllSectionName(merged);
           setSavedSectionData(merged);
-          
+
           // Fetch landlord details after section data is loaded
           fetchLandlordDetails();
         })
@@ -304,7 +313,7 @@ function IT_Declaration_Display() {
     const oldTotal80C = (savedSectionData || [])
       .filter((s) => SECTION_80C_IDS.includes(Number(s.itDecId)))
       .reduce((total, s) => total + parseAmt(s.declarationAmount), 0);
-    
+
     // ✅ Validation for 80CCD (Employee NPS) - Max 50,000
     if (Number(itDecId) === SECTION_80CCD_ID) {
       if (
@@ -417,27 +426,22 @@ function IT_Declaration_Display() {
     const updatedSections = allSectionName.map((section) =>
       Number(section.itDecId) === Number(itDecId)
         ? {
-            ...section,
-            declarationAmount: value,
-            empCode: empCode,
-            financialYear: submitFinancialYear,
-            taxRegime: regime === "Old Regime" ? 0 : 1,
-          }
+          ...section,
+          declarationAmount: value,
+          empCode: empCode,
+          financialYear: submitFinancialYear,
+          taxRegime: regime === "Old Regime" ? 0 : 1,
+        }
         : section,
     );
 
     setAllSectionName(updatedSections);
 
     // Check if we need to clear landlord details based on sections 12, 13, 14
-    const hasValue = hasAnySectionValue(updatedSections);
-    if (!hasValue) {
-      // Clear in frontend
-      clearLandlordDetails();
-      // Clear in backend
-      await clearLandlordDetailsInBackend();
-      // Update saved landlord details
-      setSavedLandlordDetails({ name: "", panNumber: "" });
-    }
+    const rentFilled = isRentFilled(updatedSections);
+
+    // ❌ DO NOTHING — let backend decide
+
   };
 
   // Handle landlord details change
@@ -449,96 +453,150 @@ function IT_Declaration_Display() {
     }));
   };
 
-  // Validate landlord details for Section 80E
+  // Validate landlord details for Section 10(13A) - House Rent Exemption only
+  // const validateLandlordDetails = () => {
+  //   const hasAnySectionValue = allSectionName.some(
+  //     section => section.itDecId === 12 && 
+  //     section.declarationAmount && 
+  //     String(section.declarationAmount).trim() !== "" &&
+  //     parseFloat(section.declarationAmount) > 0
+  //   );
+
+  //   if (hasAnySectionValue) {
+  //     if (!landlordDetails.name || !landlordDetails.name.trim()) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         text: "Owner Name is mandatory when declaring an amount under House Rent Exemption [Section 10(13A)]",
+  //         width: "450px",
+  //         confirmButtonColor: "#dc2626",
+  //         backdrop: true,
+  //         didOpen: () => {
+  //           const swalContainer = document.querySelector(".swal2-container");
+  //           if (swalContainer) swalContainer.style.zIndex = "999999";
+  //         },
+  //       });
+  //       return false;
+  //     }
+  //     if (!landlordDetails.panNumber || !landlordDetails.panNumber.trim()) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         text: "Owner PAN Number is mandatory when declaring an amount under House Rent Exemption [Section 10(13A)]",
+  //         width: "450px",
+  //         confirmButtonColor: "#dc2626",
+  //         backdrop: true,
+  //         didOpen: () => {
+  //           const swalContainer = document.querySelector(".swal2-container");
+  //           if (swalContainer) swalContainer.style.zIndex = "999999";
+  //         },
+  //       });
+  //       return false;
+  //     }
+  //     // Basic PAN validation
+  //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  //     if (!panRegex.test(landlordDetails.panNumber.toUpperCase())) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         text: "Please enter a valid PAN Number (e.g., ABCDE1234F)",
+  //         width: "450px",
+  //         confirmButtonColor: "#dc2626",
+  //         backdrop: true,
+  //         didOpen: () => {
+  //           const swalContainer = document.querySelector(".swal2-container");
+  //           if (swalContainer) swalContainer.style.zIndex = "999999";
+  //         },
+  //       });
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // };
   const validateLandlordDetails = () => {
-    const hasAnySectionValue = allSectionName.some(
-      section => [12, 13, 14].includes(section.itDecId) && 
-      section.declarationAmount && 
-      String(section.declarationAmount).trim() !== "" &&
-      parseFloat(section.declarationAmount) > 0
+    const rentSection = allSectionName.find(
+      (section) => Number(section.itDecId) === 12
     );
 
-    if (hasAnySectionValue) {
+    const rentAmount = Number(rentSection?.declarationAmount || 0);
+
+    const loanSection = allSectionName.find(
+      (section) => Number(section.itDecId) === 14
+    );
+
+    const loanAmount = Number(loanSection?.declarationAmount || 0);
+
+    // ✅ CASE 1: Loan filled → DO NOT validate landlord
+    if (loanAmount > 0) {
+      return true;
+    }
+
+    // ✅ CASE 2: Rent <= 8000 → NOT mandatory
+    if (rentAmount <= 8000) {
+      return true;
+    }
+
+    // ✅ CASE 3: Rent > 8000 → mandatory
+    if (rentAmount > 8000) {
       if (!landlordDetails.name || !landlordDetails.name.trim()) {
         Swal.fire({
           icon: "warning",
-          text: "Landlord Name is mandatory when declaring amounts in Section 80E/10/Housing Loan",
-          width: "450px",
+          text: "Landlord Name is mandatory when rent exceeds ₹8000",
           confirmButtonColor: "#dc2626",
-          backdrop: true,
-          didOpen: () => {
-            const swalContainer = document.querySelector(".swal2-container");
-            if (swalContainer) swalContainer.style.zIndex = "999999";
-          },
         });
         return false;
       }
+
       if (!landlordDetails.panNumber || !landlordDetails.panNumber.trim()) {
         Swal.fire({
           icon: "warning",
-          text: "Landlord PAN Number is mandatory when declaring amounts in Section 80E/10/Housing Loan",
-          width: "450px",
+          text: "Landlord PAN is mandatory when rent exceeds ₹8000",
           confirmButtonColor: "#dc2626",
-          backdrop: true,
-          didOpen: () => {
-            const swalContainer = document.querySelector(".swal2-container");
-            if (swalContainer) swalContainer.style.zIndex = "999999";
-          },
         });
         return false;
       }
-      // Basic PAN validation
+
       const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
       if (!panRegex.test(landlordDetails.panNumber.toUpperCase())) {
         Swal.fire({
           icon: "warning",
-          text: "Please enter a valid PAN Number (e.g., ABCDE1234F)",
-          width: "450px",
+          text: "Enter valid PAN (ABCDE1234F)",
           confirmButtonColor: "#dc2626",
-          backdrop: true,
-          didOpen: () => {
-            const swalContainer = document.querySelector(".swal2-container");
-            if (swalContainer) swalContainer.style.zIndex = "999999";
-          },
         });
         return false;
       }
     }
+
     return true;
   };
 
   const saveLandlordDetails = async () => {
-    const hasAnySectionValue = allSectionName.some(
-      section => [12, 13, 14].includes(section.itDecId) && 
-      section.declarationAmount && 
-      String(section.declarationAmount).trim() !== "" &&
-      parseFloat(section.declarationAmount) > 0
+    const rentSection = allSectionName.find(
+      (section) => Number(section.itDecId) === 12
     );
 
-    if (!hasAnySectionValue) {
-      // If no values, clear landlord details in backend
-      const payload = {
-        landlordName: null,
-        landlordPanNumber: null
-      };
-      return Service.updateLandlordDetails(empCode, payload).catch(error => {
-        console.error("Error clearing landlord details:", error);
-        // Don't throw, just log and return a resolved promise
-        return Promise.resolve();
-      });
+    const rentAmount = Number(rentSection?.declarationAmount || 0);
+
+    const loanSection = allSectionName.find(
+      (section) => Number(section.itDecId) === 14
+    );
+
+    const loanAmount = Number(loanSection?.declarationAmount || 0);
+
+    // ✅ CASE 1: Loan filled → skip landlord API completely
+    if (loanAmount > 0) {
+      return Promise.resolve();
     }
 
-    // Only include non-empty values, otherwise send null
+    // ✅ CASE 2: Rent <= 8000 → skip landlord API completely
+    if (rentAmount <= 8000) {
+      return Promise.resolve();
+    }
+
+    // ✅ CASE 3: Rent > 8000 → send landlord
     const payload = {
-      landlordName: landlordDetails.name && landlordDetails.name.trim() !== "" ? landlordDetails.name : null,
-      landlordPanNumber: landlordDetails.panNumber && landlordDetails.panNumber.trim() !== "" ? landlordDetails.panNumber.toUpperCase() : null
+      landlordName: landlordDetails.name?.trim(),
+      landlordPanNumber: landlordDetails.panNumber?.toUpperCase()?.trim()
     };
 
-    return Service.updateLandlordDetails(empCode, payload).catch(error => {
-      console.error("Error saving landlord details:", error);
-      // Don't throw, just log and return a resolved promise
-      return Promise.resolve();
-    });
+    return Service.updateLandlordDetails(empCode, payload);
   };
 
   // Section 80C functions
@@ -733,7 +791,7 @@ function IT_Declaration_Display() {
     }
 
     const cleanedData = prepareDataForSave();
-    
+
     // First save the declaration data
     Service.postSection80Data(cleanedData)
       .then(() => syncProofWithDeclaration(cleanedData))
@@ -755,7 +813,7 @@ function IT_Declaration_Display() {
         setIsUpdate80e(false);
         setOpen80e(false);
         // Update saved landlord details
-        setSavedLandlordDetails({...landlordDetails});
+        setSavedLandlordDetails({ ...landlordDetails });
       })
       .catch((error) => {
         console.error("Error saving section 80E:", error);
@@ -791,13 +849,9 @@ function IT_Declaration_Display() {
       });
 
       // Check if we need to clear landlord details
-      const hasValue = hasAnySectionValue(updated);
-      if (!hasValue) {
-        clearLandlordDetails();
-        // Clear in backend
-        clearLandlordDetailsInBackend();
-        setSavedLandlordDetails({ name: "", panNumber: "" });
-      }
+      const rentFilled = isRentFilled(updated);
+
+
 
       return updated;
     });
@@ -870,7 +924,7 @@ function IT_Declaration_Display() {
       });
       setAllSectionName(updated);
       setSavedSectionData(updated);
-      
+
       // Fetch landlord details again
       fetchLandlordDetails();
     });
@@ -910,7 +964,7 @@ function IT_Declaration_Display() {
     setOpen80e(false);
     setIsUpdate80e(false);
     // Reset to saved landlord details on close without saving
-    setLandlordDetails({...savedLandlordDetails});
+    setLandlordDetails({ ...savedLandlordDetails });
   };
 
   // Submit confirmation and navigation
@@ -939,7 +993,7 @@ function IT_Declaration_Display() {
   };
 
   // Check if landlord fields should be enabled
-  const isLandlordEnabled = hasAnySectionValue(allSectionName);
+  const isLandlordEnabled = isRentFilled(allSectionName);
 
   return (
     <div className="flex flex-col min-h-screen font-content">
@@ -1015,7 +1069,7 @@ function IT_Declaration_Display() {
                       />
                     </div>
                     {totalAmountSection80c != 0 &&
-                    totalAmountSection80c != null ? (
+                      totalAmountSection80c != null ? (
                       <div className="flex flex-col items-center pb-2">
                         <div className="flex items-center justify-center gap-2 text-sm text-gray-500 group ml-10">
                           <span>Declared Amount</span>
@@ -1057,7 +1111,7 @@ function IT_Declaration_Display() {
                       />
                     </div>
                     {totalAmountSection80d != 0 &&
-                    totalAmountSection80d != null ? (
+                      totalAmountSection80d != null ? (
                       <div className="flex flex-col items-center pb-2">
                         <div className="flex items-center justify-center gap-2 text-sm text-gray-500 font-semibold group ml-10">
                           <span>Declared Amount</span>
@@ -1717,7 +1771,7 @@ function IT_Declaration_Display() {
                 </CardContent>
                 <div className="px-6 pb-3">
                   <span className="text-xs text-red-600 font-bold font-content">
-                    Note: Landlord Name and PAN are mandatory when declaring amounts in this section
+                    Note: Owner Name and PAN are mandatory when declaring an amount under House Rent Exemption [Section 10(13A)]
                   </span>
                 </div>
               </Card>
@@ -1776,15 +1830,15 @@ function IT_Declaration_Display() {
                 </div>
               </div>
 
-              {/* Landlord Details Section */}
+              {/* Owner Details Section - Only applicable for House Rent Exemption [Section 10(13A)] */}
               <div className="mt-8 border-t pt-6">
                 <label className="text-sm ml-2 font-header text-red-600 font-semibold">
-                  Landlord Details {isLandlordEnabled ? '(Mandatory)' : '(Disabled)'}
+                  Owner Details — House Rent Exemption [Section 10(13A)] {isLandlordEnabled ? '(Mandatory)' : '(Disabled)'}
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mt-3">
                   <div className="flex flex-col">
                     <span className="font-semibold text-gray-800 text-[15px] leading-tight font-header mb-2">
-                      Landlord Name {isLandlordEnabled && <span className="text-red-600">*</span>}
+                      Owner Name {isLandlordEnabled && <span className="text-red-600">*</span>}
                     </span>
                     <TextField
                       fullWidth
@@ -1793,14 +1847,14 @@ function IT_Declaration_Display() {
                       value={landlordDetails.name}
                       name="name"
                       onChange={handleLandlordChange}
-                      placeholder={isLandlordEnabled ? "Enter landlord name" : "Enter amount in sections above to enable"}
+                      placeholder={isLandlordEnabled ? "Enter owner name" : "Enter amount in Section 10(13A) above to enable"}
                       disabled={!isLandlordEnabled || loadingLandlord}
                       className="mt-2"
                     />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-semibold text-gray-800 text-[15px] leading-tight font-header mb-2">
-                      Landlord PAN Number {isLandlordEnabled && <span className="text-red-600">*</span>}
+                      Owner PAN Number {isLandlordEnabled && <span className="text-red-600">*</span>}
                     </span>
                     <TextField
                       fullWidth
@@ -1809,9 +1863,9 @@ function IT_Declaration_Display() {
                       value={landlordDetails.panNumber}
                       name="panNumber"
                       onChange={handleLandlordChange}
-                      placeholder={isLandlordEnabled ? "Enter PAN (e.g., ABCDE1234F)" : "Enter amount in sections above to enable"}
+                      placeholder={isLandlordEnabled ? "Enter PAN (e.g., ABCDE1234F)" : "Enter amount in Section 10(13A) above to enable"}
                       disabled={!isLandlordEnabled || loadingLandlord}
-                      inputProps={{ 
+                      inputProps={{
                         maxLength: 10,
                         style: { textTransform: 'uppercase' }
                       }}
@@ -1821,12 +1875,12 @@ function IT_Declaration_Display() {
                 </div>
                 {!isLandlordEnabled && (
                   <p className="text-xs text-gray-500 mt-2 ml-2">
-                    Please enter an amount in any of the sections above to enable landlord details
+                    Owner details are only required under House Rent Exemption [Section 10(13A)]
                   </p>
                 )}
                 {loadingLandlord && (
                   <p className="text-xs text-blue-500 mt-2 ml-2">
-                    Loading landlord details...
+                    Loading owner details...
                   </p>
                 )}
               </div>

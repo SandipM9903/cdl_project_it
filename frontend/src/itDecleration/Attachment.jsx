@@ -42,7 +42,7 @@ function Attachment({ rowId, onClose, onFilesUpdated }) {
   const fetchStoredFiles = async () => {
     try {
       const response = await axios.get(
-        `${BASE_URL}:9026/it-declaration-file/files/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/files/${simpleEncrypt(
           employeeId,
         )}/${submitFinancialYear}/${rowId}`,
       );
@@ -102,7 +102,7 @@ function Attachment({ rowId, onClose, onFilesUpdated }) {
 
     try {
       await axios.post(
-        `${BASE_URL}:9026/it-declaration-file/upload/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/upload/${simpleEncrypt(
           employeeId,
         )}/${submitFinancialYear}`,
         formData,
@@ -133,7 +133,7 @@ function Attachment({ rowId, onClose, onFilesUpdated }) {
   const handleDeleteStoredFile = async (itDecDocId) => {
     try {
       await axios.delete(
-        `${BASE_URL}:9026/it-declaration-file/delete/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/delete/${simpleEncrypt(
           itDecDocId,
         )}/${submitFinancialYear}/${itDecDocId}`,
       );
@@ -173,7 +173,7 @@ function Attachment({ rowId, onClose, onFilesUpdated }) {
     try {
       const encryptedId = simpleEncrypt(itDecDocId);
       const response = await axios.post(
-        `${BASE_URL}:9026/it-declaration-file/download`,
+        `${BASE_URL}/it-declaration-file/download`,
         {
           encDocId: encryptedId,
         },

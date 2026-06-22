@@ -13,7 +13,7 @@ import Attachment from "./Attachment";
 import Service from "./Service";
 import { BASE_URL } from "../config/Config";
 import { AiOutlineEye } from "react-icons/ai";
-import { simpleEncrypt } from "../simpleEncrypt";
+
 import Swal from "sweetalert2";
 import {
   useFileStore,
@@ -23,6 +23,7 @@ import {
   useStoreRegime,
 } from "./useFileStore";
 import axios from "axios";
+import { simpleEncrypt } from "../simpleEncrypt";
 
 function Proof_Attach_Display() {
   const [submittedComments, setSubmittedComments] = useState({});
@@ -84,7 +85,7 @@ function Proof_Attach_Display() {
     try {
       const employeeId = localStorage.getItem("empId");
       const response = await axios.get(
-        `${BASE_URL}:9026/it-declaration-file/files/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/files/${simpleEncrypt(
           employeeId,
         )}/${submitFinancialYear}/${itDecId}`,
       );
@@ -140,7 +141,7 @@ function Proof_Attach_Display() {
     try {
       const encryptedId = simpleEncrypt(itDecDocId);
       const response = await axios.post(
-        `${BASE_URL}:9026/it-declaration-file/download`,
+        `${BASE_URL}/it-declaration-file/download`,
         {
           encDocId: encryptedId,
         },
@@ -182,31 +183,31 @@ function Proof_Attach_Display() {
     fetchProofOfinvestment();
   }, [proofSaveStatus]);
 
- useEffect(() => {
-  if (!master.length) return;
+  useEffect(() => {
+    if (!master.length) return;
 
-  const completeSectionList = master.map((masterItem) => {
-    const matchingInfo = info.find(
-      (item) => Number(item.itDecId) === Number(masterItem.itDecId)
-    );
+    const completeSectionList = master.map((masterItem) => {
+      const matchingInfo = info.find(
+        (item) => Number(item.itDecId) === Number(masterItem.itDecId)
+      );
 
-    const matchingProof = proof.find(
-      (item) => Number(item.itDecId) === Number(masterItem.itDecId)
-    );
+      const matchingProof = proof.find(
+        (item) => Number(item.itDecId) === Number(masterItem.itDecId)
+      );
 
-    return {
-      ...masterItem,
-      ...(matchingInfo || {}),
-      ...(matchingProof || {}),
-      revisedAmount:
-        matchingProof?.revisedAmount ??
-        matchingInfo?.declarationAmount ??
-        null,
-    };
-  });
+      return {
+        ...masterItem,
+        ...(matchingInfo || {}),
+        ...(matchingProof || {}),
+        revisedAmount:
+          matchingProof?.revisedAmount ??
+          matchingInfo?.declarationAmount ??
+          null,
+      };
+    });
 
-  setAllSectionName(completeSectionList);
-}, [master, info, proof]);
+    setAllSectionName(completeSectionList);
+  }, [master, info, proof]);
 
   // Fetch stored file counts for each section
   const fetchStoredFileCounts = async () => {
@@ -541,11 +542,10 @@ function Proof_Attach_Display() {
 
                         <div className="col-span-3 flex justify-center relative ml-8">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -728,11 +728,10 @@ function Proof_Attach_Display() {
                         </div>
                         <div className="col-span-3 flex justify-center relative ml-8">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -913,11 +912,10 @@ function Proof_Attach_Display() {
                         </div>
                         <div className="col-span-3 flex justify-center relative ml-8">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -1058,11 +1056,10 @@ function Proof_Attach_Display() {
                 Cancel
               </button>
               <button
-                className={`px-4 py-2 text-white rounded-md text-sm font-medium ${
-                  checked
+                className={`px-4 py-2 text-white rounded-md text-sm font-medium ${checked
                     ? "bg-red-600 hover:bg-red-700 transition-colors"
                     : "bg-red-400 cursor-not-allowed"
-                }`}
+                  }`}
                 onClick={handleSubmitFunction}
                 disabled={!checked}
               >

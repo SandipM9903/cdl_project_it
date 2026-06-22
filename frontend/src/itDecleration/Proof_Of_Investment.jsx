@@ -96,7 +96,7 @@ function Proof_Of_Investment() {
     setIsRegimeLoading(true);
     try {
       const response = await axios.get(
-        `${BASE_URL}:9026/api/regimes/emp/${simpleEncrypt(empCode)}`,
+        `${BASE_URL}/api/regimes/emp/${simpleEncrypt(empCode)}`,
       );
       setTaxRegime(response.data);
     } catch (error) {
@@ -140,7 +140,7 @@ function Proof_Of_Investment() {
     setIsLoading(true);
     try {
       const proofResponse = await axios.get(
-        `${BASE_URL}:9026/proof-of-investment/get-all-proof/${simpleEncrypt(
+        `${BASE_URL}/proof-of-investment/get-all-proof/${simpleEncrypt(
           empCode,
         )}/${financialYear}`,
       );
@@ -242,8 +242,8 @@ function Proof_Of_Investment() {
   const lottieSize = isSmallScreen
     ? { height: 120, width: 120 }
     : isTablet
-    ? { height: 150, width: 150 }
-    : { height: 250, width: 250 };
+      ? { height: 150, width: 150 }
+      : { height: 250, width: 250 };
 
   const isProofOpen = isProofSubmissionOpen && isCurrentFinancialYear;
 
@@ -314,9 +314,8 @@ function Proof_Of_Investment() {
                     {/* Display tax regime information */}
                     {taxRegime && (
                       <div
-                        className={`text-sm font-semibold mt-1 text-center lg:text-start p-2 ${
-                          isNewTaxRegime ? "text-red-600" : "text-green-600"
-                        }`}
+                        className={`text-sm font-semibold mt-1 text-center lg:text-start p-2 ${isNewTaxRegime ? "text-red-600" : "text-green-600"
+                          }`}
                       ></div>
                     )}
 
@@ -383,21 +382,20 @@ function Proof_Of_Investment() {
 
                               {/* Edit Button - Disabled if not current financial year or not Jan-Feb or NEW regime */}
                               <div
-                                className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${
-                                  isCurrentFinancialYear &&
-                                  isProofSubmissionOpen &&
-                                  !isNewTaxRegime
+                                className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${isCurrentFinancialYear &&
+                                    isProofSubmissionOpen &&
+                                    !isNewTaxRegime
                                     ? "cursor-pointer hover:shadow-md"
                                     : "opacity-50 pointer-events-none"
-                                }`}
+                                  }`}
                                 style={{
                                   maxWidth: "100px",
                                   fontSize: "0.85rem",
                                 }}
                                 onClick={
                                   isCurrentFinancialYear &&
-                                  isProofSubmissionOpen &&
-                                  !isNewTaxRegime
+                                    isProofSubmissionOpen &&
+                                    !isNewTaxRegime
                                     ? handleEdit
                                     : undefined
                                 }
@@ -430,21 +428,20 @@ function Proof_Of_Investment() {
                           ) : (
                             // Submit Proofs Button - Disabled for previous financial year or not Jan-Feb or NEW regime
                             <div
-                              className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${
-                                isCurrentFinancialYear &&
-                                isProofSubmissionOpen &&
-                                !isNewTaxRegime
+                              className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${isCurrentFinancialYear &&
+                                  isProofSubmissionOpen &&
+                                  !isNewTaxRegime
                                   ? "cursor-pointer hover:shadow-md"
                                   : "opacity-50 pointer-events-none"
-                              }`}
+                                }`}
                               style={{
                                 maxWidth: "150px",
                                 fontSize: "0.85rem",
                               }}
                               onClick={
                                 isCurrentFinancialYear &&
-                                isProofSubmissionOpen &&
-                                !isNewTaxRegime
+                                  isProofSubmissionOpen &&
+                                  !isNewTaxRegime
                                   ? handleSubmitProofs
                                   : undefined
                               }

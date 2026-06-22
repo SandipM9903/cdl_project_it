@@ -1571,10 +1571,19 @@ public class EmailerServiceImpl implements EmailerService {
             String url = employeeEmailsApi;
             log.info("Fetching employee emails from API: {}", url);
 
+            // Construct JSON request body
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("request", "email");
+
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+
+            org.springframework.http.HttpEntity<Map<String, String>> entity = new org.springframework.http.HttpEntity<>(requestBody, headers);
+
             ResponseEntity<List<String>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<String>>() {}
             );
 

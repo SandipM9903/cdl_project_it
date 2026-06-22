@@ -110,7 +110,7 @@ function Preview_Port_Of_Investment() {
       for (const section of allSectionName) {
         try {
           const response = await axios.get(
-            `${BASE_URL}:9026/it-declaration-file/count/${simpleEncrypt(
+            `${BASE_URL}/it-declaration-file/count/${simpleEncrypt(
               empCode,
             )}/${submitFinancialYear}/${section.itDecId}`,
           );
@@ -134,7 +134,7 @@ function Preview_Port_Of_Investment() {
     setLoadingFiles(true);
     try {
       const response = await axios.get(
-        `${BASE_URL}:9026/it-declaration-file/files/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/files/${simpleEncrypt(
           empCode,
         )}/${submitFinancialYear}/${itDecId}`,
       );
@@ -153,7 +153,7 @@ function Preview_Port_Of_Investment() {
     try {
       const encryptedId = simpleEncrypt(itDecDocId);
       const response = await axios.post(
-        `${BASE_URL}:9026/it-declaration-file/download`,
+        `${BASE_URL}/it-declaration-file/download`,
         {
           encDocId: encryptedId,
         },
@@ -444,8 +444,8 @@ function Preview_Port_Of_Investment() {
                         <div className="col-span-2 text-center text-gray-700 font-medium">
                           {section?.revisedAmount
                             ? `₹${Number(section.revisedAmount).toLocaleString(
-                                "en-IN",
-                              )}`
+                              "en-IN",
+                            )}`
                             : "-"}
                         </div>
                         <div className="col-span-2 flex justify-center items-center space-x-1 relative">
@@ -462,11 +462,10 @@ function Preview_Port_Of_Investment() {
                         </div>
                         <div className="col-span-3 flex justify-center relative">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -510,8 +509,8 @@ function Preview_Port_Of_Investment() {
                         <div className="col-span-2 text-center text-gray-700 font-medium">
                           {section?.revisedAmount
                             ? `₹${Number(section.revisedAmount).toLocaleString(
-                                "en-IN",
-                              )}`
+                              "en-IN",
+                            )}`
                             : "-"}
                         </div>
                         <div className="col-span-2 flex justify-center items-center space-x-1 relative">
@@ -528,11 +527,10 @@ function Preview_Port_Of_Investment() {
                         </div>
                         <div className="col-span-3 flex justify-center relative">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -574,8 +572,8 @@ function Preview_Port_Of_Investment() {
                         <div className="col-span-2 text-center text-gray-700 font-medium">
                           {section?.revisedAmount
                             ? `₹${Number(section.revisedAmount).toLocaleString(
-                                "en-IN",
-                              )}`
+                              "en-IN",
+                            )}`
                             : "-"}
                         </div>
                         <div className="col-span-2 flex justify-center items-center space-x-1 relative">
@@ -592,11 +590,10 @@ function Preview_Port_Of_Investment() {
                         </div>
                         <div className="col-span-3 flex justify-center relative">
                           <button
-                            className={`text-lg ${
-                              section.comments && section.comments.trim() !== ""
+                            className={`text-lg ${section.comments && section.comments.trim() !== ""
                                 ? "text-green-600"
                                 : "text-gray-400"
-                            } hover:text-red-800 transition-colors`}
+                              } hover:text-red-800 transition-colors`}
                             onClick={() => handleCommentClick(section.itDecId)}
                           >
                             <BiComment />
@@ -681,9 +678,9 @@ function Preview_Port_Of_Investment() {
             </div>
 
             {comments[openCommentIndex] ||
-            (openCommentIndex &&
-              allSectionName.find((s) => s.itDecId === openCommentIndex)
-                ?.comments) ? (
+              (openCommentIndex &&
+                allSectionName.find((s) => s.itDecId === openCommentIndex)
+                  ?.comments) ? (
               <textarea
                 readOnly
                 rows={4}
@@ -758,11 +755,10 @@ function Preview_Port_Of_Investment() {
                 Cancel
               </button>
               <button
-                className={`px-4 py-2 text-white rounded-md text-sm font-medium ${
-                  checked
+                className={`px-4 py-2 text-white rounded-md text-sm font-medium ${checked
                     ? "bg-red-600 hover:bg-red-700 transition-colors"
                     : "bg-red-400 cursor-not-allowed"
-                }`}
+                  }`}
                 onClick={handleSubmitFunction}
                 disabled={!checked}
               >

@@ -118,7 +118,7 @@ const fetchProofOfInvestmentBasedOnempCodeAndFinancialYear = (
   return response;
 };
 
-const apiClient2 = Axios("http://localhost:9026");
+const apiClient2 = Axios("http://localhost");
 
 const fetchNewProofOfInvestmentBasedOnempCodeAndFinancialYear = (
   empCode,
@@ -224,7 +224,7 @@ const getAllProofAdminFinanciaYear = () => {
   return response;
 };
 
-const apiClient1 = Axios("http://localhost:9026");
+const apiClient1 = Axios("https://mycdl.cms.co.in");
 
 const getEmployeePanByEmpCode = (empCode) => {
   return apiClient1.get(`/api/employees/emp/${empCode}`);

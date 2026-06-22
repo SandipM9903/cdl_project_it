@@ -38,7 +38,7 @@ spring:
     host: smtp.office365.com
     port: 587
     username: cdladmin@cms.co.in
-    password: hrbxlsskgstdgmkh
+    password: pzzmzpfbszxkhkvf
     properties:
       mail:
         smtp:
@@ -89,7 +89,7 @@ employee:
     search:
       api: http://172.19.63.182:9020/employee/search
     emails:
-      api: http://172.19.63.182:9020/api/v1/employees/emails
+      api: http://172.19.63.182:9020/employee/getAll
   fetch:
     eCode:
       API: http://172.19.63.182:9020/employee/eCode

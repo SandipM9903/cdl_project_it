@@ -81,7 +81,7 @@ employee:
     search:
       api: http://43.205.24.208:9020/employee/search
     emails:
-      api: http://43.205.24.208:9020/api/v1/employees/emails
+      api: http://43.205.24.208:9020/employee/getAll
   fetch:
     eCode:
       API: http://43.205.24.208:9020/employee/eCode

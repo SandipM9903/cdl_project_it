@@ -27,10 +27,10 @@ spring:
         use_sql_comments: true  # Show comments in SQL
 
   mail:
-    host: smtp.gmail.com
+    host: smtp.office365.com
     port: 587
-    username: sandipmondalaws@gmail.com
-    password: fknhzxkkbwawondm
+    username: cdladmin@cms.co.in
+    password: Info##5253
     properties:
       mail:
         smtp:
@@ -40,8 +40,9 @@ spring:
           connectiontimeout: 30000
           timeout: 30000
           writetimeout: 30000
-          maxconnections: 5
-          connectionpoolsize: 5
+          maxconnections: 10
+          connectionpoolsize: 10
+    from: cdladmin@cms.co.in
 
 # Email configuration for MAPI rate limiting
 email:
@@ -80,7 +81,7 @@ employee:
     search:
       api: http://43.205.24.208:9020/employee/search
     emails:
-      api: http://localhost:9020/api/v1/employees/emails
+      api: http://43.205.24.208:9020/employee/getAll
   fetch:
     eCode:
       API: http://43.205.24.208:9020/employee/eCode

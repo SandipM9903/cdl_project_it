@@ -17,9 +17,8 @@ import search from "./animation/Search.json";
 import "./IT_Declaration.css";
 import Proof_Of_Investment from "./Proof_Of_Investment";
 import { useStoreFinancialYear, useStoreTabStatus } from "./useFileStore";
-
+import { BASE_URL } from "../config/Config";
 import { simpleEncrypt } from "../simpleEncrypt";
-import { BASE_URL,BASE_URL_EMP } from "./api/api";
 
 function IT_Declaration() {
   const empCode = localStorage.getItem("empId");
@@ -57,47 +56,51 @@ function IT_Declaration() {
     .slice(-2)}`;
 
   const getFinancialYearOptions = () => {
-    return ["Select Year", previousYear1, previousYear2, currentFinancialYear];
+    const years = ["Select Year"];
+    for (let y = fyStartYear; y >= fyStartYear - 3; y--) {
+      years.push(`${y}-${String(y + 1).slice(-2)}`);
+    }
+    return years;
   };
 
   useEffect(() => {
-  if (!empCode) return;
+    if (!empCode) return;
 
-  axios
-    .get(`${BASE_URL}:9026/api/regimes/emp/${simpleEncrypt(empCode)}`)
-    .then((res) => {
-      const payload = res?.data?.data ?? res?.data;
+    axios
+      .get(`${BASE_URL}/api/regimes/emp/${simpleEncrypt(empCode)}`)
+      .then((res) => {
+        const payload = res?.data?.data ?? res?.data;
 
-      const hasData =
-        payload &&
-        (Array.isArray(payload)
-          ? payload.length > 0
-          : Object.keys(payload).length > 0);
+        const hasData =
+          payload &&
+          (Array.isArray(payload)
+            ? payload.length > 0
+            : Object.keys(payload).length > 0);
 
-      setHasRegime(hasData);
+        setHasRegime(hasData);
 
-      if (hasData) {
-        if (Array.isArray(payload)) {
-          setRegimeType(payload[0]?.regime ?? null);
+        if (hasData) {
+          if (Array.isArray(payload)) {
+            setRegimeType(payload[0]?.regime ?? null);
+          } else {
+            setRegimeType(payload.regime ?? null);
+          }
         } else {
-          setRegimeType(payload.regime ?? null);
+          setRegimeType(null);
         }
-      } else {
-        setRegimeType(null);
-      }
-    })
-    .catch((err) => {
-      // ✅ SILENTLY ignore 404
-      if (err?.response?.status === 404) {
-        setHasRegime(false);
-        setRegimeType(null);
-        return;
-      }
+      })
+      .catch((err) => {
+        // ✅ SILENTLY ignore 404
+        if (err?.response?.status === 404) {
+          setHasRegime(false);
+          setRegimeType(null);
+          return;
+        }
 
-      // ❌ only real errors reach here
-      console.error("Regime API failed:", err);
-    });
-}, [empCode]);
+        // ❌ only real errors reach here
+        console.error("Regime API failed:", err);
+      });
+  }, [empCode]);
 
 
   const options1 = getFinancialYearOptions();
@@ -117,7 +120,7 @@ function IT_Declaration() {
 
       axios
         .get(
-          `${BASE_URL}:9026/it-declaration-info/get/${simpleEncrypt(
+          `${BASE_URL}/it-declaration-info/get/${simpleEncrypt(
             empCode
           )}/${selectedOption.value}`
         )
@@ -151,7 +154,7 @@ function IT_Declaration() {
     setIsLoading(true);
     axios
       .get(
-        `${BASE_URL}:9026/it-declaration-info/get/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-info/get/${simpleEncrypt(
           empCode
         )}/${currentFinancialYear}`
       )
@@ -218,12 +221,15 @@ function IT_Declaration() {
   const lottieSize = isSmallScreen
     ? { height: 120, width: 120 }
     : isTablet
-    ? { height: 150, width: 150 }
-    : { height: 250, width: 250 };
+      ? { height: 150, width: 150 }
+      : { height: 250, width: 250 };
 
   const [particularEmployeeDetails, setParticularEmployeeDetails] = useState(
     ""
   );
+
+  // New joinee detection: check if today is their date of joining
+  const [isNewJoinee, setIsNewJoinee] = useState(false);
 
   useEffect(() => {
     window.scrollTo({
@@ -235,9 +241,21 @@ function IT_Declaration() {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL_EMP}/employee/eCode/${empCode}`)
+      .get(`${BASE_URL}/employee/eCode/${empCode}`)
       .then((res) => {
         setParticularEmployeeDetails(res?.data);
+
+        // Check if today is the employee's date of joining (new joinee induction)
+        const doj = res?.data?.dateOfJoining;
+        if (doj) {
+          const joiningDate = new Date(doj);
+          const todayDate = new Date();
+          const isFirstDay =
+            joiningDate.getFullYear() === todayDate.getFullYear() &&
+            joiningDate.getMonth() === todayDate.getMonth() &&
+            joiningDate.getDate() === todayDate.getDate();
+          setIsNewJoinee(isFirstDay);
+        }
       })
       .catch(() => {
         toast.error("Employee code not found");
@@ -268,7 +286,7 @@ function IT_Declaration() {
     }
   };
 
-  
+
   const isCurrentFinancialYear = selectedYear === currentFinancialYear;
   const isPreviousFinancialYear =
     selectedYear === previousYear2 || selectedYear === previousYear1;
@@ -392,6 +410,17 @@ function IT_Declaration() {
                   <div className="col-span-1">
                     <div className="grid lg:grid-cols-5">
                       <div className="col-span-4 pt-4">
+                        {/* New Joinee Induction Notice */}
+                        {isNewJoinee && (
+                          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm font-semibold text-red-700">
+                              👋 Welcome! As part of your induction, please fill in your Tax Management details today.
+                            </p>
+                            <p className="text-xs text-red-600 mt-1">
+                              You can complete your IT Declaration for the current financial year ({currentFinancialYear}) now. Other CMS modules will be available after your induction is complete.
+                            </p>
+                          </div>
+                        )}
                         <div className="lg:-mt-20 mb-20">
                           <div className="flex justify-center lg:justify-start">
                             <div className="flex space-x-1 items-center mt-5">
@@ -492,11 +521,10 @@ function IT_Declaration() {
 
                                     {/* Edit Button - Disabled if not current financial year */}
                                     <div
-                                      className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${
-                                        isCurrentFinancialYear
+                                      className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${isCurrentFinancialYear
                                           ? "cursor-pointer hover:shadow-md"
                                           : "opacity-50 pointer-events-none"
-                                      }`}
+                                        }`}
                                       style={{
                                         maxWidth: "220px",
                                         fontSize: "0.85rem",
@@ -521,11 +549,10 @@ function IT_Declaration() {
                                 ) : (
                                   // Declarative Investments Button - Disabled for previous financial years
                                   <div
-                                    className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${
-                                      isPreviousFinancialYear
+                                    className={`border-2 border-[#dc2626] items-center flex space-x-3 p-2 rounded-md ${isPreviousFinancialYear
                                         ? "opacity-50 pointer-events-none"
                                         : "cursor-pointer hover:shadow-md"
-                                    }`}
+                                      }`}
                                     style={{
                                       maxWidth: "220px",
                                       fontSize: "0.85rem",

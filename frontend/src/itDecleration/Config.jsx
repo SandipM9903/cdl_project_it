@@ -1,10 +1,10 @@
-import { BASE_URL } from "./api/api";
+import { BASE_URL } from "../config/Config";
 
 // Define the configuration objects
 const config = {
 
 
-  ITDeclarationUrl: `${BASE_URL}:9026`,
+  ITDeclarationUrl: `${BASE_URL}`,
 };
 
 const adminConfig = {

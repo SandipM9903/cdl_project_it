@@ -53,7 +53,9 @@ export const getActiveCycle = () => {
 
 // ✅ ADD NEW FUNCTION: Get all employee emails
 export const getAllEmployeeEmails = () => {
-  return axios.get(BASE_URL_EMPLOYEE_EMAILS);
+  return axios.get(BASE_URL_EMPLOYEE_EMAILS, {
+    data: { request: "email" }
+  });
 };
 
 // ✅ ADD NEW FUNCTION: Send unified emails for any action

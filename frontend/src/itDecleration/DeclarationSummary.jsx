@@ -229,7 +229,19 @@ function DeclarationSummary() {
   }, 0);
 
   // Check if landlord details exist
-  const hasLandlordDetails = landlordDetails.name || landlordDetails.panNumber;
+// Get rent amount (Section 10(13A) → usually id 13 or adjust if needed)
+const rentSection = allSectionName.find(
+  (section) => Number(section?.itDecId) === 13
+);
+
+const rentAmount = Number(rentSection?.declarationAmount || 0);
+
+// Only require landlord if rent is filled
+const shouldRequireLandlord = rentAmount > 0;
+
+// Check if landlord details exist
+const hasLandlordDetails =
+  landlordDetails.name?.trim() && landlordDetails.panNumber?.trim();
 
   return (
     <div className="min-h-screen bg-gray-50 font-content">
@@ -493,7 +505,7 @@ function DeclarationSummary() {
                           </div>
                           
                           {/* Professional Landlord Details Section */}
-                          {hasLandlordDetails && (
+                          {shouldRequireLandlord && hasLandlordDetails && (
                             <Paper 
                               elevation={0} 
                               className="mt-6 bg-gray-50 rounded-lg overflow-hidden border border-gray-200"
@@ -555,7 +567,7 @@ function DeclarationSummary() {
                           )}
                           
                           {/* Show message if housing loan exists but no landlord details */}
-                          {!hasLandlordDetails && !loading && (
+                        {shouldRequireLandlord && !hasLandlordDetails && !loading && (
                             <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
                               <p className="text-xs text-amber-700 font-content flex items-center">
                                 <HiOutlineInformationCircle className="text-amber-500 mr-2" size={16} />

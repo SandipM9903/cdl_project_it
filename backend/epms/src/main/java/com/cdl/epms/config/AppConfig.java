@@ -15,6 +15,9 @@ public class AppConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        java.net.http.HttpClient httpClient = java.net.http.HttpClient.newBuilder()
+                .version(java.net.http.HttpClient.Version.HTTP_1_1)
+                .build();
+        return new RestTemplate(new org.springframework.http.client.JdkClientHttpRequestFactory(httpClient));
     }
 }

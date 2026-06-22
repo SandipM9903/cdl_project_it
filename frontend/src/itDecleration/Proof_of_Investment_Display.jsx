@@ -165,7 +165,6 @@ function Proof_of_Investment_Display() {
         // Include proof data if available
         ...(matchingProof || {}),
         // Override with specific values
-        itInfoId: matchingInfo?.itInfoId || null,
         documentProfId: finalDocumentProfId,
         declarationAmount,
         revisedAmount,
@@ -349,7 +348,7 @@ function Proof_of_Investment_Display() {
       const employeeId = localStorage.getItem("empId");
 
       const response = await axios.get(
-        `${BASE_URL}:9026/it-declaration-file/files/${simpleEncrypt(
+        `${BASE_URL}/it-declaration-file/files/${simpleEncrypt(
           employeeId,
         )}/${submitFinancialYear}/${itDecId}`,
       );
@@ -379,7 +378,7 @@ function Proof_of_Investment_Display() {
     try {
       const encryptedId = simpleEncrypt(itDecDocId);
       const response = await axios.post(
-        `${BASE_URL}:9026/it-declaration-file/download`,
+        `${BASE_URL}/it-declaration-file/download`,
         {
           encDocId: encryptedId,
         },
@@ -437,25 +436,18 @@ function Proof_of_Investment_Display() {
     Service.postProofOfInvestment(payload)
       .then(() => {
         // 🔥 Always update declaration table
-        const declarationSyncPayload = allSectionName.map((item) => {
-          const existingDeclaration = info.find(
-            (i) => Number(i.itDecId) === Number(item.itDecId),
-          );
-
-          return {
-            itInfoId: existingDeclaration?.itInfoId || item.itInfoId || null,
-            itDecId: item.itDecId,
-            empCode: empCode,
-            financialYear: submitFinancialYear,
-            taxRegime: regime === "Old Regime" ? 0 : 1,
-            declarationAmount:
-              item.revisedAmount !== null &&
-              item.revisedAmount !== undefined &&
-              item.revisedAmount !== ""
-                ? Number(item.revisedAmount)
-                : null,
-          };
-        });
+        const declarationSyncPayload = allSectionName.map((item) => ({
+          ...item,
+          declarationAmount:
+            item.revisedAmount !== null &&
+            item.revisedAmount !== undefined &&
+            item.revisedAmount !== ""
+              ? Number(item.revisedAmount)
+              : null,
+          empCode: empCode,
+          financialYear: submitFinancialYear,
+          taxRegime: regime === "Old Regime" ? 0 : 1,
+        }));
 
         return Service.postSection80Data(declarationSyncPayload);
       })
@@ -559,7 +551,7 @@ function Proof_of_Investment_Display() {
     );
 
     axios
-      .put(`${BASE_URL}:9026/proof-of-investment/update-bulk`, updatedData)
+      .put(`${BASE_URL}/proof-of-investment/update-bulk`, updatedData)
       .then(() => {
         const declarationSyncPayload = allSectionName.map((item) => {
           // find existing declaration record from info API
