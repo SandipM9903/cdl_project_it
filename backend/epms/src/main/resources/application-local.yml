@@ -25,12 +25,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true  # Format SQL for better readability
         use_sql_comments: true  # Show comments in SQL
-
+# hrbxlsskgstdgmkh
   mail:
     host: smtp.office365.com
     port: 587
     username: cdladmin@cms.co.in
-    password: Info##5253
+    password: hrbxlsskgstdgmkhss
     properties:
       mail:
         smtp:
