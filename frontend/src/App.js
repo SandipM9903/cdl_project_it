@@ -939,32 +939,32 @@ function App() {
                     <Route path="pTrace" element={<PTrace />} />
                   </Route>
                   {/* =================================================== REPORTS =================================================================================================== */}
-      <Route path="/reports" element={<PrivateRoutes Component={report} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/mood-reports" element={<PrivateRoutes Component={MoodReports} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/recent-mood-reports" element={<PrivateRoutes Component={RecentReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/quator-wise-goal-report" element={<PrivateRoutes Component={QuatorWiseGoalReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/annual-goal-report" element={<PrivateRoutes Component={AnnualGoalReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/overall-goal-setting-report" element={<PrivateRoutes Component={OverallGoalSettingReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/performance-appraisal-report" element={<PrivateRoutes Component={PerformanceAppraisalReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/qualification-report" element={<PrivateRoutes Component={QualificationReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/employee-head-count-report" element={<PrivateRoutes Component={EmployeeHeadCountReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/newly-joined-employee-report" element={<PrivateRoutes Component={NewlyJoinedEmployeeReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/confirmation-due-report" element={<PrivateRoutes Component={ConfirmationDueReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/department-wise-employee-count-report" element={<PrivateRoutes Component={DepartmentWiseEmployeeCountReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/location-wise-employee-count-report" element={<PrivateRoutes Component={LocationWiseEmployeeCountReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/onboarded-candidates-due-for-employee-conversion" element={<PrivateRoutes Component={OnboardedCandidatesDueForEmployeeConversion} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/exited-employee-report" element={<PrivateRoutes Component={ExitedEmployeeReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/declared-employee-report" element={<PrivateRoutes Component={DeclaredEmployeeReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/poi-submission-report" element={<PrivateRoutes Component={POISubmissionReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/mediclaim-enrollment-report" element={<PrivateRoutes Component={MediclaimEnrollmentReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/cdl-user-log-report" element={<PrivateRoutes Component={CDLUserLogReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/erf-detailed-status-report" element={<PrivateRoutes Component={ERFDetailedStatusReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/new-candidates-onboarded-report" element={<PrivateRoutes Component={NewCandidatesOnboardedReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/candidates-converted-to-employee-report" element={<PrivateRoutes Component={CandidatesConvertedToEmployeeReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/job-openings-list-report" element={<PrivateRoutes Component={JobOpeningsListReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/job-detail-status-report" element={<PrivateRoutes Component={JobDetailStatusReport} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/helpdesk-report" element={<PrivateRoutes Component={HelpdeskReports} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
-      <Route path="/induction-report" element={<PrivateRoutes Component={InductionReports} requiredRoles={["CMS Employee","User","CMS Manager","HR Payroll","Admin"]} />} />
+                  <Route path="/reports" element={<PrivateRoutes Component={report} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/mood-reports" element={<PrivateRoutes Component={MoodReports} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/recent-mood-reports" element={<PrivateRoutes Component={RecentReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/quator-wise-goal-report" element={<PrivateRoutes Component={QuatorWiseGoalReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/annual-goal-report" element={<PrivateRoutes Component={AnnualGoalReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/overall-goal-setting-report" element={<PrivateRoutes Component={OverallGoalSettingReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/performance-appraisal-report" element={<PrivateRoutes Component={PerformanceAppraisalReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/qualification-report" element={<PrivateRoutes Component={QualificationReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/employee-head-count-report" element={<PrivateRoutes Component={EmployeeHeadCountReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/newly-joined-employee-report" element={<PrivateRoutes Component={NewlyJoinedEmployeeReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/confirmation-due-report" element={<PrivateRoutes Component={ConfirmationDueReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/department-wise-employee-count-report" element={<PrivateRoutes Component={DepartmentWiseEmployeeCountReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/location-wise-employee-count-report" element={<PrivateRoutes Component={LocationWiseEmployeeCountReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/onboarded-candidates-due-for-employee-conversion" element={<PrivateRoutes Component={OnboardedCandidatesDueForEmployeeConversion} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/exited-employee-report" element={<PrivateRoutes Component={ExitedEmployeeReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/declared-employee-report" element={<PrivateRoutes Component={DeclaredEmployeeReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/poi-submission-report" element={<PrivateRoutes Component={POISubmissionReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/mediclaim-enrollment-report" element={<PrivateRoutes Component={MediclaimEnrollmentReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/cdl-user-log-report" element={<PrivateRoutes Component={CDLUserLogReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/erf-detailed-status-report" element={<PrivateRoutes Component={ERFDetailedStatusReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/new-candidates-onboarded-report" element={<PrivateRoutes Component={NewCandidatesOnboardedReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/candidates-converted-to-employee-report" element={<PrivateRoutes Component={CandidatesConvertedToEmployeeReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/job-openings-list-report" element={<PrivateRoutes Component={JobOpeningsListReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/job-detail-status-report" element={<PrivateRoutes Component={JobDetailStatusReport} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/helpdesk-report" element={<PrivateRoutes Component={HelpdeskReports} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
+                  <Route path="/induction-report" element={<PrivateRoutes Component={InductionReports} requiredRoles={["CMS Employee", "User", "CMS Manager", "HR Payroll", "Admin"]} />} />
                   {/* ====================================================== All Events ======================================================================================================= */}
                   <Route
                     path="/birthday"
@@ -1278,7 +1278,7 @@ function App() {
                     path="/brand-guidelines"
                     element={<BrandGuidelines />}
                   />
-                
+
                   <Route path="/blogs/create" element={<CreateBlog />} />
                   <Route path="/blogs/edit/:id" element={<EditBlog />} />
                   <Route
@@ -1747,42 +1747,42 @@ function App() {
                   />
 
                   {/* EPMS STARTS*/}
-                  <Route path="/Performance" element={<PrivateRoutes Component={Performance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/ManagerGoalConfigPerformance" element={<PrivateRoutes Component={ManagerGoalConfigPerformance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/AppraisalList" element={<PrivateRoutes Component={AppraisalList} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/appraisal-details/:empId" element={<PrivateRoutes Component={PredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/goals/predefined/add/:empId" element={<PrivateRoutes Component={AddGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/annual-goals/:empId" element={<PrivateRoutes Component={AnnualGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/predefined-goals/:empId" element={<PrivateRoutes Component={ManagerPredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/EmployeeAppraisal" element={<PrivateRoutes Component={EmployeeAppraisal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/appraisal/self-review/:employeeId"  element={<PrivateRoutes Component={AddSelfReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/annual-review/:employeeId"  element={<PrivateRoutes Component={EmployeeAnnualReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/annual-review/preview/:employeeId"  element={<PrivateRoutes Component={AnnualReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/self-review/form/:quarter"  element={<PrivateRoutes Component={SelfAssessmentForm} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/appraisal/preview/:employeeId"  element={<PrivateRoutes Component={SelfReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/assessment/add/:employeeId"  element={<PrivateRoutes Component={ManagerReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/review/preview/:employeeId"  element={<PrivateRoutes Component={ManagerReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/appraisal/acceptance/:employeeId"  element={<PrivateRoutes Component={EmployeeFinalAcceptance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/self-review/preview/:empId"   element={<PrivateRoutes Component={ManagerSelfReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/annual-review/:empId"   element={<PrivateRoutes Component={ManagerAnnualReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/bulk-add-goals/:quarter" element={<PrivateRoutes Component={AddBulkGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/bulk-predefined-goals/:quarter"    element={<PrivateRoutes Component={ManagerBulkPredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/manager-review/preview/:empId"   element={<PrivateRoutes Component={EmployeeManagerReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/annual-review/submit-to-hr/:empId"   element={<PrivateRoutes Component={EmployeeAnnualSubmitToHr} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/annual-review/preview/:empId"   element={<PrivateRoutes Component={ManagerAnnualReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path= "/employee/goal/create/:empId"  element={<PrivateRoutes Component={EmployeeGoalCreation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path= "/manager/goal/approve/:empId"  element={<PrivateRoutes Component={ManagerApprovalQuarter} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path= "/manager/goal/preview/:empId"  element={<PrivateRoutes Component={ManagerGoalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/employee/goal/self-review/:empId"  element={<PrivateRoutes Component={StartSelfReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/manager/goal/final-review/:empId" element={<PrivateRoutes Component={ManagerReviewQuarter} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]}/>}/>
-                  <Route path="/manager/goal/final-review-preview/:empId" element={<PrivateRoutes Component={ManagerGoalFinalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]}/>}/>
-                  <Route path="/employee/goal/edit/:empId" element={<PrivateRoutes Component={EditGoalCreation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]}/>}/>
-                  <Route path="/employee/goal/preview/:empId" element={<PrivateRoutes Component={EmployeeGoalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]}/>}/>
+                  <Route path="/Performance" element={<PrivateRoutes Component={Performance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/ManagerGoalConfigPerformance" element={<PrivateRoutes Component={ManagerGoalConfigPerformance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/AppraisalList" element={<PrivateRoutes Component={AppraisalList} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/appraisal-details/:empId" element={<PrivateRoutes Component={PredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/goals/predefined/add/:empId" element={<PrivateRoutes Component={AddGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/annual-goals/:empId" element={<PrivateRoutes Component={AnnualGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/predefined-goals/:empId" element={<PrivateRoutes Component={ManagerPredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/EmployeeAppraisal" element={<PrivateRoutes Component={EmployeeAppraisal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/appraisal/self-review/:employeeId" element={<PrivateRoutes Component={AddSelfReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/annual-review/:employeeId" element={<PrivateRoutes Component={EmployeeAnnualReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/annual-review/preview/:employeeId" element={<PrivateRoutes Component={AnnualReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/self-review/form/:quarter" element={<PrivateRoutes Component={SelfAssessmentForm} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/appraisal/preview/:employeeId" element={<PrivateRoutes Component={SelfReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/assessment/add/:employeeId" element={<PrivateRoutes Component={ManagerReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/review/preview/:employeeId" element={<PrivateRoutes Component={ManagerReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/appraisal/acceptance/:employeeId" element={<PrivateRoutes Component={EmployeeFinalAcceptance} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/self-review/preview/:empId" element={<PrivateRoutes Component={ManagerSelfReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/annual-review/:empId" element={<PrivateRoutes Component={ManagerAnnualReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/bulk-add-goals/:quarter" element={<PrivateRoutes Component={AddBulkGoal} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/bulk-predefined-goals/:quarter" element={<PrivateRoutes Component={ManagerBulkPredefinedGoals} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/manager-review/preview/:empId" element={<PrivateRoutes Component={EmployeeManagerReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/annual-review/submit-to-hr/:empId" element={<PrivateRoutes Component={EmployeeAnnualSubmitToHr} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/annual-review/preview/:empId" element={<PrivateRoutes Component={ManagerAnnualReviewPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/goal/create/:empId" element={<PrivateRoutes Component={EmployeeGoalCreation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/goal/approve/:empId" element={<PrivateRoutes Component={ManagerApprovalQuarter} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/goal/preview/:empId" element={<PrivateRoutes Component={ManagerGoalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/employee/goal/self-review/:empId" element={<PrivateRoutes Component={StartSelfReview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/manager/goal/final-review/:empId" element={<PrivateRoutes Component={ManagerReviewQuarter} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]} />} />
+                  <Route path="/manager/goal/final-review-preview/:empId" element={<PrivateRoutes Component={ManagerGoalFinalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]} />} />
+                  <Route path="/employee/goal/edit/:empId" element={<PrivateRoutes Component={EditGoalCreation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]} />} />
+                  <Route path="/employee/goal/preview/:empId" element={<PrivateRoutes Component={EmployeeGoalPreview} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin"]} />} />
                   {/* EPMS ENDS */}
 
-                  <Route path="/view-details/:empCode"  element={<PrivateRoutes Component={ViewDetails} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/probation-evaluation/:empCode"  element={<PrivateRoutes Component={ProbationEvaluation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
-                  <Route path="/view-feedback/:empCode/:extensionNumber/:threeId/:sixId"  element={<PrivateRoutes Component={ViewFeedback} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]}/>}/>
+                  <Route path="/view-details/:empCode" element={<PrivateRoutes Component={ViewDetails} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/probation-evaluation/:empCode" element={<PrivateRoutes Component={ProbationEvaluation} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
+                  <Route path="/view-feedback/:empCode/:extensionNumber/:threeId/:sixId" element={<PrivateRoutes Component={ViewFeedback} requiredRoles={["CMS Employee", "User", "HR Payroll", "CMS Manager", "Admin",]} />} />
 
                 </Routes>
               </BrowserRouter>
