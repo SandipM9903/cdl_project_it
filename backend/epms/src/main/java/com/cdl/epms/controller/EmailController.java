@@ -45,18 +45,18 @@ public class EmailController {
         }
 
         try {
-            // Call the service to send emails asynchronously
-            emailerService.sendUnifiedCycleEmail(
-                    request.getCycleId(),
-                    request.getActionType(),
-                    request.getCustomSubject(),
-                    request.getCustomBody(),
-                    request.getNewExpiryDate()
-            );
+            // Call the service to send emails asynchronously (DISABLED)
+            // emailerService.sendUnifiedCycleEmail(
+            //         request.getCycleId(),
+            //         request.getActionType(),
+            //         request.getCustomSubject(),
+            //         request.getCustomBody(),
+            //         request.getNewExpiryDate()
+            // );
 
             Map<String, Object> response = new HashMap<>();
-            response.put("status", "PROCESSING");
-            response.put("message", String.format("%s emails are being sent to all employees", request.getActionType()));
+            response.put("status", "DISABLED");
+            response.put("message", String.format("Bulk email notifications are disabled for action: %s", request.getActionType()));
             response.put("actionType", request.getActionType());
             response.put("cycleId", request.getCycleId());
 

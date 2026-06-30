@@ -404,7 +404,7 @@ const handleUnifiedEmailLaunch = async (emailData) => {
   try {
     setLoadingId(cycleToUse.id);
     setIsEmailModalOpen(false);
-    showNotification("info", `Processing ${emailModalAction} action and sending emails...`);
+    showNotification("info", `Processing ${emailModalAction} action...`);
 
     let response;
     const payload = {
@@ -441,7 +441,7 @@ const handleUnifiedEmailLaunch = async (emailData) => {
     }
 
     if (response && (response.status === 200 || response.status === 201)) {
-      showNotification("success", `${emailModalAction} completed successfully with email notifications.`);
+      showNotification("success", `${emailModalAction} completed successfully.`);
       await fetchCycles(reviewCycle);
     } else {
       throw new Error("Unexpected response from server");

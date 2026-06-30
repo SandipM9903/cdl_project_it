@@ -12,8 +12,8 @@ export const BASE_URL_EPMS_EMP_LOCATION = "http://43.205.24.208:9020";
 export const BASE_URL_EPMS_EMP = "http://localhost:9009/api/v1/performance/employees";
 
 // THIS NEW EXPORT - API endpoint that returns only emails
-// export const BASE_URL_EMPLOYEE_EMAILS = "http://43.205.24.208:9020/employee/getAll";
-export const BASE_URL_EMPLOYEE_EMAILS = "http://localhost:9020/employee/getAll";
+export const BASE_URL_EMPLOYEE_EMAILS = "http://43.205.24.208:9020/employee/getAll";
+// export const BASE_URL_EMPLOYEE_EMAILS = "http://localhost:9020/employee/getAll";
 
 export const DOC_URL = "https://mycdl.cms.co.in/documents/access";
 // export const DOC_URL = "http://43.205.24.208:9023/documents/access"

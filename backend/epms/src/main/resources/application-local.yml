@@ -30,7 +30,7 @@ spring:
     host: smtp.office365.com
     port: 587
     username: cdladmin@cms.co.in
-    password: hrbxlsskgstdgmkhss
+    password: hrbxlsskgstdgmkh
     properties:
       mail:
         smtp:

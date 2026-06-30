@@ -123,10 +123,10 @@ public class CycleServiceImpl implements CycleService {
 
         // Send emails with custom subject and body (if provided)
         try {
-            log.info("Publishing launch email to ALL employees for cycle: {} {} / {}",
+            log.info("Publishing launch email to ALL employees for cycle (DISABLED): {} {} / {}",
                     cycle.getQuarter(), cycle.getFinancialYear(), cycle.getYear());
             log.info("Passing custom subject to emailer: {}", customSubject);
-            emailerService.publishEmailToAllEmployees(cycle.getId(), customSubject, customBody);
+            // emailerService.publishEmailToAllEmployees(cycle.getId(), customSubject, customBody);
         } catch (Exception e) {
             log.error("Failed to send launch emails: ", e);
             // Don't throw exception - cycle is already active
@@ -245,13 +245,13 @@ public class CycleServiceImpl implements CycleService {
         }
 
         try {
-            log.info("Sending reminder email to ALL employees for cycle: {} {} / {}",
+            log.info("Sending reminder email to ALL employees for cycle (DISABLED): {} {} / {}",
                     cycle.getQuarter(), cycle.getFinancialYear(), cycle.getYear());
 
-            emailerService.sendReminderToAllEmployees(cycle.getId());
+            // emailerService.sendReminderToAllEmployees(cycle.getId());
             cycle.setLastReminderDate(LocalDateTime.now());
 
-            log.info("Reminder sent successfully for cycle ID: {} at {}", cycleId, cycle.getLastReminderDate());
+            log.info("Reminder sent successfully (bypassed) for cycle ID: {} at {}", cycleId, cycle.getLastReminderDate());
 
             return cycleRepository.save(cycle);
 

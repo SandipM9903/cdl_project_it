@@ -101,71 +101,8 @@ public class EmailerServiceImpl implements EmailerService {
     @Override
     @Async
     public void publishEmailToAllEmployees(Long cycleId, String customSubject, String customBody) {
-        initExecutorService();
-        long startTime = System.currentTimeMillis();
-
-        PerformanceCycle cycle = cycleRepository.findById(cycleId)
-                .orElseThrow(() -> new RuntimeException("Cycle not found"));
-
-        log.info("========== PUBLISHING LAUNCH EMAILS ==========");
-        log.info("Cycle ID: {}, Quarter: {}", cycleId, cycle.getQuarter());
-
-        List<Map<String, Object>> employees = fetchEmployeesFromAPI();
-
-        if (employees.isEmpty()) {
-            log.warn("No employees found to send launch emails");
-            return;
-        }
-
-        List<Map<String, Object>> validEmployees = employees.stream()
-                .filter(emp -> emp.get("emailId") != null && !((String) emp.get("emailId")).isEmpty())
-                .toList();
-
-        List<List<Map<String, Object>>> batches = new ArrayList<>();
-        for (int i = 0; i < validEmployees.size(); i += batchSize) {
-            batches.add(validEmployees.subList(i, Math.min(i + batchSize, validEmployees.size())));
-        }
-
-        log.info("Split into {} batches", batches.size());
-
-        AtomicInteger successCount = new AtomicInteger(0);
-        AtomicInteger errorCount = new AtomicInteger(0);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (int i = 0; i < batches.size(); i++) {
-            final int batchIndex = i;
-            final List<Map<String, Object>> batch = batches.get(i);
-
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                try {
-                    semaphore.acquire();
-                    log.info("Processing batch {}/{}", batchIndex + 1, batches.size());
-
-                    boolean success = sendBatchLaunchEmail(batch, customSubject, customBody, cycle);
-                    if (success) {
-                        successCount.addAndGet(batch.size());
-                    } else {
-                        errorCount.addAndGet(batch.size());
-                    }
-
-                    if (batchIndex < batches.size() - 1) {
-                        Thread.sleep(batchDelayMs);
-                    }
-                } catch (Exception e) {
-                    log.error("Batch {} failed", batchIndex + 1, e);
-                    errorCount.addAndGet(batch.size());
-                } finally {
-                    semaphore.release();
-                }
-            }, executorService);
-
-            futures.add(future);
-        }
-
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        long totalSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        log.info("LAUNCH EMAILS COMPLETED - Success: {}, Errors: {}, Time: {} seconds", successCount.get(), errorCount.get(), totalSeconds);
+        log.info("========== PUBLISHING LAUNCH EMAILS (DISABLED) ==========");
+        log.info("Bulk launch email notification is disabled. No email will be sent for cycle ID: {}", cycleId);
     }
 
     private boolean sendBatchLaunchEmail(List<Map<String, Object>> batch, String customSubject,
@@ -238,61 +175,8 @@ public class EmailerServiceImpl implements EmailerService {
     @Override
     @Async
     public void sendReminderToAllEmployees(Long cycleId) {
-        initExecutorService();
-        long startTime = System.currentTimeMillis();
-
-        PerformanceCycle cycle = cycleRepository.findById(cycleId)
-                .orElseThrow(() -> new RuntimeException("Cycle not found"));
-
-        log.info("========== SENDING REMINDER EMAILS ==========");
-        log.info("Cycle ID: {}, Quarter: {}", cycleId, cycle.getQuarter());
-
-        List<Map<String, Object>> employees = fetchEmployeesFromAPI();
-        if (employees.isEmpty()) {
-            log.warn("No employees found");
-            return;
-        }
-
-        List<Map<String, Object>> validEmployees = employees.stream()
-                .filter(emp -> emp.get("emailId") != null && !((String) emp.get("emailId")).isEmpty())
-                .toList();
-
-        List<List<Map<String, Object>>> batches = new ArrayList<>();
-        for (int i = 0; i < validEmployees.size(); i += batchSize) {
-            batches.add(validEmployees.subList(i, Math.min(i + batchSize, validEmployees.size())));
-        }
-
-        AtomicInteger successCount = new AtomicInteger(0);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (int i = 0; i < batches.size(); i++) {
-            final int batchIndex = i;
-            final List<Map<String, Object>> batch = batches.get(i);
-
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                try {
-                    semaphore.acquire();
-                    boolean success = sendBatchReminderEmail(batch, cycle);
-                    if (success) {
-                        successCount.addAndGet(batch.size());
-                    }
-                    if (batchIndex < batches.size() - 1) {
-                        Thread.sleep(batchDelayMs);
-                    }
-                } catch (Exception e) {
-                    log.error("Batch {} failed", batchIndex + 1, e);
-                } finally {
-                    semaphore.release();
-                }
-            }, executorService);
-
-            futures.add(future);
-        }
-
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        long totalSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        log.info("REMINDER EMAILS COMPLETED - Success: {}, Time: {} seconds", successCount.get(), totalSeconds);
+        log.info("========== SENDING REMINDER EMAILS (DISABLED) ==========");
+        log.info("Bulk reminder email notification is disabled. No email will be sent for cycle ID: {}", cycleId);
     }
 
     private boolean sendBatchReminderEmail(List<Map<String, Object>> batch, PerformanceCycle cycle) {
@@ -1367,61 +1251,8 @@ public class EmailerServiceImpl implements EmailerService {
     @Override
     @Async
     public void sendUnifiedCycleEmail(Long cycleId, String actionType, String customSubject, String customBody, String newExpiryDate) {
-        initExecutorService();
-        long startTime = System.currentTimeMillis();
-
-        PerformanceCycle cycle = cycleRepository.findById(cycleId)
-                .orElseThrow(() -> new RuntimeException("Cycle not found"));
-
-        log.info("========== SENDING UNIFIED CYCLE EMAIL ==========");
-        log.info("Action: {}, Cycle ID: {}", actionType, cycleId);
-
-        Long templateId = getTemplateIdByAction(actionType);
-        if (templateId == null) {
-            throw new RuntimeException("Invalid action type: " + actionType);
-        }
-
-        List<Map<String, Object>> employees = fetchEmployeesFromAPI();
-        if (employees.isEmpty()) {
-            log.warn("No employees found");
-            return;
-        }
-
-        List<Map<String, Object>> validEmployees = employees.stream()
-                .filter(emp -> emp.get("emailId") != null && !((String) emp.get("emailId")).isEmpty())
-                .toList();
-
-        List<List<Map<String, Object>>> batches = new ArrayList<>();
-        for (int i = 0; i < validEmployees.size(); i += batchSize) {
-            batches.add(validEmployees.subList(i, Math.min(i + batchSize, validEmployees.size())));
-        }
-
-        AtomicInteger successCount = new AtomicInteger(0);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (int i = 0; i < batches.size(); i++) {
-            final int batchIndex = i;
-            final List<Map<String, Object>> batch = batches.get(i);
-
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                try {
-                    semaphore.acquire();
-                    boolean success = sendBatchUnifiedEmail(batch, cycle, templateId, customSubject, customBody, actionType, newExpiryDate);
-                    if (success) successCount.addAndGet(batch.size());
-                    if (batchIndex < batches.size() - 1) Thread.sleep(batchDelayMs);
-                } catch (Exception e) {
-                    log.error("Batch {} failed", batchIndex + 1, e);
-                } finally {
-                    semaphore.release();
-                }
-            }, executorService);
-            futures.add(future);
-        }
-
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        long totalSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        log.info("UNIFIED EMAILS COMPLETED - Action: {}, Success: {}, Time: {} seconds", actionType, successCount.get(), totalSeconds);
+        log.info("========== SENDING UNIFIED CYCLE EMAIL (DISABLED) ==========");
+        log.info("Bulk unified cycle email notification is disabled. Action: {}, Cycle ID: {}", actionType, cycleId);
     }
 
     private Long getTemplateIdByAction(String actionType) {
