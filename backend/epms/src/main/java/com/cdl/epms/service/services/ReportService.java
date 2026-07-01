@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.cdl.epms.dto.reports.ReportGoalResponseDto;
+import com.cdl.epms.repository.GoalRepository;
+import com.cdl.epms.model.Goal;
+import com.cdl.epms.common.enums.Quarter;
+import com.cdl.epms.repository.DevelopmentGoalRepository;
+import com.cdl.epms.model.DevelopmentGoal;
 
 @Slf4j
 @Service
@@ -19,6 +25,8 @@ public class ReportService {
 
     private final AnnualPerformanceReportRepository annualReviewRepository;
     private final EmployeeApiClient employeeApiClient;
+    private final GoalRepository goalRepository;
+    private final DevelopmentGoalRepository developmentGoalRepository;
 
     public List<ReportWithEmployeeDTO> searchByDateRangeWithEmployee(LocalDateTime startDate,
                                                                      LocalDateTime endDate,
@@ -148,5 +156,145 @@ public class ReportService {
                 .managerEmpCode("N/A")
                 .managerFullName("N/A")
                 .managerEmailId("N/A");
+    }
+
+    public List<ReportGoalResponseDto> getDetailedGoalsQuarterWiseReport(Integer year, String quarterStr) {
+        log.info("Searching detailed goals quarter wise: year={}, quarter={}", year, quarterStr);
+
+        if (year == null || year <= 0) {
+            throw new ReportGenerationException("Year is required");
+        }
+
+        if (quarterStr == null || quarterStr.trim().isEmpty()) {
+            throw new ReportGenerationException("Quarter is required");
+        }
+
+        Quarter quarter;
+        try {
+            quarter = Quarter.valueOf(quarterStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ReportGenerationException("Invalid quarter: " + quarterStr);
+        }
+
+        // Fetch regular goals
+        List<Goal> goals = goalRepository.findByQuarterAndPerformanceCycle_Year(quarter, year);
+        log.info("Found {} goals for quarter {} and year {}", goals.size(), quarter, year);
+
+        // Fetch development goals
+        List<DevelopmentGoal> devGoals = developmentGoalRepository.findByQuarterAndYear(quarter, year);
+        log.info("Found {} development goals for quarter {} and year {}", devGoals.size(), quarter, year);
+
+        // Map and merge
+        List<ReportGoalResponseDto> mappedGoals = goals.stream()
+                .map(this::convertToGoalDTOWithEmployee)
+                .collect(Collectors.toList());
+
+        List<ReportGoalResponseDto> mappedDevGoals = devGoals.stream()
+                .map(this::convertToGoalDTOWithEmployee)
+                .collect(Collectors.toList());
+
+        mappedGoals.addAll(mappedDevGoals);
+
+        return mappedGoals;
+    }
+
+    private ReportGoalResponseDto convertToGoalDTOWithEmployee(Goal goal) {
+        ReportGoalResponseDto dto = new ReportGoalResponseDto();
+        dto.setGoalId(goal.getId());
+        dto.setEmployeeId(goal.getEmployeeId());
+        dto.setManagerId(goal.getManagerId());
+        if (goal.getPerformanceCycle() != null) {
+            dto.setYear(goal.getPerformanceCycle().getYear());
+        } else {
+            dto.setYear(goal.getYear());
+        }
+        dto.setQuarter(goal.getQuarter());
+        dto.setGoalType(goal.getGoalType());
+        dto.setTitle(goal.getTitle());
+        dto.setTarget(goal.getTarget());
+        dto.setTrainingName("N/A");
+        dto.setWeightage(goal.getWeightage());
+        dto.setRemarks(goal.getRemarks());
+        dto.setSelfAssessmentScore(goal.getSelfAssessmentScore());
+        dto.setManagerAssessmentScore(goal.getManagerAssessmentScore());
+        dto.setManagerComment(goal.getManagerComment());
+        dto.setManagerApprovalComment(goal.getManagerApprovalComment());
+        dto.setStatus(goal.getStatus());
+        dto.setCreatedAt(goal.getCreatedAt());
+
+        try {
+            EmployeeResponseDTO employee = employeeApiClient.getEmployeeByCode(goal.getEmployeeId());
+            if (employee != null) {
+                dto.setEmployeeFullName(getValueOrDefault(employee.getFullName(), "N/A"));
+                dto.setMainDepartment(getValueOrDefault(employee.getMainDepartment(), "N/A"));
+                dto.setSubDepartment(getValueOrDefault(employee.getSubDepartment(), "N/A"));
+                dto.setLocationName(getValueOrDefault(employee.getLocationName(), "N/A"));
+                dto.setManagerEmpCode(getValueOrDefault(employee.getManagerEmpCode(), "N/A"));
+                dto.setManagerFullName(getValueOrDefault(employee.getManagerFullName(), "N/A"));
+                dto.setManagerEmailId(getValueOrDefault(employee.getManagerEmailId(), "N/A"));
+            } else {
+                setGoalDefaultValues(dto);
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch employee details for {}: {}", goal.getEmployeeId(), e.getMessage());
+            setGoalDefaultValues(dto);
+        }
+
+        return dto;
+    }
+
+    private ReportGoalResponseDto convertToGoalDTOWithEmployee(DevelopmentGoal dg) {
+        ReportGoalResponseDto dto = new ReportGoalResponseDto();
+        dto.setGoalId(dg.getId());
+        dto.setEmployeeId(dg.getEmployeeId());
+        dto.setManagerId(dg.getManagerId());
+        if (dg.getPerformanceCycle() != null) {
+            dto.setYear(dg.getPerformanceCycle().getYear());
+        } else {
+            dto.setYear(dg.getYear());
+        }
+        dto.setQuarter(dg.getQuarter());
+        dto.setGoalType(com.cdl.epms.common.enums.GoalType.DEVELOPMENT);
+        dto.setTitle(dg.getTitle());
+        dto.setTrainingName(dg.getTrainingName());
+        dto.setTarget(dg.getDescription());
+        dto.setWeightage(null);
+        dto.setRemarks(null);
+        dto.setSelfAssessmentScore(dg.getSelfAssessmentScore());
+        dto.setManagerAssessmentScore(dg.getManagerAssessmentScore());
+        dto.setManagerComment(dg.getManagerComment());
+        dto.setManagerApprovalComment(dg.getManagerApprovalComment());
+        dto.setStatus(dg.getStatus());
+        dto.setCreatedAt(dg.getCreatedAt());
+
+        try {
+            EmployeeResponseDTO employee = employeeApiClient.getEmployeeByCode(dg.getEmployeeId());
+            if (employee != null) {
+                dto.setEmployeeFullName(getValueOrDefault(employee.getFullName(), "N/A"));
+                dto.setMainDepartment(getValueOrDefault(employee.getMainDepartment(), "N/A"));
+                dto.setSubDepartment(getValueOrDefault(employee.getSubDepartment(), "N/A"));
+                dto.setLocationName(getValueOrDefault(employee.getLocationName(), "N/A"));
+                dto.setManagerEmpCode(getValueOrDefault(employee.getManagerEmpCode(), "N/A"));
+                dto.setManagerFullName(getValueOrDefault(employee.getManagerFullName(), "N/A"));
+                dto.setManagerEmailId(getValueOrDefault(employee.getManagerEmailId(), "N/A"));
+            } else {
+                setGoalDefaultValues(dto);
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch employee details for {}: {}", dg.getEmployeeId(), e.getMessage());
+            setGoalDefaultValues(dto);
+        }
+
+        return dto;
+    }
+
+    private void setGoalDefaultValues(ReportGoalResponseDto dto) {
+        dto.setEmployeeFullName("N/A");
+        dto.setMainDepartment("N/A");
+        dto.setSubDepartment("N/A");
+        dto.setLocationName("N/A");
+        dto.setManagerEmpCode("N/A");
+        dto.setManagerFullName("N/A");
+        dto.setManagerEmailId("N/A");
     }
 }

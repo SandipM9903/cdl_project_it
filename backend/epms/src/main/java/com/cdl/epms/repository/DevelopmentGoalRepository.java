@@ -49,4 +49,6 @@ public interface DevelopmentGoalRepository extends JpaRepository<DevelopmentGoal
             Integer year,
             String title
     );
+
+    List<DevelopmentGoal> findByQuarterAndYear(Quarter quarter, Integer year);
 }

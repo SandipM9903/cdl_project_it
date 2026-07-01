@@ -1,6 +1,7 @@
 package com.cdl.epms.controller;
 
 import com.cdl.epms.dto.report.ReportWithEmployeeDTO;
+import com.cdl.epms.dto.reports.ReportGoalResponseDto;
 import com.cdl.epms.service.services.ReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,15 @@ public class ReportController {
 
         log.info("REST API request: search by financial year: {} with status: {}", financialYear, status);
         List<ReportWithEmployeeDTO> reports = reportService.searchByFinancialYearWithEmployee(financialYear, status);
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/detailed-goals-qwise")
+    public ResponseEntity<List<ReportGoalResponseDto>> getDetailedGoalsQuarterWise(
+            @RequestParam Integer year,
+            @RequestParam String quarter) {
+        log.info("REST API request: get detailed goals quarter wise for year: {}, quarter: {}", year, quarter);
+        List<ReportGoalResponseDto> reports = reportService.getDetailedGoalsQuarterWiseReport(year, quarter);
         return ResponseEntity.ok(reports);
     }
 
