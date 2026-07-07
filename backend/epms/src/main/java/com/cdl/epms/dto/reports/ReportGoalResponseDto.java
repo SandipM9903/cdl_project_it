@@ -18,6 +18,7 @@ public class ReportGoalResponseDto {
     private String title;
     private String target;          // Replaces description
     private String trainingName;
+    private String description;
     private Integer weightage;
     private String remarks;         // New field
 

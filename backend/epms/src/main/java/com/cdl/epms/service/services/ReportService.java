@@ -185,15 +185,17 @@ public class ReportService {
         log.info("Found {} development goals for quarter {} and year {}", devGoals.size(), quarter, year);
 
         // Map and merge
-        List<ReportGoalResponseDto> mappedGoals = goals.stream()
-                .map(this::convertToGoalDTOWithEmployee)
-                .collect(Collectors.toList());
-
-        List<ReportGoalResponseDto> mappedDevGoals = devGoals.stream()
-                .map(this::convertToGoalDTOWithEmployee)
-                .collect(Collectors.toList());
-
-        mappedGoals.addAll(mappedDevGoals);
+        List<ReportGoalResponseDto> mappedGoals = new java.util.ArrayList<>();
+        if (goals != null) {
+            mappedGoals.addAll(goals.stream()
+                    .map(this::convertToGoalDTOWithEmployee)
+                    .collect(Collectors.toList()));
+        }
+        if (devGoals != null) {
+            mappedGoals.addAll(devGoals.stream()
+                    .map(this::convertToGoalDTOWithEmployee)
+                    .collect(Collectors.toList()));
+        }
 
         return mappedGoals;
     }
@@ -213,6 +215,7 @@ public class ReportService {
         dto.setTitle(goal.getTitle());
         dto.setTarget(goal.getTarget());
         dto.setTrainingName("N/A");
+        dto.setDescription("N/A");
         dto.setWeightage(goal.getWeightage());
         dto.setRemarks(goal.getRemarks());
         dto.setSelfAssessmentScore(goal.getSelfAssessmentScore());
@@ -258,6 +261,7 @@ public class ReportService {
         dto.setTitle(dg.getTitle());
         dto.setTrainingName(dg.getTrainingName());
         dto.setTarget(dg.getDescription());
+        dto.setDescription(dg.getDescription());
         dto.setWeightage(null);
         dto.setRemarks(null);
         dto.setSelfAssessmentScore(dg.getSelfAssessmentScore());

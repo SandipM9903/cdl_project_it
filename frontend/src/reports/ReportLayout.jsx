@@ -33,6 +33,7 @@ function ReportLayout({
   selectedStatus = "ALL",
   onStatusChange,
   loading = false,
+  customTableRender = null,
 }) {
   const [selectedColumns, setSelectedColumns] = useState(
     defaultSelectedColumns.length > 0
@@ -1179,9 +1180,34 @@ function ReportLayout({
               </div>
 
               {filteredData && filteredData.length > 0 ? (
-                <>
-                  <div className="table-container">
-                    <table className="report-table">
+                customTableRender ? (
+                  customTableRender({
+                    filteredData,
+                    generatedColumns,
+                    currentRecords,
+                    indexOfFirstRecord,
+                    selectedRows,
+                    handleRowSelect,
+                    formatColumnHeader,
+                    renderTableCell,
+                    columnKeyMap,
+                    selectedEmployees,
+                    selectAll,
+                    handleSelectAll,
+                    indexOfLastRecord,
+                    recordsPerPage,
+                    currentPage,
+                    totalPages,
+                    goToPage,
+                    getPageNumbers,
+                    goToPreviousPage,
+                    goToNextPage,
+                    handleRecordsPerPageChange
+                  })
+                ) : (
+                  <>
+                    <div className="table-container">
+                      <table className="report-table">
                       <thead>
                         <tr>
                           {selectedEmployees === "Selected Employees" && (
@@ -1335,7 +1361,7 @@ function ReportLayout({
                     </div>
                   </div>
                 </>
-              ) : (
+              )) : (
                 <div className="bg-white p-8 rounded-lg shadow-md text-center">
                   <p className="text-gray-500 text-lg font-content">
                     {searchTerm

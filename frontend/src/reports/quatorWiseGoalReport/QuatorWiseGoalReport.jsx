@@ -104,7 +104,7 @@ function QuarterWiseGoalReport() {
     "Goal Type",
     "Goal Objective (Title)",
     "Training Name",
-    "Target / Key Result",
+    "Target / Description",
     "Weightage",
     "Status",
     "Self Assessment Score",
@@ -123,6 +123,7 @@ function QuarterWiseGoalReport() {
     "Goal Type",
     "Goal Objective (Title)",
     "Training Name",
+    "Target / Description",
     "Weightage",
     "Status",
     "Self Assessment Score",
@@ -143,7 +144,7 @@ function QuarterWiseGoalReport() {
     "Goal Type": "goalType",
     "Goal Objective (Title)": "title",
     "Training Name": "trainingName",
-    "Target / Key Result": "target",
+    "Target / Description": "target",
     "Weightage": "weightage",
     "Status": "status",
     "Self Assessment Score": "selfAssessmentScore",
@@ -354,6 +355,257 @@ function QuarterWiseGoalReport() {
     );
   };
 
+  const customTableRender = ({
+    filteredData,
+    generatedColumns,
+    currentRecords,
+    indexOfFirstRecord,
+    selectedRows,
+    handleRowSelect,
+    formatColumnHeader,
+    renderTableCell,
+    columnKeyMap,
+    selectedEmployees,
+    selectAll,
+    handleSelectAll,
+    indexOfLastRecord,
+    recordsPerPage,
+    currentPage,
+    totalPages,
+    goToPage,
+    getPageNumbers,
+    goToPreviousPage,
+    goToNextPage,
+    handleRecordsPerPageChange
+  }) => {
+    const pageSmartGoals = currentRecords.filter(item => item.goalType === "SMART");
+    const pageDevelopmentGoals = currentRecords.filter(item => item.goalType === "DEVELOPMENT");
+    const smartColumns = generatedColumns.filter(col => col !== "Training Name");
+    const devColumns = generatedColumns.filter(col => 
+      col !== "Weightage" && 
+      col !== "Remarks" &&
+      col !== "Self Assessment Score" &&
+      col !== "Manager Assessment Score" &&
+      col !== "Manager Comment" &&
+      col !== "Manager Approval Comment"
+    );
+
+    return (
+      <div className="space-y-10 w-full">
+        {/* SMART Goals Section */}
+        {pageSmartGoals.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden w-full">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white font-header flex items-center gap-2">
+                🎯 SMART Goals
+              </h2>
+              <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                {pageSmartGoals.length} item(s) on page
+              </span>
+            </div>
+            <div className="table-container p-4 overflow-x-auto w-full">
+              <table className="report-table w-full">
+                <thead>
+                  <tr>
+                    {selectedEmployees === "Selected Employees" && (
+                      <th style={{ backgroundColor: "#ef4444" }} className="px-4 py-3 font-semibold uppercase tracking-wider font-header text-left whitespace-nowrap w-12 text-white">
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          className="h-4 w-4 accent-[#ef4444] focus:ring-[#ef4444] border-gray-300 rounded"
+                        />
+                      </th>
+                    )}
+                    {smartColumns.map((col) => (
+                      <th key={col} style={{ backgroundColor: "#ef4444" }} className="px-4 py-3 font-semibold uppercase tracking-wider font-header text-left whitespace-nowrap text-white">
+                        {formatColumnHeader(col)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageSmartGoals.map((item) => {
+                    const originalIndex = currentRecords.indexOf(item);
+                    const absoluteIndex = indexOfFirstRecord + originalIndex;
+                    const isSelected = selectedRows.has(absoluteIndex);
+                    return (
+                      <tr key={absoluteIndex} className={`hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}>
+                        {selectedEmployees === "Selected Employees" && (
+                          <td className="px-4 py-3 text-center border-b border-gray-200">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleRowSelect(originalIndex)}
+                              className="h-4 w-4 accent-[#ef4444] focus:ring-[#ef4444] border-gray-300 rounded"
+                            />
+                          </td>
+                        )}
+                        {smartColumns.map((column) =>
+                          renderTableCell(column, item, absoluteIndex)
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Development Goals Section */}
+        {pageDevelopmentGoals.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden w-full">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white font-header flex items-center gap-2">
+                🚀 Development Goals
+              </h2>
+              <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                {pageDevelopmentGoals.length} item(s) on page
+              </span>
+            </div>
+            <div className="table-container p-4 overflow-x-auto w-full">
+              <table className="report-table w-full">
+                <thead>
+                  <tr>
+                    {selectedEmployees === "Selected Employees" && (
+                      <th style={{ backgroundColor: "#3b82f6" }} className="px-4 py-3 font-semibold uppercase tracking-wider font-header text-left whitespace-nowrap w-12 text-white">
+                        <input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          className="h-4 w-4 accent-[#3b82f6] focus:ring-[#3b82f6] border-gray-300 rounded"
+                        />
+                      </th>
+                    )}
+                    {devColumns.map((col) => (
+                      <th key={col} style={{ backgroundColor: "#3b82f6" }} className="px-4 py-3 font-semibold uppercase tracking-wider font-header text-left whitespace-nowrap text-white">
+                        {formatColumnHeader(col)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageDevelopmentGoals.map((item) => {
+                    const originalIndex = currentRecords.indexOf(item);
+                    const absoluteIndex = indexOfFirstRecord + originalIndex;
+                    const isSelected = selectedRows.has(absoluteIndex);
+                    return (
+                      <tr key={absoluteIndex} className={`hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}>
+                        {selectedEmployees === "Selected Employees" && (
+                          <td className="px-4 py-3 text-center border-b border-gray-200">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleRowSelect(originalIndex)}
+                              className="h-4 w-4 accent-[#3b82f6] focus:ring-[#3b82f6] border-gray-300 rounded"
+                            />
+                          </td>
+                        )}
+                        {devColumns.map((column) =>
+                          renderTableCell(column, item, absoluteIndex)
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {pageSmartGoals.length === 0 && pageDevelopmentGoals.length === 0 && (
+          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center">
+            <p className="text-gray-500 text-lg font-content">No data on this page</p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-700 font-content">
+              Rows per page:
+            </span>
+            <select
+              value={recordsPerPage}
+              onChange={handleRecordsPerPageChange}
+              className="px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm font-content"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={30}>30</option>
+              <option value={40}>40</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+
+          <div className="text-sm text-gray-700 font-content">
+            Showing {indexOfFirstRecord + 1} to{" "}
+            {Math.min(indexOfFirstRecord + recordsPerPage, filteredData.length)} of{" "}
+            {filteredData.length} entries
+            {selectedEmployees === "Selected Employees" && (
+              <span className="ml-2 text-blue-600">
+                ({selectedRows.size} selected)
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded-md text-sm font-content ${
+                currentPage === 1
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-red-500 text-white hover:bg-red-600"
+              }`}
+            >
+              Previous
+            </button>
+
+            <div className="flex space-x-1">
+              {getPageNumbers().map((pageNumber, index) =>
+                pageNumber === "..." ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="px-3 py-1 text-gray-500 font-content"
+                  >
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={pageNumber}
+                    onClick={() => goToPage(pageNumber)}
+                    className={`px-3 py-1 rounded-md text-sm font-content ${
+                      currentPage === pageNumber
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded-md text-sm font-content ${
+                currentPage === totalPages
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-red-500 text-white hover:bg-red-600"
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (error && reportData.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -392,6 +644,7 @@ function QuarterWiseGoalReport() {
       onStatusChange={setSelectedStatus}
       loading={loading}
       customExcelExport={handleExcelExport}
+      customTableRender={customTableRender}
     >
       {{
         left: (
