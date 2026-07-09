@@ -424,7 +424,10 @@ function ReportLayout({
 
     // If custom export function is provided, use it
     if (customExcelExport) {
-      customExcelExport(filteredData, generatedColumns, sheetName);
+      const selectedData = selectedEmployees === "Selected Employees" && selectedRows.size > 0
+        ? Array.from(selectedRows).map((absoluteIndex) => filteredData[absoluteIndex]).filter(Boolean)
+        : filteredData;
+      customExcelExport(selectedData, generatedColumns, sheetName);
       return;
     }
 

@@ -10,6 +10,8 @@ function QuarterWiseGoalReport() {
   const [error, setError] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [selectedQuarter, setSelectedQuarter] = useState("Q1");
+  const [showSmart, setShowSmart] = useState(true);
+  const [showDevelopment, setShowDevelopment] = useState(true);
 
   const statusOptions = [
     {
@@ -155,14 +157,19 @@ function QuarterWiseGoalReport() {
     "Created At": "createdAt",
   };
 
-  // Sync / filter locally whenever status or raw data changes
+  // Sync / filter locally whenever status, goal type, or raw data changes
   useEffect(() => {
-    if (selectedStatus === "ALL") {
-      setReportData(rawReportData);
-    } else {
-      setReportData(rawReportData.filter((item) => item.status === selectedStatus));
+    let filtered = rawReportData;
+    if (selectedStatus !== "ALL") {
+      filtered = filtered.filter((item) => item.status === selectedStatus);
     }
-  }, [selectedStatus, rawReportData]);
+    filtered = filtered.filter((item) => {
+      if (item.goalType === "SMART") return showSmart;
+      if (item.goalType === "DEVELOPMENT") return showDevelopment;
+      return true;
+    });
+    setReportData(filtered);
+  }, [selectedStatus, rawReportData, showSmart, showDevelopment]);
 
   const fetchReportData = async (financialYear) => {
     setLoading(true);
@@ -217,11 +224,8 @@ function QuarterWiseGoalReport() {
     return String(value);
   };
 
-  const handleExcelExport = (data, selectedColumns, sheetName) => {
-    if (!data || data.length === 0) {
-      alert("No data available to export");
-      return;
-    }
+  const exportSingleExcel = (data, selectedColumns, sheetName) => {
+    if (!data || data.length === 0) return;
 
     const exportData = data.map((item) => {
       const row = {};
@@ -287,8 +291,56 @@ function QuarterWiseGoalReport() {
     ws["!rows"] = [{ hpt: 30 }];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const safeSheetName = sheetName.substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
     XLSX.writeFile(wb, `${sheetName}.xlsx`);
+  };
+
+  const handleExcelExport = (data, selectedColumns, sheetName) => {
+    if (!data || data.length === 0) {
+      alert("No data available to export");
+      return;
+    }
+
+    const tasks = [];
+
+    if (showSmart) {
+      const smartData = data.filter((item) => item.goalType === "SMART");
+      const smartColumns = selectedColumns.filter((col) => col !== "Training Name");
+      if (smartData.length > 0) {
+        tasks.push(() => exportSingleExcel(smartData, smartColumns, `${sheetName}_SMART`));
+      }
+    }
+
+    if (showDevelopment) {
+      const devData = data.filter((item) => item.goalType === "DEVELOPMENT");
+      const devColumns = selectedColumns.filter(
+        (col) =>
+          col !== "Weightage" &&
+          col !== "Remarks" &&
+          col !== "Self Assessment Score" &&
+          col !== "Manager Assessment Score" &&
+          col !== "Manager Comment" &&
+          col !== "Manager Approval Comment"
+      );
+      if (devData.length > 0) {
+        tasks.push(() => exportSingleExcel(devData, devColumns, `${sheetName}_DEVELOPMENT`));
+      }
+    }
+
+    if (tasks.length === 0) {
+      alert("No matching goals data available to export");
+      return;
+    }
+
+    // Trigger downloads with a 500ms delay to prevent the browser from blocking multiple downloads
+    tasks.forEach((task, index) => {
+      if (index === 0) {
+        task();
+      } else {
+        setTimeout(task, 500);
+      }
+    });
   };
 
   const getStatusBadge = (status) => {
@@ -648,20 +700,64 @@ function QuarterWiseGoalReport() {
     >
       {{
         left: (
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 font-header">
-              Quarter Selection
-            </h2>
-            <select
-              value={selectedQuarter}
-              onChange={(e) => setSelectedQuarter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-700 font-medium font-content"
-            >
-              <option value="Q1">Quarter 1 (Apr - Jun)</option>
-              <option value="Q2">Quarter 2 (Jul - Sep)</option>
-              <option value="Q3">Quarter 3 (Oct - Dec)</option>
-              <option value="Q4">Quarter 4 (Jan - Mar)</option>
-            </select>
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 font-header">
+                Quarter Selection
+              </h2>
+              <select
+                value={selectedQuarter}
+                onChange={(e) => setSelectedQuarter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-700 font-medium font-content"
+              >
+                <option value="Q1">Quarter 1 (Apr - Jun)</option>
+                <option value="Q2">Quarter 2 (Jul - Sep)</option>
+                <option value="Q3">Quarter 3 (Oct - Dec)</option>
+                <option value="Q4">Quarter 4 (Jan - Mar)</option>
+              </select>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 font-header">
+                Goal Type Selection
+              </h2>
+              <div className="flex flex-col space-y-3">
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={showSmart}
+                    onChange={(e) => {
+                      if (!e.target.checked && !showDevelopment) {
+                        alert("At least one goal type must be selected.");
+                        return;
+                      }
+                      setShowSmart(e.target.checked);
+                    }}
+                    className="h-5 w-5 text-red-500 border-gray-300 rounded focus:ring-red-500 cursor-pointer"
+                  />
+                  <span className="text-sm font-medium text-gray-700 font-content flex items-center gap-1.5">
+                    🎯 SMART Goals
+                  </span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={showDevelopment}
+                    onChange={(e) => {
+                      if (!e.target.checked && !showSmart) {
+                        alert("At least one goal type must be selected.");
+                        return;
+                      }
+                      setShowDevelopment(e.target.checked);
+                    }}
+                    className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                  />
+                  <span className="text-sm font-medium text-gray-700 font-content flex items-center gap-1.5">
+                    🚀 Development Goals
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
         ),
       }}

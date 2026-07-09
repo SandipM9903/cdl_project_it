@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReportLayout from "../ReportLayout";
+import { DOC_URL } from "../../performance/services/api";
+import { simpleEncrypt } from "../../simpleEncrypt";
 import {
   FaGrinStars,
   FaSmile,
@@ -8,6 +10,116 @@ import {
   FaGrinTears,
 } from "react-icons/fa";
 import * as XLSX from "xlsx";
+
+const openDocument = async (docId) => {
+  if (!docId) {
+    alert("Document ID not found");
+    return;
+  }
+
+  try {
+    const encryptedId = simpleEncrypt(docId.toString());
+    const response = await fetch(DOC_URL, {
+      method: "GET",
+      headers: { "X-DOC-TOKEN": encryptedId },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch document");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    alert("Unable to open document");
+  }
+};
+
+const CertificateCell = ({ item, type, BASE_URL }) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // If the data is already present in the item, use it directly!
+    const hasPosh = item.poshDocId !== undefined;
+    const hasCerts = item.certifications !== undefined;
+    if (hasPosh || hasCerts) {
+      setData({
+        poshDocId: item.poshDocId,
+        certifications: item.certifications
+      });
+      return;
+    }
+
+    let active = true;
+    const fetchDocData = async () => {
+      if (!item.id) return;
+      setLoading(true);
+      try {
+        const response = await fetch(`${BASE_URL}/api/annual-review/all/${item.id}`);
+        if (!response.ok) throw new Error("Failed to fetch documents");
+        const json = await response.json();
+        if (active && json && json.success) {
+          setData(json.data);
+        }
+      } catch (err) {
+        console.error("Error loading certificates:", err);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    fetchDocData();
+    return () => {
+      active = false;
+    };
+  }, [item, BASE_URL]);
+
+  if (loading) {
+    return <span className="text-gray-400 text-xs italic">Loading...</span>;
+  }
+
+  if (!data) {
+    return <span className="text-gray-400 text-sm">N/A</span>;
+  }
+
+  if (type === "POSH") {
+    if (!data.poshDocId) {
+      return <span className="text-gray-400 text-sm">N/A</span>;
+    }
+    return (
+      <button
+        onClick={() => openDocument(data.poshDocId)}
+        className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 rounded-full text-xs font-semibold transition-colors duration-200 focus:outline-none shadow-sm cursor-pointer"
+      >
+        📄 View POSH
+      </button>
+    );
+  } else {
+    // OTHER certificates
+    const certs = data.certifications || [];
+    if (certs.length === 0) {
+      return <span className="text-gray-400 text-sm">N/A</span>;
+    }
+    return (
+      <div className="flex flex-col gap-1 max-w-[200px]">
+        {certs.map((cert, idx) => (
+          <button
+            key={idx}
+            onClick={() => cert.certificateDocId && openDocument(cert.certificateDocId)}
+            className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100 rounded text-left text-xs truncate font-medium transition-colors duration-200 focus:outline-none shadow-sm cursor-pointer"
+            title={cert.fileName || "View Certificate"}
+          >
+            🎓 <span className="truncate">{cert.fileName || `Cert ${idx + 1}`}</span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+};
 
 function OverallGoalSettingReport() {
   const [reportData, setReportData] = useState([]);
@@ -138,6 +250,8 @@ function OverallGoalSettingReport() {
     "Submitted To HR Date",
     "Submitted At",
     "Created At",
+    "POSH Certificate",
+    "Other Certificates",
   ];
 
   const defaultSelectedColumns = [
@@ -184,6 +298,8 @@ function OverallGoalSettingReport() {
     "Submitted To HR Date": "submittedToHrDate",
     "Submitted At": "submittedAt",
     "Created At": "createdAt",
+    "POSH Certificate": "poshDocId",
+    "Other Certificates": "certifications",
   };
 
   // Convert HTML to clean plain text for Excel export
@@ -399,6 +515,12 @@ function OverallGoalSettingReport() {
           } else {
             row[column] = value;
           }
+        } else if (column === "POSH Certificate") {
+          row[column] = value ? "Yes" : "No";
+        } else if (column === "Other Certificates") {
+          row[column] = (value && Array.isArray(value))
+            ? value.map((c) => c.fileName || "Certificate").join(", ")
+            : "N/A";
         } else {
           row[column] = value;
         }
@@ -546,6 +668,22 @@ function OverallGoalSettingReport() {
   const renderTableCell = (column, item, index) => {
     const key = columnKeyMap[column] || column;
     let value = item[key];
+
+    if (column === "POSH Certificate") {
+      return (
+        <td className="px-3 py-2 align-middle whitespace-nowrap">
+          <CertificateCell item={item} type="POSH" BASE_URL={BASE_URL} />
+        </td>
+      );
+    }
+
+    if (column === "Other Certificates") {
+      return (
+        <td className="px-3 py-2 align-middle">
+          <CertificateCell item={item} type="OTHER" BASE_URL={BASE_URL} />
+        </td>
+      );
+    }
 
     // Special handling for Key Accomplishment column with scrollable view
     if (column === "Key Accomplishment") {
