@@ -556,7 +556,7 @@ const ManagerReviewQuarter = () => {
           managerComment: managerReviews[goal.id].managerComment,
         }));
         const payload = {
-          managerId: localStorage.getItem("email") || "",
+          managerId: employeeData?.reportingManagerEmailId || localStorage.getItem("email") || "",
           employeeId: empId,
           quarter: selectedQuarter,
           year: parseInt(selectedYear),

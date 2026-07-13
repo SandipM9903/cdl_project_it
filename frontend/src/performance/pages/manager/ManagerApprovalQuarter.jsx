@@ -275,7 +275,7 @@ const ManagerApprovalQuarter = () => {
       if (smartGoals.length > 0) {
         const smartGoalIds = smartGoals.map((g) => g.id);
         const smartPayload = {
-          managerId: localStorage.getItem("email") || "",
+          managerId: employeeData?.reportingManagerEmailId || localStorage.getItem("email") || "",
           employeeId: empId,
           quarter: selectedQuarter,
           year: parseInt(selectedYear),

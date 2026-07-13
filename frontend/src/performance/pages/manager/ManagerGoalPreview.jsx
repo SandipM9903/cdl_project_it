@@ -722,7 +722,7 @@ const ManagerGoalPreview = () => {
           </button>
           {canTakeAction() && (
             <button
-              onClick={() => navigate(`/manager/goal-approval/${empId}?year=${selectedYear}&quarter=${selectedQuarter}`)}
+              onClick={() => navigate(`/manager/goal/approve/${empId}?year=${selectedYear}&quarter=${selectedQuarter}`)}
               className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-md hover:shadow-lg"
             >
               <FiEdit />

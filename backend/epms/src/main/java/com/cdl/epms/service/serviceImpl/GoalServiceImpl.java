@@ -345,8 +345,18 @@ public class GoalServiceImpl implements GoalService {
             Goal goal = goalRepository.findById(goalId)
                     .orElseThrow(() -> new ResourceNotFoundException("Goal not found: " + goalId));
 
-            if (!goal.getManagerId().equals(requestDto.getManagerId())) {
-                throw new ValidationException("Goal does not belong to this manager");
+            if (!goal.getManagerId().equalsIgnoreCase(requestDto.getManagerId())) {
+                String goalManagerId = goal.getManagerId();
+                String reqManagerId = requestDto.getManagerId();
+                if (goalManagerId != null && reqManagerId != null && goalManagerId.contains("@") && reqManagerId.contains("@")) {
+                    String goalPrefix = goalManagerId.split("@")[0].split("[._]")[0].toLowerCase();
+                    String reqPrefix = reqManagerId.split("@")[0].split("[._]")[0].toLowerCase();
+                    if (!goalPrefix.equals(reqPrefix)) {
+                        throw new ValidationException("Goal does not belong to this manager");
+                    }
+                } else {
+                    throw new ValidationException("Goal does not belong to this manager");
+                }
             }
 
             if (goal.getStatus() != GoalStatus.PENDING_APPROVAL) {
