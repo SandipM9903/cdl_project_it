@@ -26,15 +26,19 @@ import LoadingAnimation from "../../components/common/LoadingAnimation";
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee";
 
-  // Check localStorage first for EmployeeFullName
-  const localStorageFullName = localStorage.getItem("EmployeeFullName");
-  if (localStorageFullName && localStorageFullName.trim() !== "") {
-    return localStorageFullName.trim();
-  }
-
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
+  }
+
+  // Check for employeeFullName
+  if (employeeData.employeeFullName && employeeData.employeeFullName.trim() !== "") {
+    return employeeData.employeeFullName.trim();
+  }
+
+  // Check for name
+  if (employeeData.name && employeeData.name.trim() !== "") {
+    return employeeData.name.trim();
   }
 
   // Fallback to firstName, middleName, lastName
@@ -45,6 +49,12 @@ const getEmployeeFullName = (employeeData) => {
 
   if (fullName && fullName !== "") {
     return fullName;
+  }
+
+  // Fallback to localStorage as last resort
+  const localStorageFullName = localStorage.getItem("EmployeeFullName") || localStorage.getItem("EmployeeName");
+  if (localStorageFullName && localStorageFullName.trim() !== "") {
+    return localStorageFullName.trim();
   }
 
   return "Employee";
@@ -116,11 +126,17 @@ const PredefinedGoals = () => {
     setEmployeeError(null);
 
     try {
-      const response = await axios.get(BASE_URL_EPMS_EMP);
-      const employees = response.data;
-      const employee = employees.find(
-        (emp) => emp.empCode.toString() === empId.toString()
-      );
+      const response = await axios.get(`${BASE_URL_EPMS_EMP}/${empId}`);
+      let employee = null;
+      if (response.data) {
+        if (response.data.fileAndObjectTypeBean?.empResDTO) {
+          employee = response.data.fileAndObjectTypeBean.empResDTO;
+        } else if (response.data.empResDTO) {
+          employee = response.data.empResDTO;
+        } else {
+          employee = response.data;
+        }
+      }
 
       if (employee) {
         setEmployeeData(employee);

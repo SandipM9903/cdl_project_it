@@ -9,15 +9,19 @@ import { FiArrowLeft } from "react-icons/fi";
 const getEmployeeFullName = (employeeData) => {
   if (!employeeData) return "Employee Name";
 
-  // Check localStorage first for EmployeeFullName
-  const localStorageFullName = localStorage.getItem("EmployeeFullName");
-  if (localStorageFullName && localStorageFullName.trim() !== "") {
-    return localStorageFullName.trim();
-  }
-
   // Check for fullNameAsAadhaar in employeeData
   if (employeeData.fullNameAsAadhaar && employeeData.fullNameAsAadhaar.trim() !== "") {
     return employeeData.fullNameAsAadhaar.trim();
+  }
+
+  // Check for employeeFullName
+  if (employeeData.employeeFullName && employeeData.employeeFullName.trim() !== "") {
+    return employeeData.employeeFullName.trim();
+  }
+
+  // Check for name
+  if (employeeData.name && employeeData.name.trim() !== "") {
+    return employeeData.name.trim();
   }
 
   // Fallback to firstName, middleName, lastName
@@ -28,6 +32,12 @@ const getEmployeeFullName = (employeeData) => {
 
   if (fullName && fullName !== "") {
     return fullName;
+  }
+
+  // Fallback to localStorage as last resort
+  const localStorageFullName = localStorage.getItem("EmployeeFullName") || localStorage.getItem("EmployeeName");
+  if (localStorageFullName && localStorageFullName.trim() !== "") {
+    return localStorageFullName.trim();
   }
 
   return "Employee Name";
@@ -98,14 +108,24 @@ const SelfAssessmentForm = () => {
 
   const fetchEmployeeDetails = async () => {
     try {
-      const response = await fetch(BASE_URL_EPMS_EMP);
-      const employees = await response.json();
-      const currentEmployee = employees.find(
-        (emp) => emp.empCode.toString() === employeeId.toString(),
-      );
-      if (currentEmployee) {
-        setEmployeeData(currentEmployee);
-        addDebugLog("Employee details loaded:", currentEmployee);
+      const response = await fetch(`${BASE_URL_EPMS_EMP}/${employeeId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      let employee = null;
+      if (data) {
+        if (data.fileAndObjectTypeBean?.empResDTO) {
+          employee = data.fileAndObjectTypeBean.empResDTO;
+        } else if (data.empResDTO) {
+          employee = data.empResDTO;
+        } else {
+          employee = data;
+        }
+      }
+      if (employee) {
+        setEmployeeData(employee);
+        addDebugLog("Employee details loaded:", employee);
       }
     } catch (err) {
       console.error("Error fetching employee details:", err);

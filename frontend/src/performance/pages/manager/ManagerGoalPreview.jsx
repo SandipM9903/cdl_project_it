@@ -722,7 +722,13 @@ const ManagerGoalPreview = () => {
           </button>
           {canTakeAction() && (
             <button
-              onClick={() => navigate(`/manager/goal/approve/${empId}?year=${selectedYear}&quarter=${selectedQuarter}`)}
+              onClick={() => {
+                const isSelfReviewed = smartGoals.some(goal => goal.status === "SELF_REVIEWED");
+                const path = isSelfReviewed
+                  ? `/manager/goal/final-review/${empId}?year=${selectedYear}&quarter=${selectedQuarter}`
+                  : `/manager/goal/approve/${empId}?year=${selectedYear}&quarter=${selectedQuarter}`;
+                navigate(path);
+              }}
               className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-md hover:shadow-lg"
             >
               <FiEdit />
