@@ -667,7 +667,7 @@ public class EmailerServiceImpl implements EmailerService {
         log.info("Employee ID: {}, Manager ID: {}, Quarter: {}, Year: {}", employeeId, managerId, quarter, year);
 
         try {
-            String hrEmail = "hr@cms.co.in";
+            String hrEmail = "mrudul_mangoli@cms.co.in";
 
             Map<String, Object> employee = fetchEmployeeById(employeeId);
             String employeeName = employee != null ? getEmployeeFullName(employee) : "Employee";
