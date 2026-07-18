@@ -857,4 +857,24 @@ public class GoalServiceImpl implements GoalService {
             // Don't throw exception - email failure shouldn't affect goal submission
         }
     }
+
+    @Override
+    @Transactional
+    public void updateGoalWeightages(List<GoalWeightageUpdateDto> updates) {
+        log.info("Updating goal weightages for {} goals", updates != null ? updates.size() : 0);
+        if (updates == null || updates.isEmpty()) {
+            return;
+        }
+        for (GoalWeightageUpdateDto update : updates) {
+            Goal goal = goalRepository.findById(update.getGoalId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Goal not found with id: " + update.getGoalId()));
+
+            if (update.getWeightage() == null || update.getWeightage() <= 0 || update.getWeightage() > 100) {
+                throw new ValidationException("Weightage must be between 1 and 100");
+            }
+            goal.setWeightage(update.getWeightage());
+            goal.setUpdatedAt(LocalDateTime.now());
+            goalRepository.save(goal);
+        }
+    }
 }

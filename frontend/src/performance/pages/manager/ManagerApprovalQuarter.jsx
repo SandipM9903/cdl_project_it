@@ -22,6 +22,7 @@ import {
   FiTarget,
   FiLoader,
   FiBookOpen,
+  FiInfo,
 } from "react-icons/fi";
 import axios from "axios";
 import Header from "../../../components/Header";
@@ -183,6 +184,16 @@ const ManagerApprovalQuarter = () => {
     setShowInfoModal(false);
   };
 
+  const handleWeightageChange = (goalId, newWeightage) => {
+    if (newWeightage < 0) newWeightage = 0;
+    if (newWeightage > 100) newWeightage = 100;
+    setSmartGoals((prevGoals) =>
+      prevGoals.map((goal) =>
+        goal.id === goalId ? { ...goal, weightage: newWeightage } : goal
+      )
+    );
+  };
+
   const fetchEmployeeDetails = async () => {
     try {
       if (!empId) return;
@@ -273,6 +284,17 @@ const ManagerApprovalQuarter = () => {
     try {
       // Process SMART Goals
       if (smartGoals.length > 0) {
+        // Save adjusted weightages to the database first
+        const weightageUpdates = smartGoals.map((g) => ({
+          goalId: g.id,
+          weightage: g.weightage,
+        }));
+
+        await axios.put(
+          `${BASE_URL_EPMS}/api/goals/manager/update-weightages`,
+          weightageUpdates
+        );
+
         const smartGoalIds = smartGoals.map((g) => g.id);
         const smartPayload = {
           managerId: employeeData?.reportingManagerEmailId || localStorage.getItem("email") || "",
@@ -384,7 +406,8 @@ const ManagerApprovalQuarter = () => {
   };
 
   const totalWeightage = calculateTotalWeightage();
-  const isValidWeightage = totalWeightage === 100;
+  const hasZeroWeightage = smartGoals.some((goal) => (goal.weightage || 0) <= 0);
+  const isValidWeightage = totalWeightage === 100 && !hasZeroWeightage;
   const totalGoals = smartGoals.length + developmentGoals.length;
 
   if (loading) {
@@ -547,6 +570,17 @@ const ManagerApprovalQuarter = () => {
               </div>
             ) : (
               <>
+                {/* Manager Edit Weightage Banner */}
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                  <FiInfo className="text-blue-600 text-xl mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-blue-900 text-sm">Manager Weightage Adjustment</h4>
+                    <p className="text-xs text-blue-700 mt-1 leading-relaxed">
+                      You can adjust the weightage entered by the employee. Simply change the values in the inputs below. Please ensure that the total weightage of all SMART goals combined sums to exactly 100% before approving.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Weightage Summary */}
                 <div
                   className={`rounded-xl p-4 mb-6 flex items-center justify-between ${isValidWeightage
@@ -573,8 +607,10 @@ const ManagerApprovalQuarter = () => {
                   <div className="text-right">
                     <p className="text-xs text-gray-500">Required: 100%</p>
                     {!isValidWeightage && (
-                      <p className="text-xs text-red-500 mt-1">
-                        ⚠️ Weightage must be 100% before approval
+                      <p className="text-xs text-red-500 mt-1 font-medium">
+                        {totalWeightage !== 100
+                          ? "⚠️ Total weightage must be exactly 100%"
+                          : "⚠️ All goals must have weightage greater than 0%"}
                       </p>
                     )}
                   </div>
@@ -614,13 +650,19 @@ const ManagerApprovalQuarter = () => {
                                 </p>
                               </div>
                               <div>
-                                <p className="text-xs text-gray-500">
-                                  Weightage
+                                <p className="text-xs text-gray-500 mb-1">
+                                  Weightage (%)
                                 </p>
-                                <p className="text-sm font-medium flex items-center gap-1">
-                                  <FiPercent className="text-gray-400 text-xs" />
-                                  {goal.weightage}%
-                                </p>
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={goal.weightage === 0 ? "" : goal.weightage}
+                                    onChange={(e) => handleWeightageChange(goal.id, e.target.value === "" ? 0 : parseInt(e.target.value) || 0)}
+                                    className="w-20 px-2 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 font-semibold"
+                                  />
+                                </div>
                               </div>
                               <div>
                                 <p className="text-xs text-gray-500">
@@ -854,8 +896,9 @@ const ManagerApprovalQuarter = () => {
                       </span>
                     </div>
                     <p className="text-sm text-red-600 mt-1">
-                      SMART goals total weightage is {totalWeightage}%. It
-                      must be 100% before approval.
+                      {totalWeightage !== 100
+                        ? `SMART goals total weightage is ${totalWeightage}%. It must be exactly 100% before approval.`
+                        : "All SMART goals must have weightage greater than 0%."}
                     </p>
                   </div>
                 )}

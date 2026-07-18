@@ -44,4 +44,7 @@ public interface GoalService {
 
     // ==================== BULK OPERATIONS ====================
     void deleteGoals(List<Long> goalIds);
+
+    // ==================== WEIGHTAGE VALIDATION ====================
+    void updateGoalWeightages(List<GoalWeightageUpdateDto> updates);
 }

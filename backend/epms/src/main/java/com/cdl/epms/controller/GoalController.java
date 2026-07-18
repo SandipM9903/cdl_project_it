@@ -475,4 +475,18 @@ public class GoalController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/manager/update-weightages")
+    public ResponseEntity<ApiResponse<String>> updateGoalWeightages(
+            @RequestBody List<GoalWeightageUpdateDto> updates
+    ) {
+        log.info("Manager updating weightages for {} goals", updates != null ? updates.size() : 0);
+        goalService.updateGoalWeightages(updates);
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(true)
+                .message("Weightages updated successfully")
+                .data("Success")
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }
