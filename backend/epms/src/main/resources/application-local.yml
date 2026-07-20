@@ -6,9 +6,9 @@ spring:
     name: epms
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/epms
+    url: jdbc:postgresql://43.205.24.208:5432/epms
     username: postgres
-    password: root
+    password: pgadmin
     driver-class-name: org.postgresql.Driver
   servlet:
     multipart:
