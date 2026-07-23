@@ -173,7 +173,23 @@ const DevelopmentGoalModal = ({ isOpen, onClose, onSave, editingGoal, devGoalFor
   if (!isOpen) return null;
 
   const handleChange = (field, value) => {
-    setDevGoalForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "title") {
+      if (value === "Other") {
+        setDevGoalForm((prev) => ({
+          ...prev,
+          title: value,
+          trainingName: trainingNameOptions.includes(prev.trainingName) ? "" : prev.trainingName,
+        }));
+      } else {
+        setDevGoalForm((prev) => ({
+          ...prev,
+          title: value,
+          trainingName: trainingNameOptions.includes(prev.trainingName) ? prev.trainingName : "",
+        }));
+      }
+    } else {
+      setDevGoalForm((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   return (
@@ -217,20 +233,31 @@ const DevelopmentGoalModal = ({ isOpen, onClose, onSave, editingGoal, devGoalFor
               <FaGraduationCap className="inline mr-1 text-red-500 text-xs" />
               Training Name <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
-              <select
+            {devGoalForm.title === "Other" ? (
+              <input
+                type="text"
                 value={devGoalForm.trainingName}
                 onChange={(e) => handleChange("trainingName", e.target.value)}
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"
+                placeholder="Enter manual training name..."
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all ${devErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"
                   }`}
-              >
-                <option value="">Select Training Name</option>
-                {trainingNameOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-              <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-            </div>
+              />
+            ) : (
+              <div className="relative">
+                <select
+                  value={devGoalForm.trainingName}
+                  onChange={(e) => handleChange("trainingName", e.target.value)}
+                  className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all appearance-none ${devErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"
+                    }`}
+                >
+                  <option value="">Select Training Name</option>
+                  {trainingNameOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+                <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+            )}
             {devErrors.trainingName && <p className="text-xs text-red-500 mt-1"><FaInfoCircle className="inline mr-1" /> {devErrors.trainingName}</p>}
           </div>
 
@@ -283,7 +310,7 @@ const EditGoalCreation = () => {
 
   const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", onConfirm: null });
 
-  const titleOptions = ["Deep Technical Java Technologies", "Cloud Computing & AWS", "DevOps Practices", "Agile Methodologies", "Leadership Skills", "Communication Skills", "Project Management", "Database Management", "Security & Compliance", "AI/ML Fundamentals"];
+  const titleOptions = ["Deep Technical Java Technologies", "Cloud Computing & AWS", "DevOps Practices", "Agile Methodologies", "Leadership Skills", "Communication Skills", "Project Management", "Database Management", "Security & Compliance", "AI/ML Fundamentals", "Other"];
   const trainingNameOptions = ["Java Full Stack Certification", "AWS Certified Developer", "Docker & Kubernetes Training", "Scrum Master Certification", "PMP Certification", "Advanced React.js Training", "Spring Boot Microservices", "Python for Data Science", "Azure Fundamentals", "Cybersecurity Awareness"];
 
   const [goals, setGoals] = useState([]);

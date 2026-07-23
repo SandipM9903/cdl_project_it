@@ -29,7 +29,7 @@ public class DevelopmentGoalServiceImpl implements DevelopmentGoalService {
     private final PerformanceCycleRepository cycleRepository;
 
     private PerformanceCycle getActiveCycle() {
-        return cycleRepository.findByStatus(CycleStatus.ACTIVE)
+        return cycleRepository.findFirstByStatusOrderByIdDesc(CycleStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active cycle found"));
     }
 
@@ -51,10 +51,18 @@ public class DevelopmentGoalServiceImpl implements DevelopmentGoalService {
             throw new ValidationException("Training name is required");
         }
 
-        // Check for duplicate title
-        if (developmentGoalRepository.existsByEmployeeIdAndQuarterAndYearAndTitle(
-                requestDto.getEmployeeId(), quarter, activeCycle.getYear(), requestDto.getTitle())) {
-            throw new ConflictException("A development goal with this title already exists for this quarter");
+        // Check for duplicate title (if Title is "Other", allow multiple goals with different training names)
+        boolean isOtherTitle = "Other".equalsIgnoreCase(requestDto.getTitle().trim());
+        if (isOtherTitle) {
+            if (developmentGoalRepository.existsByEmployeeIdAndQuarterAndYearAndTitleAndTrainingName(
+                    requestDto.getEmployeeId(), quarter, activeCycle.getYear(), requestDto.getTitle().trim(), requestDto.getTrainingName().trim())) {
+                throw new ConflictException("A development goal with this training name already exists for this quarter");
+            }
+        } else {
+            if (developmentGoalRepository.existsByEmployeeIdAndQuarterAndYearAndTitle(
+                    requestDto.getEmployeeId(), quarter, activeCycle.getYear(), requestDto.getTitle().trim())) {
+                throw new ConflictException("A development goal with this title already exists for this quarter");
+            }
         }
 
         DevelopmentGoal goal = new DevelopmentGoal();
@@ -95,10 +103,30 @@ public class DevelopmentGoalServiceImpl implements DevelopmentGoalService {
         }
 
         if (requestDto.getTitle() != null && !requestDto.getTitle().trim().isEmpty()) {
-            goal.setTitle(requestDto.getTitle());
+            String newTitle = requestDto.getTitle().trim();
+            String newTraining = requestDto.getTrainingName() != null && !requestDto.getTrainingName().trim().isEmpty() ? requestDto.getTrainingName().trim() : goal.getTrainingName();
+            boolean isOther = "Other".equalsIgnoreCase(newTitle);
+
+            List<DevelopmentGoal> existingGoals = developmentGoalRepository.findByEmployeeIdAndQuarterAndYear(goal.getEmployeeId(), goal.getQuarter(), goal.getYear());
+            if (isOther) {
+                boolean duplicate = existingGoals.stream()
+                        .filter(g -> !g.getId().equals(goalId))
+                        .anyMatch(g -> "Other".equalsIgnoreCase(g.getTitle()) && newTraining != null && newTraining.equalsIgnoreCase(g.getTrainingName()));
+                if (duplicate) {
+                    throw new ConflictException("A development goal with this training name already exists for this quarter");
+                }
+            } else {
+                boolean duplicate = existingGoals.stream()
+                        .filter(g -> !g.getId().equals(goalId))
+                        .anyMatch(g -> newTitle.equalsIgnoreCase(g.getTitle()));
+                if (duplicate) {
+                    throw new ConflictException("A development goal with title '" + newTitle + "' already exists for this quarter");
+                }
+            }
+            goal.setTitle(newTitle);
         }
         if (requestDto.getTrainingName() != null && !requestDto.getTrainingName().trim().isEmpty()) {
-            goal.setTrainingName(requestDto.getTrainingName());
+            goal.setTrainingName(requestDto.getTrainingName().trim());
         }
         if (requestDto.getDescription() != null) {
             goal.setDescription(requestDto.getDescription());

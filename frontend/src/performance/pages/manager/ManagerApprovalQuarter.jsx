@@ -23,11 +23,45 @@ import {
   FiLoader,
   FiBookOpen,
   FiInfo,
+  FiEdit,
+  FiTrash2,
+  FiPlus,
+  FiSave,
+  FiChevronDown,
 } from "react-icons/fi";
 import axios from "axios";
 import Header from "../../../components/Header";
 import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
+
+const targetOperatorOptions = ["=", "<", ">", "<=", ">=", "-"];
+
+const devTitleOptions = [
+  "Deep Technical Java Technologies",
+  "Cloud Computing & AWS",
+  "DevOps Practices",
+  "Agile Methodologies",
+  "Leadership Skills",
+  "Communication Skills",
+  "Project Management",
+  "Database Management",
+  "Security & Compliance",
+  "AI/ML Fundamentals",
+  "Other",
+];
+
+const devTrainingNameOptions = [
+  "Java Full Stack Certification",
+  "AWS Certified Developer",
+  "Docker & Kubernetes Training",
+  "Scrum Master Certification",
+  "PMP Certification",
+  "Advanced React.js Training",
+  "Spring Boot Microservices",
+  "Python for Data Science",
+  "Azure Fundamentals",
+  "Cybersecurity Awareness",
+];
 
 // Helper function to get full name with priority to fullNameAsAadhaar
 const getFullName = (data) => {
@@ -168,6 +202,26 @@ const ManagerApprovalQuarter = () => {
   const [expandedGoal, setExpandedGoal] = useState(null);
   const [expandedDevGoal, setExpandedDevGoal] = useState(null);
 
+  // Modals and form state for SMART & Development Goal CRUD
+  const [showSmartModal, setShowSmartModal] = useState(false);
+  const [editingSmartGoal, setEditingSmartGoal] = useState(null);
+  const [smartForm, setSmartForm] = useState({ title: "", target: "=", weightage: "" });
+  const [smartFormErrors, setSmartFormErrors] = useState({});
+  const [savingSmartGoal, setSavingSmartGoal] = useState(false);
+
+  const [showDevModal, setShowDevModal] = useState(false);
+  const [editingDevGoal, setEditingDevGoal] = useState(null);
+  const [devForm, setDevForm] = useState({ title: "", trainingName: "", description: "" });
+  const [devFormErrors, setDevFormErrors] = useState({});
+  const [savingDevGoal, setSavingDevGoal] = useState(false);
+
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchEmployeeDetails();
@@ -182,6 +236,198 @@ const ManagerApprovalQuarter = () => {
 
   const closeInfoModal = () => {
     setShowInfoModal(false);
+  };
+
+  // SMART Goal CRUD Handlers
+  const handleOpenSmartModal = (goal = null) => {
+    if (goal) {
+      setEditingSmartGoal(goal);
+      setSmartForm({
+        title: goal.title || "",
+        target: goal.target || "=",
+        weightage: goal.weightage !== undefined && goal.weightage !== null ? goal.weightage : "",
+      });
+    } else {
+      setEditingSmartGoal(null);
+      setSmartForm({ title: "", target: "=", weightage: "" });
+    }
+    setSmartFormErrors({});
+    setShowSmartModal(true);
+  };
+
+  const handleCloseSmartModal = () => {
+    setShowSmartModal(false);
+    setEditingSmartGoal(null);
+    setSmartForm({ title: "", target: "=", weightage: "" });
+    setSmartFormErrors({});
+  };
+
+  const validateSmartForm = () => {
+    const errors = {};
+    if (!smartForm.title?.trim()) errors.title = "Goal / Objective title is required";
+    const weightage = parseInt(smartForm.weightage);
+    if (isNaN(weightage) || weightage <= 0 || weightage > 100) {
+      errors.weightage = "Weightage must be between 1 and 100%";
+    }
+    setSmartFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSaveSmartGoal = async () => {
+    if (!validateSmartForm()) return;
+    setSavingSmartGoal(true);
+    try {
+      const managerId =
+        editingSmartGoal?.managerId ||
+        employeeData?.reportingManagerEmailId ||
+        employeeData?.managerId ||
+        employeeData?.reportingManager ||
+        localStorage.getItem("email") ||
+        localStorage.getItem("userEmail") ||
+        "manager@cms.co.in";
+
+      const payload = {
+        employeeId: empId,
+        managerId: managerId,
+        title: smartForm.title.trim(),
+        target: smartForm.target ? smartForm.target.trim() : "=",
+        weightage: parseInt(smartForm.weightage) || 0,
+      };
+
+      if (editingSmartGoal && editingSmartGoal.id) {
+        await axios.put(`${BASE_URL_EPMS}/api/goals/draft/${editingSmartGoal.id}`, payload);
+        showInfoModalMessage("Success", "SMART goal updated successfully!", "success");
+      } else {
+        await axios.post(`${BASE_URL_EPMS}/api/goals/create/${selectedQuarter}`, payload);
+        showInfoModalMessage("Success", "SMART goal added successfully!", "success");
+      }
+      handleCloseSmartModal();
+      await fetchSmartGoals();
+    } catch (err) {
+      console.error("Error saving SMART goal:", err, err.response?.data);
+      const serverMsg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response?.data : null);
+      showInfoModalMessage(
+        "Error",
+        serverMsg || "Failed to save SMART goal. Please check all required fields.",
+        "error"
+      );
+    } finally {
+      setSavingSmartGoal(false);
+    }
+  };
+
+  const handleDeleteSmartGoal = (goal) => {
+    setDeleteConfirmModal({
+      isOpen: true,
+      title: "Confirm Delete SMART Goal",
+      message: `Are you sure you want to delete "${goal.title}"?`,
+      onConfirm: async () => {
+        setDeleteConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await axios.delete(`${BASE_URL_EPMS}/api/goals/${goal.id}`);
+          showInfoModalMessage("Success", "SMART goal deleted successfully!", "success");
+          await fetchSmartGoals();
+        } catch (err) {
+          console.error("Error deleting SMART goal:", err);
+          showInfoModalMessage("Error", err.response?.data?.message || "Failed to delete SMART goal", "error");
+        }
+      },
+    });
+  };
+
+  // Development Goal CRUD Handlers
+  const handleOpenDevModal = (goal = null) => {
+    if (goal) {
+      setEditingDevGoal(goal);
+      setDevForm({
+        title: goal.title || "",
+        trainingName: goal.trainingName || "",
+        description: goal.description || "",
+      });
+    } else {
+      setEditingDevGoal(null);
+      setDevForm({ title: "", trainingName: "", description: "" });
+    }
+    setDevFormErrors({});
+    setShowDevModal(true);
+  };
+
+  const handleCloseDevModal = () => {
+    setShowDevModal(false);
+    setEditingDevGoal(null);
+    setDevForm({ title: "", trainingName: "", description: "" });
+    setDevFormErrors({});
+  };
+
+  const validateDevForm = () => {
+    const errors = {};
+    if (!devForm.title?.trim()) errors.title = "Title is required";
+    if (!devForm.trainingName?.trim()) errors.trainingName = "Training name is required";
+    if (!devForm.description?.trim()) errors.description = "Description is required";
+    setDevFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSaveDevGoal = async () => {
+    if (!validateDevForm()) return;
+    setSavingDevGoal(true);
+    try {
+      const managerId =
+        editingDevGoal?.managerId ||
+        employeeData?.reportingManagerEmailId ||
+        employeeData?.managerId ||
+        employeeData?.reportingManager ||
+        localStorage.getItem("email") ||
+        localStorage.getItem("userEmail") ||
+        "manager@cms.co.in";
+
+      const payload = {
+        employeeId: empId,
+        managerId: managerId,
+        title: devForm.title.trim(),
+        trainingName: devForm.trainingName.trim(),
+        description: devForm.description,
+      };
+
+      if (editingDevGoal && editingDevGoal.id) {
+        await axios.put(`${BASE_URL_EPMS}/api/development-goals/update/${editingDevGoal.id}`, payload);
+        showInfoModalMessage("Success", "Development goal updated successfully!", "success");
+      } else {
+        await axios.post(`${BASE_URL_EPMS}/api/development-goals/create/${selectedQuarter}`, payload);
+        showInfoModalMessage("Success", "Development goal added successfully!", "success");
+      }
+      handleCloseDevModal();
+      await fetchDevelopmentGoals();
+    } catch (err) {
+      console.error("Error saving Development goal:", err, err.response?.data);
+      const serverMsg = err.response?.data?.message || (typeof err.response?.data === "string" ? err.response?.data : null);
+      showInfoModalMessage(
+        "Error",
+        serverMsg || "Failed to save development goal. Please check all required fields.",
+        "error"
+      );
+    } finally {
+      setSavingDevGoal(false);
+    }
+  };
+
+  const handleDeleteDevGoal = (goal) => {
+    setDeleteConfirmModal({
+      isOpen: true,
+      title: "Confirm Delete Development Goal",
+      message: `Are you sure you want to delete "${goal.title}"?`,
+      onConfirm: async () => {
+        setDeleteConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          await axios.delete(`${BASE_URL_EPMS}/api/development-goals/${goal.id}`);
+          showInfoModalMessage("Success", "Development goal deleted successfully!", "success");
+          await fetchDevelopmentGoals();
+        } catch (err) {
+          console.error("Error deleting Development goal:", err);
+          showInfoModalMessage("Error", err.response?.data?.message || "Failed to delete development goal", "error");
+        }
+      },
+    });
   };
 
   const handleWeightageChange = (goalId, newWeightage) => {
@@ -548,7 +794,7 @@ const ManagerApprovalQuarter = () => {
 
         {/* SMART Goals Section */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 mb-6">
-          <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4">
+          <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                 <FiTarget />
@@ -558,6 +804,13 @@ const ManagerApprovalQuarter = () => {
                 {smartGoals.length} SMART goal(s) awaiting your review
               </p>
             </div>
+            <button
+              onClick={() => handleOpenSmartModal(null)}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+            >
+              <FiPlus size={16} />
+              Add SMART Goal
+            </button>
           </div>
 
           <div className="p-6">
@@ -639,6 +892,20 @@ const ManagerApprovalQuarter = () => {
                                   <FiClock size={10} />
                                   Pending Approval
                                 </span>
+                                <button
+                                  onClick={() => handleOpenSmartModal(goal)}
+                                  className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                  title="Edit SMART Goal"
+                                >
+                                  <FiEdit size={16} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteSmartGoal(goal)}
+                                  className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Delete SMART Goal"
+                                >
+                                  <FiTrash2 size={16} />
+                                </button>
                               </div>
                             </div>
 
@@ -708,7 +975,7 @@ const ManagerApprovalQuarter = () => {
 
         {/* Development Goals Section */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
-          <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-4 flex items-center justify-between">
             <div>
               <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                 <FiBookOpen />
@@ -719,6 +986,13 @@ const ManagerApprovalQuarter = () => {
                 review
               </p>
             </div>
+            <button
+              onClick={() => handleOpenDevModal(null)}
+              className="px-4 py-2 bg-white text-red-600 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shadow-sm font-semibold"
+            >
+              <FiPlus size={16} />
+              Add Development Goal
+            </button>
           </div>
 
           <div className="p-6">
@@ -755,6 +1029,20 @@ const ManagerApprovalQuarter = () => {
                                 <FiClock size={10} />
                                 Pending Approval
                               </span>
+                              <button
+                                onClick={() => handleOpenDevModal(goal)}
+                                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Edit Development Goal"
+                              >
+                                <FiEdit size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteDevGoal(goal)}
+                                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete Development Goal"
+                              >
+                                <FiTrash2 size={16} />
+                              </button>
                             </div>
                           </div>
 
@@ -941,6 +1229,231 @@ const ManagerApprovalQuarter = () => {
         message={infoModal.message}
         type={infoModal.type}
       />
+
+      {/* Delete Confirmation Modal */}
+      <CustomModal
+        isOpen={deleteConfirmModal.isOpen}
+        onClose={() => setDeleteConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={deleteConfirmModal.onConfirm}
+        title={deleteConfirmModal.title}
+        message={deleteConfirmModal.message}
+        type="warning"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+
+      {/* Add / Edit SMART Goal Modal */}
+      {showSmartModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full animate-fadeIn overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-4 flex justify-between items-center text-white">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FiTarget />
+                {editingSmartGoal ? "Edit SMART Goal" : "Add New SMART Goal"}
+              </h3>
+              <button
+                onClick={handleCloseSmartModal}
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                <FiXCircle size={22} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Goal/Objective <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={smartForm.title}
+                  onChange={(e) => setSmartForm({ ...smartForm, title: e.target.value })}
+                  placeholder="e.g., Increase customer satisfaction score"
+                  className={`w-full px-3 py-2 border ${smartFormErrors.title ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm`}
+                />
+                {smartFormErrors.title && (
+                  <p className="text-xs text-red-500 mt-1">{smartFormErrors.title}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Target <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={smartForm.target}
+                    onChange={(e) => setSmartForm({ ...smartForm, target: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm appearance-none bg-white"
+                  >
+                    {targetOperatorOptions.map((op) => (
+                      <option key={op} value={op}>
+                        {op}
+                      </option>
+                    ))}
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Weightage (%) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={smartForm.weightage}
+                  onChange={(e) => setSmartForm({ ...smartForm, weightage: e.target.value })}
+                  placeholder="0"
+                  className={`w-full px-3 py-2 border ${smartFormErrors.weightage ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm`}
+                />
+                {smartFormErrors.weightage && (
+                  <p className="text-xs text-red-500 mt-1">{smartFormErrors.weightage}</p>
+                )}
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                onClick={handleCloseSmartModal}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveSmartGoal}
+                disabled={savingSmartGoal}
+                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                {savingSmartGoal ? <FiLoader className="animate-spin" /> : <FiSave />}
+                {editingSmartGoal ? "Update Goal" : "Save Goal"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Development Goal Modal */}
+      {showDevModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full animate-fadeIn overflow-hidden">
+            <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-4 flex justify-between items-center text-white">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FiBookOpen />
+                {editingDevGoal ? "Edit Development Goal" : "Add New Development Goal"}
+              </h3>
+              <button
+                onClick={handleCloseDevModal}
+                className="text-white hover:text-red-100 transition-colors"
+              >
+                <FiXCircle size={22} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={devTitleOptions.includes(devForm.title) ? devForm.title : (devForm.title ? "Other" : "")}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "Other") {
+                        setDevForm((prev) => ({
+                          ...prev,
+                          title: "Other",
+                          trainingName: devTrainingNameOptions.includes(prev.trainingName) ? "" : prev.trainingName,
+                        }));
+                      } else {
+                        setDevForm((prev) => ({
+                          ...prev,
+                          title: val,
+                          trainingName: devTrainingNameOptions.includes(prev.trainingName) ? prev.trainingName : "",
+                        }));
+                      }
+                    }}
+                    className={`w-full px-3 py-2 border ${devFormErrors.title ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm appearance-none bg-white`}
+                  >
+                    <option value="">Select Title</option>
+                    {devTitleOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                  <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
+                {devFormErrors.title && (
+                  <p className="text-xs text-red-500 mt-1">{devFormErrors.title}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Training Name <span className="text-red-500">*</span>
+                </label>
+                {devForm.title === "Other" ? (
+                  <input
+                    type="text"
+                    value={devForm.trainingName}
+                    onChange={(e) => setDevForm({ ...devForm, trainingName: e.target.value })}
+                    placeholder="Enter manual training name..."
+                    className={`w-full px-3 py-2 border ${devFormErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm`}
+                  />
+                ) : (
+                  <div className="relative">
+                    <select
+                      value={devForm.trainingName}
+                      onChange={(e) => setDevForm({ ...devForm, trainingName: e.target.value })}
+                      className={`w-full px-3 py-2 border ${devFormErrors.trainingName ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm appearance-none bg-white`}
+                    >
+                      <option value="">Select Training Name</option>
+                      {devTrainingNameOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                    <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                )}
+                {devFormErrors.trainingName && (
+                  <p className="text-xs text-red-500 mt-1">{devFormErrors.trainingName}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Description / Plan <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={devForm.description}
+                  onChange={(e) => setDevForm({ ...devForm, description: e.target.value })}
+                  placeholder="Describe your development plan, learning objectives, and expected outcomes..."
+                  className={`w-full px-3 py-2 border ${devFormErrors.description ? "border-red-500 bg-red-50" : "border-gray-300"} rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm`}
+                />
+                {devFormErrors.description && (
+                  <p className="text-xs text-red-500 mt-1">{devFormErrors.description}</p>
+                )}
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                onClick={handleCloseDevModal}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveDevGoal}
+                disabled={savingDevGoal}
+                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                {savingDevGoal ? <FiLoader className="animate-spin" /> : <FiSave />}
+                {editingDevGoal ? "Update Goal" : "Save Goal"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes fadeIn {

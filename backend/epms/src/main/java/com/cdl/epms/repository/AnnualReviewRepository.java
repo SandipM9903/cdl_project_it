@@ -19,6 +19,8 @@ public interface AnnualReviewRepository extends JpaRepository<AnnualReview, Long
     // New method to find by financial year
     Optional<AnnualReview> findByEmployeeIdAndFinancialYear(String employeeId, String financialYear);
 
+    List<AnnualReview> findAllByEmployeeIdAndFinancialYear(String employeeId, String financialYear);
+
     // Get by financial year only
     Optional<AnnualReview> findByFinancialYear(String financialYear);
 

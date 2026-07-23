@@ -32,6 +32,8 @@ import {
   reopenQuarter,
   sendReminder,
   sendUnifiedEmails,
+  resetEmployeeData,
+  getResetLogs,
 } from "../../services/cycleService";
 
 import {
@@ -65,6 +67,15 @@ const HrCycleConfig = () => {
   
   // Store cycle temporarily for reopen/extend operations
   const [tempCycle, setTempCycle] = useState(null);
+
+  // Reset Employee Data states
+  const [resetScope, setResetScope] = useState("ALL");
+  const [resetQuarter, setResetQuarter] = useState("Q1");
+  const [resetEmpId, setResetEmpId] = useState("");
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetLogs, setResetLogs] = useState([]);
+  const [loadingResetLogs, setLoadingResetLogs] = useState(false);
 
   const navigate = useNavigate();
   const emailBatchRef = useRef(null);
@@ -168,17 +179,7 @@ const HrCycleConfig = () => {
   };
 
   const canAddAnyQuarter = () => {
-    const availableQuarters = getAvailableQuartersToAdd();
-    if (availableQuarters.length === 0) return false;
-
-    if (quarterCycles.length === 0) return true;
-
-    const sortedQuarters = [...quarterCycles].sort(
-      (a, b) => getQuarterOrder(b.quarter) - getQuarterOrder(a.quarter),
-    );
-    const latestQuarter = sortedQuarters[0];
-
-    return latestQuarter.status === "CLOSED";
+    return quarterCycles.length < 4;
   };
 
   const isAnyCycleActive =
@@ -213,8 +214,23 @@ const HrCycleConfig = () => {
         setReviewCycle(previousFinancialYear);
         fetchCycles(previousFinancialYear);
       }
+    } else if (activeTab === "Reset Employee Data") {
+      fetchResetLogs(reviewCycle);
     }
-  }, [activeTab]);
+  }, [activeTab, reviewCycle]);
+
+  const fetchResetLogs = async (fy) => {
+    setLoadingResetLogs(true);
+    try {
+      const res = await getResetLogs(fy);
+      const logs = res?.data?.data || res?.data || [];
+      setResetLogs(Array.isArray(logs) ? logs : []);
+    } catch (err) {
+      console.error("Failed to fetch reset logs:", err);
+    } finally {
+      setLoadingResetLogs(false);
+    }
+  };
 
   const fetchCycles = async (yearValue) => {
     try {
@@ -313,14 +329,6 @@ const HrCycleConfig = () => {
   const handlePublishClick = (cycle) => {
     if (cycle.status === "ACTIVE") {
       showNotification("error", "This cycle is already active");
-      return;
-    }
-
-    if (isAnyCycleActive && cycle.status !== "ACTIVE") {
-      showNotification(
-        "error",
-        "Cannot publish: Another cycle is currently active. Please close the active cycle first.",
-      );
       return;
     }
 
@@ -460,6 +468,35 @@ const handleUnifiedEmailLaunch = async (emailData) => {
     setEmailModalExpiryDate(null);
   }
 };
+
+  const handleConfirmResetEmployeeData = async () => {
+    setIsResetting(true);
+    try {
+      const currentEmpId = localStorage.getItem("empId") || localStorage.getItem("user") || "HR_ADMIN";
+      const payload = {
+        financialYear: reviewCycle,
+        scope: resetScope,
+        quarter: resetScope === "QUARTER" ? resetQuarter : null,
+        employeeId: resetEmpId ? resetEmpId.trim() : null,
+        resetBy: currentEmpId,
+      };
+      await resetEmployeeData(payload);
+      showNotification(
+        "success",
+        `Employee data reset successfully for financial year ${reviewCycle}`,
+      );
+      setIsResetModalOpen(false);
+      fetchResetLogs(reviewCycle);
+    } catch (err) {
+      console.error("Error resetting employee data:", err);
+      showNotification(
+        "error",
+        err?.response?.data?.message || err?.message || "Failed to reset employee data",
+      );
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   const closedQuartersList = getClosedQuartersList();
   const isAnnualCycleCreated = annualCycle !== null;
@@ -620,7 +657,7 @@ const handleUnifiedEmailLaunch = async (emailData) => {
 
         <div className="mt-6">
           <Tab
-            tabs={["Quarterly Review", "Annual Review"]}
+            tabs={["Quarterly Review", "Annual Review", "Reset Employee Data"]}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
@@ -661,11 +698,6 @@ const handleUnifiedEmailLaunch = async (emailData) => {
                     <Button
                       onClick={() => setIsQuarterModalOpen(true)}
                       disabled={!canAddAnyQuarter()}
-                      title={
-                        !canAddAnyQuarter()
-                          ? "Latest quarter must be closed before adding next quarter"
-                          : ""
-                      }
                     >
                       + Add Quarter
                     </Button>
@@ -737,20 +769,13 @@ const handleUnifiedEmailLaunch = async (emailData) => {
                                   <button
                                     onClick={() => handlePublishClick(cycle)}
                                     disabled={
-                                      loadingId === cycle.id ||
-                                      isAnyCycleActive ||
-                                      isLaunching
+                                      loadingId === cycle.id || isLaunching
                                     }
                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
-                                      loadingId === cycle.id || isAnyCycleActive
+                                      loadingId === cycle.id
                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                         : "bg-red-500 hover:bg-red-600 text-white shadow-sm hover:shadow-md"
                                     }`}
-                                    title={
-                                      isAnyCycleActive
-                                        ? "Another cycle is currently active. Please close it first."
-                                        : ""
-                                    }
                                   >
                                     {loadingId === cycle.id ? (
                                       <LoadingSpinner />
@@ -939,21 +964,13 @@ const handleUnifiedEmailLaunch = async (emailData) => {
                             <button
                               onClick={() => handlePublishClick(annualCycle)}
                               disabled={
-                                loadingId === annualCycle?.id ||
-                                isAnyCycleActive ||
-                                isLaunching
+                                loadingId === annualCycle?.id || isLaunching
                               }
                               className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
-                                loadingId === annualCycle?.id ||
-                                isAnyCycleActive
+                                loadingId === annualCycle?.id
                                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                   : "bg-red-500 hover:bg-red-600 text-white shadow-sm hover:shadow-md"
                               }`}
-                              title={
-                                isAnyCycleActive
-                                  ? "Another cycle is currently active. Please close it first."
-                                  : ""
-                              }
                             >
                               {loadingId === annualCycle?.id ? (
                                 <LoadingSpinner />
@@ -1027,12 +1044,217 @@ const handleUnifiedEmailLaunch = async (emailData) => {
             )}
           </>
         )}
+
+        {activeTab === "Reset Employee Data" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                  <FiRefreshCw className="text-red-500" />
+                  Reset Employee Performance Data
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Reset or clear employee goals, evaluations, and performance records for financial year{" "}
+                  <span className="font-semibold text-red-600">{reviewCycle}</span>.
+                </p>
+              </div>
+            </div>
+
+            {/* Scope & Options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Reset Scope */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Reset Scope
+                </label>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 p-3.5 border rounded-xl cursor-pointer transition-all hover:border-red-200 bg-white">
+                    <input
+                      type="radio"
+                      name="resetScope"
+                      value="ALL"
+                      checked={resetScope === "ALL"}
+                      onChange={(e) => setResetScope(e.target.value)}
+                      className="accent-red-500 w-4 h-4"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">All Quarters & Annual Data</p>
+                      <p className="text-xs text-gray-500">Reset SMART goals, development goals & annual review data</p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3.5 border rounded-xl cursor-pointer transition-all hover:border-red-200 bg-white">
+                    <input
+                      type="radio"
+                      name="resetScope"
+                      value="QUARTER"
+                      checked={resetScope === "QUARTER"}
+                      onChange={(e) => setResetScope(e.target.value)}
+                      className="accent-red-500 w-4 h-4"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Specific Quarter Only</p>
+                      <p className="text-xs text-gray-500">Reset employee data for a selected quarter</p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3.5 border rounded-xl cursor-pointer transition-all hover:border-red-200 bg-white">
+                    <input
+                      type="radio"
+                      name="resetScope"
+                      value="ANNUAL"
+                      checked={resetScope === "ANNUAL"}
+                      onChange={(e) => setResetScope(e.target.value)}
+                      className="accent-red-500 w-4 h-4"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Annual Review Only</p>
+                      <p className="text-xs text-gray-500">Reset annual review self & manager assessments</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Additional Options */}
+              <div className="space-y-4">
+                {resetScope === "QUARTER" && (
+                  <div>
+                    <Select
+                      label="Select Quarter"
+                      value={resetQuarter}
+                      onChange={(val) => setResetQuarter(val)}
+                      options={[
+                        { label: "Quarter 1 (Q1)", value: "Q1" },
+                        { label: "Quarter 2 (Q2)", value: "Q2" },
+                        { label: "Quarter 3 (Q3)", value: "Q3" },
+                        { label: "Quarter 4 (Q4)", value: "Q4" },
+                      ]}
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Employee Code / ID (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={resetEmpId}
+                    onChange={(e) => setResetEmpId(e.target.value)}
+                    placeholder="Leave blank to reset for ALL employees"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Specify an employee ID if you only want to reset a single employee's data.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Warning Banner */}
+            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3">
+              <FiAlertCircle className="text-amber-600 text-lg flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-semibold text-amber-800">Important Warning</h4>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Resetting employee data will revert or clear employee-submitted goals and evaluation progress for the selected scope. Please ensure you have confirmed with management before performing this reset.
+                </p>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setIsResetModalOpen(true)}
+                disabled={isResetting}
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {isResetting ? (
+                  <LoadingSpinner />
+                ) : (
+                  <FiRefreshCw className="text-sm" />
+                )}
+                <span>Reset Employee Data</span>
+              </button>
+            </div>
+
+            {/* Audit Log Table */}
+            <div className="mt-8 border-t border-gray-200 pt-6">
+              <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FiClock className="text-red-500" />
+                Reset Audit History Log ({reviewCycle})
+              </h3>
+
+              {loadingResetLogs ? (
+                <div className="py-8 text-center text-gray-500 text-sm">
+                  Loading reset history logs...
+                </div>
+              ) : resetLogs.length === 0 ? (
+                <div className="py-8 text-center text-gray-400 text-sm bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  No employee data reset actions recorded for financial year {reviewCycle}.
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-red-50 text-red-900 font-semibold uppercase text-xs">
+                      <tr>
+                        <th className="px-4 py-3">Reset Date & Time</th>
+                        <th className="px-4 py-3">Target Employee</th>
+                        <th className="px-4 py-3 text-center">Financial Year</th>
+                        <th className="px-4 py-3 text-center">Scope / Type</th>
+                        <th className="px-4 py-3 text-center">Quarter</th>
+                        <th className="px-4 py-3 text-center">Reset By</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {resetLogs.map((log) => (
+                        <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-700">
+                            {log.resetAt
+                              ? new Date(log.resetAt).toLocaleString("en-GB")
+                              : "-"}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-gray-800">
+                            {log.employeeId === "ALL" ? (
+                              <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700">
+                                ALL EMPLOYEES
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                                {log.employeeId}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center font-medium text-gray-600">
+                            {log.financialYear}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-gray-100 text-gray-700">
+                              {log.resetScope}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-center font-semibold text-red-600">
+                            {log.quarter || "-"}
+                          </td>
+                          <td className="px-4 py-3 text-center font-medium text-gray-600">
+                            {log.resetBy}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <CreateQuarterlyCycleModal
         isOpen={isQuarterModalOpen}
         onClose={() => setIsQuarterModalOpen(false)}
         onSaveQuarter={handleQuarterSave}
+        existingQuarters={quarterCycles.map((c) => c.quarter)}
         closedQuarters={closedQuartersList}
       />
 
@@ -1074,6 +1296,49 @@ const handleUnifiedEmailLaunch = async (emailData) => {
         currentExpiryDate={selectedCycle?.endDate || tempCycle?.endDate}
         isReopen={selectedCycle?.status === "CLOSED" || tempCycle?.status === "CLOSED"}
       />
+
+      {/* Reset Employee Data Confirmation Modal */}
+      {isResetModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-fadeIn border border-gray-100">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiAlertCircle className="text-red-600 text-2xl" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+              Confirm Employee Data Reset
+            </h3>
+            <p className="text-sm text-gray-600 text-center mb-6">
+              Are you sure you want to reset employee performance data for financial year{" "}
+              <span className="font-semibold text-red-600">{reviewCycle}</span>
+              {resetEmpId ? ` (Employee: ${resetEmpId})` : " (All Employees)"}?
+            </p>
+
+            <div className="bg-gray-50 rounded-xl p-3.5 mb-6 text-xs text-gray-600 space-y-1 border border-gray-100">
+              <p><span className="font-semibold">Financial Year:</span> {reviewCycle}</p>
+              <p><span className="font-semibold">Scope:</span> {resetScope === "ALL" ? "All Quarters & Annual Review" : resetScope === "QUARTER" ? `Quarter ${resetQuarter}` : "Annual Review Only"}</p>
+              <p><span className="font-semibold">Target:</span> {resetEmpId ? `Single Employee (${resetEmpId})` : "All Employees"}</p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setIsResetModalOpen(false)}
+                disabled={isResetting}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmResetEmployeeData}
+                disabled={isResetting}
+                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
+              >
+                {isResetting ? <LoadingSpinner /> : <FiRefreshCw className="text-xs" />}
+                <span>Confirm Reset</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

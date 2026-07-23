@@ -6,6 +6,7 @@ import Select from "../../components/common/Select";
 const CreateQuarterlyCycleModal = ({
   isOpen,
   onClose,
+  existingQuarters = [],
   closedQuarters = [],
   onSaveQuarter,
 }) => {
@@ -16,17 +17,16 @@ const CreateQuarterlyCycleModal = ({
   const [status, setStatus] = useState("NOT_STARTED");
   const [loading, setLoading] = useState(false);
 
-  // Determine next quarter based on closed quarters
+  // Determine created quarters list
+  const createdQuarters = useMemo(() => {
+    return existingQuarters.length > 0 ? existingQuarters : closedQuarters;
+  }, [existingQuarters, closedQuarters]);
+
+  // Determine next quarter based on created quarters
   const nextQuarter = useMemo(() => {
-    if (closedQuarters.length === 0) return "Q1";
-
-    const lastClosed = closedQuarters[closedQuarters.length - 1];
-    const lastIndex = quarters.indexOf(lastClosed);
-
-    if (lastIndex === -1 || lastIndex === 3) return null;
-
-    return quarters[lastIndex + 1];
-  }, [closedQuarters, quarters]);
+    if (createdQuarters.length === 0) return "Q1";
+    return quarters.find((q) => !createdQuarters.includes(q)) || null;
+  }, [createdQuarters, quarters]);
 
   useEffect(() => {
     if (nextQuarter) {
@@ -78,9 +78,9 @@ const CreateQuarterlyCycleModal = ({
     return quarter !== nextQuarter;
   };
 
-  // Check if a quarter is already completed (for styling)
+  // Check if a quarter is already created (for styling)
   const isQuarterCompleted = (quarter) => {
-    return closedQuarters.includes(quarter);
+    return createdQuarters.includes(quarter);
   };
 
   return (

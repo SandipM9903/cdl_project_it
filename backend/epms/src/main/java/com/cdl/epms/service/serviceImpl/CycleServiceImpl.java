@@ -6,8 +6,10 @@ import com.cdl.epms.common.enums.Quarter;
 import com.cdl.epms.exception.ConflictException;
 import com.cdl.epms.exception.ResourceNotFoundException;
 import com.cdl.epms.exception.ValidationException;
+import com.cdl.epms.model.AnnualReview;
+import com.cdl.epms.model.Certification;
 import com.cdl.epms.model.PerformanceCycle;
-import com.cdl.epms.repository.PerformanceCycleRepository;
+import com.cdl.epms.repository.*;
 import com.cdl.epms.service.services.CycleService;
 import com.cdl.epms.service.services.EmailerService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,13 @@ import java.util.Optional;
 public class CycleServiceImpl implements CycleService {
 
     private final PerformanceCycleRepository cycleRepository;
+    private final GoalRepository goalRepository;
+    private final DevelopmentGoalRepository developmentGoalRepository;
+    private final AnnualReviewRepository annualReviewRepository;
+    private final CertificationRepository certificationRepository;
+    private final EmployeeCertificationRepository employeeCertificationRepository;
+    private final PoshRepository poshRepository;
+    private final ResetEmployeeDataLogRepository resetEmployeeDataLogRepository;
     private final ModelMapper modelMapper;
     private final EmailerService emailerService;
 
@@ -38,7 +48,8 @@ public class CycleServiceImpl implements CycleService {
             Integer reminderDays,
             LocalDate startDate,
             LocalDate endDate,
-            String financialYear
+            String financialYear,
+            CycleStatus status
     ) {
 
         validateCycleInput(cycleType, year, quarter, startDate, endDate);
@@ -59,21 +70,14 @@ public class CycleServiceImpl implements CycleService {
                 throw new ConflictException("Cycle already exists for " + quarter + " " + financialYear);
             }
 
-            // Check if previous quarter is closed before creating new quarter
+            // Check if previous quarter exists before creating new quarter
             if (quarter != Quarter.Q1) {
                 Quarter previousQuarter = getPreviousQuarter(quarter);
                 Optional<PerformanceCycle> previousCycle =
                         cycleRepository.findByFinancialYearAndQuarterAndCycleType(
                                 financialYear, previousQuarter, CycleType.QUARTERLY);
 
-                if (previousCycle.isPresent()) {
-                    PerformanceCycle prevCycle = previousCycle.get();
-                    if (prevCycle.getStatus() != CycleStatus.CLOSED) {
-                        throw new ValidationException(
-                                "Cannot create " + quarter + " because " + previousQuarter + " is still " + prevCycle.getStatus()
-                        );
-                    }
-                } else {
+                if (!previousCycle.isPresent()) {
                     throw new ValidationException("Previous quarter " + previousQuarter + " does not exist for financial year " + financialYear);
                 }
             }
@@ -87,7 +91,11 @@ public class CycleServiceImpl implements CycleService {
         cycle.setReminderDays(reminderDays);
         cycle.setStartDate(startDate);
         cycle.setEndDate(endDate);
-        cycle.setStatus(CycleStatus.NOT_STARTED);
+        CycleStatus targetStatus = status != null ? status : CycleStatus.NOT_STARTED;
+        cycle.setStatus(targetStatus);
+        if (targetStatus == CycleStatus.ACTIVE) {
+            cycle.setPublishedDate(LocalDate.now());
+        }
         cycle.setFinancialYear(financialYear);
 
         return cycleRepository.save(cycle);
@@ -113,10 +121,6 @@ public class CycleServiceImpl implements CycleService {
             throw new ConflictException("Only NOT_STARTED cycles can be published");
         }
 
-        if (cycleRepository.existsByStatus(CycleStatus.ACTIVE)) {
-            throw new ConflictException("Another performance cycle is already active");
-        }
-
         cycle.setStatus(CycleStatus.ACTIVE);
         cycle.setPublishedDate(LocalDate.now());
         cycleRepository.save(cycle);
@@ -138,7 +142,7 @@ public class CycleServiceImpl implements CycleService {
 
     @Override
     public PerformanceCycle getActiveCycle() {
-        return cycleRepository.findByStatus(CycleStatus.ACTIVE)
+        return cycleRepository.findFirstByStatusOrderByIdDesc(CycleStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active cycle found"));
     }
 
@@ -394,5 +398,132 @@ public class CycleServiceImpl implements CycleService {
 
         return allQuarters.stream()
                 .anyMatch(q -> getQuarterOrder(q.getQuarter()) > currentOrder);
+    }
+
+    @Override
+    @Transactional
+    public void resetEmployeeData(String financialYear, String quarterStr, String employeeId, String scope, String resetBy) {
+        log.info("========== RESET EMPLOYEE DATA CALLED ==========");
+        log.info("Financial Year: {}, Quarter: {}, EmployeeId: {}, Scope: {}, ResetBy: {}", financialYear, quarterStr, employeeId, scope, resetBy);
+
+        if (financialYear == null || financialYear.trim().isEmpty()) {
+            throw new ValidationException("Financial year is required for resetting data");
+        }
+
+        Integer startYear = extractYearFromFinancialYear(financialYear);
+        boolean hasEmpId = employeeId != null && !employeeId.trim().isEmpty();
+        String cleanEmpId = hasEmpId ? employeeId.trim() : null;
+
+        Quarter quarter = null;
+        if (quarterStr != null && !quarterStr.trim().isEmpty()) {
+            try {
+                quarter = Quarter.valueOf(quarterStr.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid quarter format provided: {}", quarterStr);
+            }
+        }
+
+        boolean resetQuarterly = "QUARTER".equalsIgnoreCase(scope) || "ALL".equalsIgnoreCase(scope);
+        boolean resetAnnual = "ANNUAL".equalsIgnoreCase(scope) || "ALL".equalsIgnoreCase(scope);
+
+        // 1. Reset Quarterly Data (goal, development_goal)
+        if (resetQuarterly) {
+            if (quarter != null) {
+                if (hasEmpId) {
+                    log.info("Deleting goals and dev goals for emp: {}, quarter: {}, FY: {}", cleanEmpId, quarter, financialYear);
+                    goalRepository.deleteByEmployeeIdAndQuarterAndFinancialYear(cleanEmpId, quarter, financialYear, startYear);
+                    developmentGoalRepository.deleteByEmployeeIdAndQuarterAndFinancialYear(cleanEmpId, quarter, financialYear, startYear);
+                } else {
+                    log.info("Deleting goals and dev goals for ALL employees, quarter: {}, FY: {}", quarter, financialYear);
+                    goalRepository.deleteByQuarterAndFinancialYear(quarter, financialYear, startYear);
+                    developmentGoalRepository.deleteByQuarterAndFinancialYear(quarter, financialYear, startYear);
+                }
+            } else {
+                if (hasEmpId) {
+                    log.info("Deleting goals and dev goals for emp: {}, ALL quarters, FY: {}", cleanEmpId, financialYear);
+                    goalRepository.deleteByEmployeeIdAndFinancialYear(cleanEmpId, financialYear, startYear);
+                    developmentGoalRepository.deleteByEmployeeIdAndFinancialYear(cleanEmpId, financialYear, startYear);
+                } else {
+                    log.info("Deleting goals and dev goals for ALL employees, ALL quarters, FY: {}", financialYear);
+                    goalRepository.deleteByFinancialYear(financialYear, startYear);
+                    developmentGoalRepository.deleteByFinancialYear(financialYear, startYear);
+                }
+            }
+        }
+
+        // 2. Reset Annual Review Data (annual_reviews, certification, employee_certification, posh)
+        if (resetAnnual) {
+            List<AnnualReview> reviewsToReset;
+            if (hasEmpId) {
+                reviewsToReset = annualReviewRepository.findAllByEmployeeIdAndFinancialYear(cleanEmpId, financialYear);
+            } else {
+                reviewsToReset = annualReviewRepository.findAllByFinancialYear(financialYear);
+            }
+
+            log.info("Found {} annual_reviews records to reset for FY: {}, EmpId: {}", reviewsToReset.size(), financialYear, cleanEmpId);
+
+            for (AnnualReview review : reviewsToReset) {
+                Long arId = review.getId();
+
+                // Delete POSH records
+                poshRepository.deleteByAnnualReviewId(arId);
+
+                // Find & delete certifications & employee_certifications
+                List<Certification> certs = certificationRepository.findByAnnualReviewId(arId);
+                if (certs != null && !certs.isEmpty()) {
+                    List<Long> certIds = certs.stream().map(Certification::getId).collect(Collectors.toList());
+                    employeeCertificationRepository.deleteByCertificationIdIn(certIds);
+                    certificationRepository.deleteByAnnualReviewId(arId);
+                }
+
+                // Delete the annual review record
+                annualReviewRepository.delete(review);
+            }
+
+            // Also cleanup employee_certification by year/empId
+            if (startYear != null) {
+                if (hasEmpId) {
+                    employeeCertificationRepository.deleteByEmployeeIdAndYear(cleanEmpId, startYear);
+                } else {
+                    employeeCertificationRepository.deleteByYear(startYear);
+                }
+            }
+        }
+
+        // 3. Save Audit Log Entry to reset_employee_data_log table
+        try {
+            com.cdl.epms.model.ResetEmployeeDataLog logEntry = com.cdl.epms.model.ResetEmployeeDataLog.builder()
+                    .employeeId(hasEmpId ? cleanEmpId : "ALL")
+                    .financialYear(financialYear)
+                    .resetScope(scope != null ? scope.toUpperCase() : "ALL")
+                    .quarter(quarterStr != null && !quarterStr.trim().isEmpty() ? quarterStr.trim().toUpperCase() : ("ANNUAL".equalsIgnoreCase(scope) ? "ANNUAL" : "ALL"))
+                    .resetBy(resetBy != null && !resetBy.trim().isEmpty() ? resetBy.trim() : "HR_ADMIN")
+                    .resetAt(LocalDateTime.now())
+                    .build();
+
+            resetEmployeeDataLogRepository.save(logEntry);
+            log.info("Saved audit log entry to reset_employee_data_log table: {}", logEntry);
+        } catch (Exception e) {
+            log.error("Failed to save reset employee data audit log", e);
+        }
+
+        log.info("========== RESET EMPLOYEE DATA COMPLETED ==========");
+    }
+
+    @Override
+    public List<com.cdl.epms.model.ResetEmployeeDataLog> getResetLogs(String financialYear) {
+        if (financialYear != null && !financialYear.trim().isEmpty()) {
+            return resetEmployeeDataLogRepository.findByFinancialYearOrderByIdDesc(financialYear.trim());
+        }
+        return resetEmployeeDataLogRepository.findAllByOrderByIdDesc();
+    }
+
+    private Integer extractYearFromFinancialYear(String financialYear) {
+        if (financialYear == null || !financialYear.contains("-")) return null;
+        try {
+            return Integer.parseInt(financialYear.split("-")[0]);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

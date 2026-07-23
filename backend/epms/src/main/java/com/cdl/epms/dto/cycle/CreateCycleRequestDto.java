@@ -1,5 +1,6 @@
 package com.cdl.epms.dto.cycle;
 
+import com.cdl.epms.common.enums.CycleStatus;
 import com.cdl.epms.common.enums.CycleType;
 import com.cdl.epms.common.enums.Quarter;
 import jakarta.validation.constraints.NotNull;
@@ -30,4 +31,6 @@ public class CreateCycleRequestDto {
     private LocalDate endDate;
 
     private String financialYear; // New field for financial year (e.g., "2026-2027")
+
+    private CycleStatus status;
 }

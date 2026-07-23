@@ -36,6 +36,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { BASE_URL_EPMS, BASE_URL_CDL } from "../../services/api";
+import { generateFinancialYears } from "../../utils/dateUtils";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
@@ -360,8 +361,19 @@ const EmployeeAppraisal = () => {
     if (selectedYear) {
       fetchAvailableCycles(parseInt(selectedYear));
       checkQuarterlyCyclesExist();
+      checkAnnualCycleExists();
     }
   }, [selectedYear]);
+
+  const handleFinancialYearChange = (e) => {
+    const selectedFY = e.target.value;
+    const startYear = selectedFY.split("-")[0];
+    setSelectedYear(startYear);
+
+    const url = new URL(window.location);
+    url.searchParams.set("year", startYear);
+    window.history.pushState({}, "", url);
+  };
 
   useEffect(() => {
     if (selectedQuarter) {
@@ -1778,8 +1790,27 @@ const EmployeeAppraisal = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div><p className="text-sm text-gray-500">Financial Year</p><p className="text-lg font-semibold text-gray-800">{getFinancialYearDisplay()}</p></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                <FaCalendarAlt className="text-[#EF4444] text-xs" />
+                Financial Year
+              </p>
+              <div className="relative inline-block w-full max-w-[200px]">
+                <select
+                  value={`${selectedYear}-${parseInt(selectedYear) + 1}`}
+                  onChange={handleFinancialYearChange}
+                  className="w-full bg-red-50/80 border-2 border-[#EF4444] font-bold text-[#EF4444] rounded-xl px-3.5 py-1.5 text-base shadow-sm hover:bg-red-100 transition-all focus:outline-none focus:ring-2 focus:ring-red-300 cursor-pointer appearance-none pr-9"
+                >
+                  {generateFinancialYears(5).map((fy) => (
+                    <option key={fy} value={fy} className="bg-white text-gray-800 font-semibold text-sm">
+                      {fy}
+                    </option>
+                  ))}
+                </select>
+                <FaChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#EF4444] text-xs pointer-events-none" />
+              </div>
+            </div>
             <div><p className="text-sm text-gray-500">Review Type</p><p className="text-lg font-semibold text-[#EF4444]">{reviewType === "quarterly" ? "Quarterly" : "Annual"}</p></div>
             {reviewType === "quarterly" && (<div><p className="text-sm text-gray-500">Current Quarter</p><p className="text-lg font-semibold text-[#EF4444]">{selectedQuarter}</p></div>)}
             {reviewType === "annual" && (<div><p className="text-sm text-gray-500">Quarterly Goals Progress</p><p className="text-lg font-semibold text-[#EF4444]">{Math.round(annualProgress)}%</p></div>)}

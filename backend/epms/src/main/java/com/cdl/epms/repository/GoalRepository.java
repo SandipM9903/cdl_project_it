@@ -6,14 +6,52 @@ import com.cdl.epms.common.enums.Quarter;
 import com.cdl.epms.model.Goal;
 import com.cdl.epms.model.PerformanceCycle;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Goal g WHERE g.employeeId = :employeeId AND g.quarter = :quarter AND (g.performanceCycle.financialYear = :financialYear OR g.year = :year)")
+    void deleteByEmployeeIdAndQuarterAndFinancialYear(
+            @Param("employeeId") String employeeId,
+            @Param("quarter") Quarter quarter,
+            @Param("financialYear") String financialYear,
+            @Param("year") Integer year
+    );
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Goal g WHERE g.quarter = :quarter AND (g.performanceCycle.financialYear = :financialYear OR g.year = :year)")
+    void deleteByQuarterAndFinancialYear(
+            @Param("quarter") Quarter quarter,
+            @Param("financialYear") String financialYear,
+            @Param("year") Integer year
+    );
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Goal g WHERE g.employeeId = :employeeId AND (g.performanceCycle.financialYear = :financialYear OR g.year = :year)")
+    void deleteByEmployeeIdAndFinancialYear(
+            @Param("employeeId") String employeeId,
+            @Param("financialYear") String financialYear,
+            @Param("year") Integer year
+    );
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Goal g WHERE (g.performanceCycle.financialYear = :financialYear OR g.year = :year)")
+    void deleteByFinancialYear(
+            @Param("financialYear") String financialYear,
+            @Param("year") Integer year
+    );
 
     List<Goal> findByEmployeeIdAndPerformanceCycleAndQuarter(
             String employeeId,

@@ -31,7 +31,7 @@ public class GoalServiceImpl implements GoalService {
     private final EmailerService emailerService;
 
     private PerformanceCycle getActiveCycle() {
-        return cycleRepository.findByStatus(CycleStatus.ACTIVE)
+        return cycleRepository.findFirstByStatusOrderByIdDesc(CycleStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active cycle found"));
     }
 
@@ -195,8 +195,10 @@ public class GoalServiceImpl implements GoalService {
             throw new ValidationException("Goal does not belong to this employee");
         }
 
-        if (existingGoal.getStatus() != GoalStatus.DRAFT && existingGoal.getStatus() != GoalStatus.SENT_BACK) {
-            throw new ValidationException("Only goals in DRAFT or SENT_BACK status can be updated. Current status: " + existingGoal.getStatus());
+        if (existingGoal.getStatus() != GoalStatus.DRAFT &&
+                existingGoal.getStatus() != GoalStatus.SENT_BACK &&
+                existingGoal.getStatus() != GoalStatus.PENDING_APPROVAL) {
+            throw new ValidationException("Only goals in DRAFT, SENT_BACK, or PENDING_APPROVAL status can be updated. Current status: " + existingGoal.getStatus());
         }
 
         if (goal.getTitle() != null && !goal.getTitle().trim().isEmpty()) {
@@ -318,9 +320,8 @@ public class GoalServiceImpl implements GoalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Goal not found"));
 
         if (goal.getStatus() == GoalStatus.ACCEPTED_BY_EMPLOYEE ||
-                goal.getStatus() == GoalStatus.FINAL_SUBMITTED_TO_HR ||
-                goal.getStatus() == GoalStatus.PENDING_APPROVAL) {
-            throw new ValidationException("Cannot delete goal that has been submitted for approval or accepted");
+                goal.getStatus() == GoalStatus.FINAL_SUBMITTED_TO_HR) {
+            throw new ValidationException("Cannot delete goal that has been accepted or finalized");
         }
 
         log.info("Deleting goal with ID: {}", goalId);

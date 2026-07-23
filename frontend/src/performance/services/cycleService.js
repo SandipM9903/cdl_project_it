@@ -72,6 +72,14 @@ export const sendUnifiedEmails = (actionType, cycleId, emailData, additionalData
   return axios.post(`${BASE_URL_EPMS}/api/email/unified/send`, payload);
 };
 
+export const resetEmployeeData = (data) => {
+  return axios.post(`${BASE_URL}/reset-employee-data`, data);
+};
+
+export const getResetLogs = (financialYear) => {
+  return axios.get(`${BASE_URL}/reset-logs`, { params: { financialYear } });
+};
+
 // Also export as a single object for those who prefer that pattern
 export const cycleApi = {
   createCycle,
@@ -86,4 +94,6 @@ export const cycleApi = {
   getActiveCycle,
   getAllEmployeeEmails,
   sendUnifiedEmails,
+  resetEmployeeData,
+  getResetLogs,
 };

@@ -3,6 +3,7 @@ package com.cdl.epms.controller;
 import com.cdl.epms.dto.cycle.CreateCycleRequestDto;
 import com.cdl.epms.dto.cycle.PublishCycleRequest;
 import com.cdl.epms.model.PerformanceCycle;
+import com.cdl.epms.model.ResetEmployeeDataLog;
 import com.cdl.epms.payload.ApiResponse;
 import com.cdl.epms.service.services.CycleService;
 import jakarta.validation.Valid;
@@ -35,7 +36,8 @@ public class CycleController {
                 requestDto.getReminderDays(),
                 requestDto.getStartDate(),
                 requestDto.getEndDate(),
-                requestDto.getFinancialYear()  // Pass financial year
+                requestDto.getFinancialYear(),
+                requestDto.getStatus()
         );
 
         ApiResponse<PerformanceCycle> response = ApiResponse.<PerformanceCycle>builder()
@@ -247,6 +249,42 @@ public class CycleController {
                 .success(true)
                 .message("Reminder sent successfully to all employees")
                 .data(updatedCycle)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-employee-data")
+    public ResponseEntity<ApiResponse<String>> resetEmployeeData(
+            @RequestBody Map<String, String> request) {
+
+        String financialYear = request.get("financialYear");
+        String quarter = request.get("quarter");
+        String employeeId = request.get("employeeId");
+        String scope = request.get("scope");
+        String resetBy = request.get("resetBy");
+
+        cycleService.resetEmployeeData(financialYear, quarter, employeeId, scope, resetBy);
+
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(true)
+                .message("Employee data reset successfully for financial year: " + financialYear)
+                .data("Success")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/reset-logs")
+    public ResponseEntity<ApiResponse<List<ResetEmployeeDataLog>>> getResetLogs(
+            @RequestParam(required = false) String financialYear) {
+
+        List<ResetEmployeeDataLog> logs = cycleService.getResetLogs(financialYear);
+
+        ApiResponse<List<ResetEmployeeDataLog>> response = ApiResponse.<List<ResetEmployeeDataLog>>builder()
+                .success(true)
+                .message("Reset logs fetched successfully")
+                .data(logs)
                 .build();
 
         return ResponseEntity.ok(response);

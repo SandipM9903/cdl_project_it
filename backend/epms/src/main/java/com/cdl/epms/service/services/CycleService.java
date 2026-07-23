@@ -1,8 +1,11 @@
 package com.cdl.epms.service.services;
 
+import com.cdl.epms.common.enums.CycleStatus;
 import com.cdl.epms.common.enums.CycleType;
 import com.cdl.epms.common.enums.Quarter;
 import com.cdl.epms.model.PerformanceCycle;
+
+import com.cdl.epms.model.ResetEmployeeDataLog;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +19,8 @@ public interface CycleService {
             Integer reminderDays,
             LocalDate startDate,
             LocalDate endDate,
-            String financialYear  // Added financialYear parameter
+            String financialYear,
+            CycleStatus status
     );
 
     String publishCycle(Long cycleId, String customSubject, String customBody);
@@ -42,4 +46,8 @@ public interface CycleService {
             LocalDate endDate,
             String financialYear  // Added financialYear parameter
     );
+
+    void resetEmployeeData(String financialYear, String quarter, String employeeId, String scope, String resetBy);
+
+    List<ResetEmployeeDataLog> getResetLogs(String financialYear);
 }
