@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
-import { BASE_URL_EPMS } from "../../services/api";
+import { BASE_URL_EPMS, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -42,7 +42,7 @@ const EmployeeManagerReviewPreview = () => {
 
       setLoading(true);
       try {
-        const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`;
+        const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`;
         console.log("Fetching from:", url);
 
         const response = await fetch(url);

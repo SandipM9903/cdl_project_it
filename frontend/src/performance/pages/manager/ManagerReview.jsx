@@ -12,7 +12,7 @@ import {
   FaSpinner,
   FaInfoCircle,
 } from "react-icons/fa";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -145,7 +145,7 @@ const ManagerReview = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`);
+        const response = await fetch(`${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`);
         const result = await response.json();
         if (result.success && Array.isArray(result.data)) {
           setGoals(result.data);

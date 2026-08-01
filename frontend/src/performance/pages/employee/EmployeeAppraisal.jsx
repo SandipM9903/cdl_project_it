@@ -35,7 +35,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_CDL } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_CDL, getEncryptedEmployeeCode } from "../../services/api";
 import { generateFinancialYears } from "../../utils/dateUtils";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
@@ -468,7 +468,8 @@ const EmployeeAppraisal = () => {
 
   const fetchGoals = async (storedEmpId, quarter, year) => {
     try {
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/${quarter}?year=${year}`;
+      const encryptedToken = getEncryptedEmployeeCode(storedEmpId);
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${encryptedToken}/${quarter}?year=${year}`;
       console.log(`📊 Fetching goals from: ${url}`);
 
       const response = await axios.get(url);
@@ -522,7 +523,8 @@ const EmployeeAppraisal = () => {
   try {
     // Use financial year string (previous year - current year)
     const financialYear = `${year}-${year + 1}`;
-    const url = `${BASE_URL_EPMS}/api/annual-review/by-financial-year/${storedEmpId}/${financialYear}`;
+    const encryptedToken = getEncryptedEmployeeCode(storedEmpId);
+    const url = `${BASE_URL_EPMS}/api/annual-review/by-financial-year/${encryptedToken}/${financialYear}`;
     console.log("Fetching annual review from:", url);
     
     const response = await axios.get(url);
@@ -639,7 +641,7 @@ const EmployeeAppraisal = () => {
 
     for (const quarter of quarters) {
       try {
-        const url = `${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/${quarter}?year=${year}`;
+        const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(storedEmpId)}/${quarter}?year=${year}`;
         const response = await axios.get(url);
         const goalsData =
           response.data?.data ||

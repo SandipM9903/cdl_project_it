@@ -19,7 +19,7 @@ import {
 } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
@@ -165,7 +165,7 @@ const PredefinedGoals = () => {
       }
 
       const response = await axios.get(
-        `${BASE_URL_EPMS}/api/goals/predefined/employee/${empId}/${quarter}`,
+        `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(empId)}/${quarter}`,
         {
           params: { year: yearToUse },
           timeout: 5000,
@@ -413,8 +413,8 @@ const PredefinedGoals = () => {
                 onClick={handleViewAllGoals}
                 disabled={predefinedGoals.length === 0 || goalsLoading}
                 className={`font-medium py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2 text-sm ${predefinedGoals.length === 0 || goalsLoading
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
                   }`}
               >
                 <FaEye /> View Details

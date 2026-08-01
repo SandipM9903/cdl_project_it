@@ -31,7 +31,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 const targetOperatorOptions = ["=", "<", ">", "<=", ">=", "-"];
@@ -473,7 +473,7 @@ const ManagerApprovalQuarter = () => {
 
   const fetchSmartGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
 
       let goalsData = [];
@@ -494,7 +494,7 @@ const ManagerApprovalQuarter = () => {
 
   const fetchDevelopmentGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
 
       let devGoalsData = [];
@@ -837,8 +837,8 @@ const ManagerApprovalQuarter = () => {
                 {/* Weightage Summary */}
                 <div
                   className={`rounded-xl p-4 mb-6 flex items-center justify-between ${isValidWeightage
-                      ? "bg-green-50 border border-green-200"
-                      : "bg-red-50 border border-red-200"
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1093,8 +1093,8 @@ const ManagerApprovalQuarter = () => {
                 submitting || (smartGoals.length > 0 && !isValidWeightage)
               }
               className={`px-6 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium shadow-md ${smartGoals.length > 0 && !isValidWeightage
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-green-600 text-white hover:bg-green-700"
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-green-600 text-white hover:bg-green-700"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               title={
                 smartGoals.length > 0 && !isValidWeightage

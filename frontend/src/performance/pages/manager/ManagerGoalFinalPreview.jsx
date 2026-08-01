@@ -27,7 +27,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 // Helper function to get full name with priority to fullNameAsAadhaar
@@ -161,7 +161,7 @@ const ManagerGoalFinalPreview = () => {
 
   const fetchSmartGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
 
       let goalsData = [];
@@ -180,7 +180,7 @@ const ManagerGoalFinalPreview = () => {
 
   const fetchDevelopmentGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
 
       let devGoalsData = [];
@@ -544,8 +544,8 @@ const ManagerGoalFinalPreview = () => {
           <button
             onClick={() => setActiveTab("smart")}
             className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${activeTab === "smart"
-                ? "text-red-600 border-b-2 border-red-600 bg-red-50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              ? "text-red-600 border-b-2 border-red-600 bg-red-50"
+              : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
           >
             <FiTarget size={16} />
@@ -557,8 +557,8 @@ const ManagerGoalFinalPreview = () => {
           <button
             onClick={() => setActiveTab("development")}
             className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all rounded-t-lg ${activeTab === "development"
-                ? "text-red-600 border-b-2 border-red-600 bg-red-50"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              ? "text-red-600 border-b-2 border-red-600 bg-red-50"
+              : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
           >
             <FiBookOpen size={16} />

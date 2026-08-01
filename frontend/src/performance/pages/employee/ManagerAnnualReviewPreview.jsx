@@ -23,7 +23,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL, getEncryptedEmployeeCode } from "../../services/api";
 import { simpleEncrypt } from "../../../simpleEncrypt";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
@@ -174,7 +174,7 @@ const ManagerAnnualReviewPreview = () => {
       }
 
       // Fetch the annual review data
-      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${storedEmpId}/${year}`;
+      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${getEncryptedEmployeeCode(storedEmpId)}/${year}`;
       console.log("Fetching annual review from:", annualReviewUrl);
 
       const annualReviewResponse = await axios.get(annualReviewUrl);

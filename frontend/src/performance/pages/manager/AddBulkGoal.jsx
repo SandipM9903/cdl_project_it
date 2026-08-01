@@ -21,7 +21,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -240,7 +240,7 @@ const AddBulkGoal = () => {
       const empCode = employee.empCode || employee.id;
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/predefined/employee/${empCode}/${quarter}`,
+          `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(empCode)}/${quarter}`,
           { params: { year: yearToUse }, timeout: 3000 }
         );
 
@@ -663,8 +663,8 @@ const AddBulkGoal = () => {
                   <div
                     key={empCode}
                     className={`border rounded-lg p-4 transition-all ${isEligible
-                        ? "border-gray-200 hover:border-green-300 hover:shadow-md"
-                        : "border-gray-200 bg-gray-50 opacity-75"
+                      ? "border-gray-200 hover:border-green-300 hover:shadow-md"
+                      : "border-gray-200 bg-gray-50 opacity-75"
                       }`}
                   >
                     <div className="flex items-start gap-3">
@@ -685,10 +685,10 @@ const AddBulkGoal = () => {
                         {status && (
                           <div className="mt-2">
                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${status.status === "Submitted"
-                                ? "bg-green-100 text-green-700"
-                                : status.status === "Has Goals"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-gray-100 text-gray-600"
+                              ? "bg-green-100 text-green-700"
+                              : status.status === "Has Goals"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-gray-100 text-gray-600"
                               }`}>
                               {status.status === "Submitted" ? (
                                 <FaCheckCircle size={10} />

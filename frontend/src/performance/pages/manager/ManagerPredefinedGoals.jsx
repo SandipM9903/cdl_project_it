@@ -19,7 +19,7 @@ import {
   FaEdit,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -235,7 +235,7 @@ const ManagerPredefinedGoals = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${BASE_URL_EPMS}/api/goals/predefined/employee/${empId}/${quarter}`,
+        `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(empId)}/${quarter}`,
         {
           params: { year: year },
         },
@@ -493,7 +493,7 @@ const ManagerPredefinedGoals = () => {
         console.log("Submitting to employee with:", { managerId, employeeId: empId, quarter });
 
         await axios.put(
-          `${BASE_URL_EPMS}/api/goals/manager/submit-to-employee/${managerId}/${empId}/${quarter}`
+          `${BASE_URL_EPMS}/api/goals/manager/submit-to-employee/${getEncryptedEmployeeCode(managerId)}/${getEncryptedEmployeeCode(empId)}/${quarter}`
         );
 
         // ✅ STEP 3: Trigger Email to the Employee using DB Template
@@ -1035,10 +1035,10 @@ const ManagerPredefinedGoals = () => {
                         <td className="px-6 py-4 w-32">
                           <div
                             className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${isRedistributed && !isSubmitted
-                                ? "border-red-300 bg-red-50 text-red-700"
-                                : isWeightageZero && !isSubmitted
-                                  ? "border-orange-300 bg-orange-50 text-orange-700"
-                                  : "border-gray-200 bg-gray-50 text-gray-900"
+                              ? "border-red-300 bg-red-50 text-red-700"
+                              : isWeightageZero && !isSubmitted
+                                ? "border-orange-300 bg-orange-50 text-orange-700"
+                                : "border-gray-200 bg-gray-50 text-gray-900"
                               }`}
                           >
                             {group.weightage.toFixed(2)}%
@@ -1065,16 +1065,16 @@ const ManagerPredefinedGoals = () => {
                               >
                                 <span
                                   className={`text-sm ${group.timeline?.length
-                                      ? "text-gray-900"
-                                      : "text-gray-400"
+                                    ? "text-gray-900"
+                                    : "text-gray-400"
                                     }`}
                                 >
                                   {getSelectedTimelineText(group.timeline)}
                                 </span>
                                 <FaChevronDown
                                   className={`text-gray-400 transition-transform ${openDropdownIndices[groupIndex]
-                                      ? "rotate-180"
-                                      : ""
+                                    ? "rotate-180"
+                                    : ""
                                     }`}
                                 />
                               </button>
@@ -1109,8 +1109,8 @@ const ManagerPredefinedGoals = () => {
                                           className={`text-sm ${group.timeline?.includes(
                                             option.value,
                                           )
-                                              ? "font-medium text-red-600"
-                                              : "text-gray-600"
+                                            ? "font-medium text-red-600"
+                                            : "text-gray-600"
                                             }`}
                                         >
                                           {option.label}
@@ -1146,8 +1146,8 @@ const ManagerPredefinedGoals = () => {
                     </span>
                     <span
                       className={`text-lg font-bold ${Math.abs(totalWeightage - 100) <= 0.01
-                          ? "text-red-600"
-                          : "text-red-600"
+                        ? "text-red-600"
+                        : "text-red-600"
                         }`}
                     >
                       {totalWeightage.toFixed(2)}%
@@ -1177,8 +1177,8 @@ const ManagerPredefinedGoals = () => {
                     onClick={handleSubmitClick}
                     disabled={isSubmitDisabled}
                     className={`px-6 py-3 rounded-lg min-w-[120px] transition-colors ${isSubmitDisabled
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-red-600 hover:bg-red-700"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-red-600 hover:bg-red-700"
                       } text-white`}
                   >
                     {submitting ? (

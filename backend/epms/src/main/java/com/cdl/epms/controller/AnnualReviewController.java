@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cdl.epms.util.CryptoUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -41,11 +42,14 @@ public class AnnualReviewController {
     private final EmailerService emailerService;
     private final PoshRepository poshRepository;
     private final CertificationRepository certificationRepository;
+    private final CryptoUtil cryptoUtil;
 
     @PostMapping(value = "/draft/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveDraft(@RequestPart(value = "dto") AnnualReviewRequestDto dto,
                                        @RequestPart(value = "poshCertificate", required = false)MultipartFile poshCertificate,
                                        @RequestPart(value = "certificateFiles", required = false)List<MultipartFile> certificatesFiles) throws IOException {
+        dto.setEmployeeId(cryptoUtil.decryptIfEncrypted(dto.getEmployeeId()));
+        dto.setManagerId(cryptoUtil.decryptIfEncrypted(dto.getManagerId()));
         log.info("Received draft save request - Employee: {}, FinancialYear: {}", dto.getEmployeeId(), dto.getFinancialYear());
         annualReviewService.saveDraft(dto, poshCertificate, certificatesFiles);
         return ResponseEntity.ok(Map.of("success", true, "message", "Draft saved successfully"));
@@ -55,6 +59,8 @@ public class AnnualReviewController {
     public ResponseEntity<?> submitReview(@RequestPart(value = "dto") AnnualReviewRequestDto dto,
                                           @RequestPart(value = "poshCertificate", required = true)MultipartFile poshCertificate,
                                           @RequestPart(value = "certificateFiles", required = false) List<MultipartFile> certificatesFiles) throws IOException {
+        dto.setEmployeeId(cryptoUtil.decryptIfEncrypted(dto.getEmployeeId()));
+        dto.setManagerId(cryptoUtil.decryptIfEncrypted(dto.getManagerId()));
         log.info("Received submit request - Employee: {}, FinancialYear: {}", dto.getEmployeeId(), dto.getFinancialYear());
 
         // Submit the review and get the review ID
@@ -99,6 +105,7 @@ public class AnnualReviewController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) String financialYear) {
 
+        empId = cryptoUtil.decryptIfEncrypted(empId);
         log.info("Fetching draft - Employee: {}, Year: {}, FinancialYear: {}", empId, year, financialYear);
 
         Object result;
@@ -115,6 +122,7 @@ public class AnnualReviewController {
     public ResponseEntity<?> getFullReview(
             @PathVariable String empId,
             @PathVariable Integer year) {
+        empId = cryptoUtil.decryptIfEncrypted(empId);
         log.info("Fetching full review - Employee: {}, Year: {}", empId, year);
         return ResponseEntity.ok(annualReviewService.getFullReview(empId, year));
     }
@@ -124,6 +132,7 @@ public class AnnualReviewController {
     public ResponseEntity<?> getFullReviewByFinancialYear(
             @PathVariable String empId,
             @PathVariable String financialYear) {
+        empId = cryptoUtil.decryptIfEncrypted(empId);
         log.info("Fetching full review - Employee: {}, FinancialYear: {}", empId, financialYear);
         Object result = ((AnnualReviewServiceImpl) annualReviewService).getFullReviewByFinancialYear(empId, financialYear);
         return ResponseEntity.ok(result);
@@ -139,6 +148,7 @@ public class AnnualReviewController {
     public ResponseEntity<?> getManagerReview(
             @PathVariable String empId,
             @PathVariable Integer year) {
+        empId = cryptoUtil.decryptIfEncrypted(empId);
         return ResponseEntity.ok(annualReviewService.getManagerReview(empId, year));
     }
 
@@ -147,6 +157,7 @@ public class AnnualReviewController {
     public ResponseEntity<?> getManagerReviewByFinancialYear(
             @PathVariable String empId,
             @PathVariable String financialYear) {
+        empId = cryptoUtil.decryptIfEncrypted(empId);
         log.info("Fetching manager review - Employee: {}, FinancialYear: {}", empId, financialYear);
         return ResponseEntity.ok(((AnnualReviewServiceImpl) annualReviewService).getFullReviewByFinancialYear(empId, financialYear));
     }

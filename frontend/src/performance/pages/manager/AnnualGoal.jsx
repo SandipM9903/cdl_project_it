@@ -71,8 +71,8 @@ const AnnualGoal = () => {
               key={q}
               onClick={() => setSelectedQuarter(q)}
               className={`cursor-pointer p-4 rounded-lg text-center font-semibold ${selectedQuarter === q
-                  ? "bg-yellow-400 text-white"
-                  : "bg-gray-200"
+                ? "bg-yellow-400 text-white"
+                : "bg-gray-200"
                 }`}
             >
               {q}

@@ -34,7 +34,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 // Helper function to get full name with priority to fullNameAsAadhaar
@@ -430,7 +430,7 @@ const ManagerReviewQuarter = () => {
 
   const fetchSmartGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
       let goalsData = [];
       if (response.data && response.data.data) goalsData = response.data.data;
@@ -452,7 +452,7 @@ const ManagerReviewQuarter = () => {
 
   const fetchDevelopmentGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${empId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${getEncryptedEmployeeCode(empId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
       let devGoalsData = [];
       if (response.data && response.data.data) devGoalsData = response.data.data;

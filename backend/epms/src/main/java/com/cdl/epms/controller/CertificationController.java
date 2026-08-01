@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.cdl.epms.util.CryptoUtil;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,7 @@ import java.util.List;
 public class CertificationController {
 
     private final CertificationService certificationService;
+    private final CryptoUtil cryptoUtil;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Certification>> createCertification(
@@ -55,6 +57,7 @@ public class CertificationController {
             @PathVariable Long certificationId,
             @PathVariable Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
 
         EmployeeCertification completedCertification =
                 certificationService.completeCertification(employeeId, certificationId, year);

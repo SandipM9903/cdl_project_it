@@ -29,7 +29,7 @@ import {
   FiArrowLeft
 } from "react-icons/fi";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
@@ -179,7 +179,7 @@ const EmployeeFinalAcceptance = () => {
 
   const fetchSmartGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${employeeId}/${quarter}?year=${year}`;
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`;
       console.log("Fetching SMART goals from:", url);
 
       const response = await axios.get(url);
@@ -218,7 +218,7 @@ const EmployeeFinalAcceptance = () => {
 
   const fetchDevelopmentGoals = async () => {
     try {
-      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${employeeId}/${quarter}?year=${year}`;
+      const url = `${BASE_URL_EPMS}/api/development-goals/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`;
       console.log("Fetching Development goals from:", url);
 
       const response = await axios.get(url);
@@ -311,7 +311,7 @@ const EmployeeFinalAcceptance = () => {
     try {
       // Accept SMART goals
       if (smartGoals.length > 0) {
-        const smartUrl = `${BASE_URL_EPMS}/api/goals/employee/accept/${employeeId}/${quarter}?year=${year}`;
+        const smartUrl = `${BASE_URL_EPMS}/api/goals/employee/accept/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`;
         console.log("Accepting SMART goals with URL:", smartUrl);
         await axios.put(smartUrl);
       }

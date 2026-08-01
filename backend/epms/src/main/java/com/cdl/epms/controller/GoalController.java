@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.cdl.epms.util.CryptoUtil;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +35,15 @@ public class GoalController {
     private final GoalService goalService;
     private final ModelMapper modelMapper;
     private final GoalRepository goalRepository;
+    private final CryptoUtil cryptoUtil;
 
     @PostMapping("/create/{quarter}")
     public ResponseEntity<ApiResponse<Goal>> createGoalWithDto(
             @PathVariable("quarter") Quarter quarter,
             @Valid @RequestBody CreateGoalRequestDto requestDto
     ) {
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
+        requestDto.setManagerId(cryptoUtil.decryptIfEncrypted(requestDto.getManagerId()));
         log.info("Creating goal for employee: {}, quarter: {}", requestDto.getEmployeeId(), quarter);
 
         Goal goal = new Goal();
@@ -64,6 +68,8 @@ public class GoalController {
             @PathVariable("quarter") Quarter quarter,
             @Valid @RequestBody UpdateGoalDraftDto draftDto
     ) {
+        draftDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(draftDto.getEmployeeId()));
+        draftDto.setManagerId(cryptoUtil.decryptIfEncrypted(draftDto.getManagerId()));
         log.info("Saving goal as DRAFT for employee: {}", draftDto.getEmployeeId());
 
         Goal goal = new Goal();
@@ -89,6 +95,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         log.info("Fetching goals for employee: {}, quarter: {}, year: {}", employeeId, quarter, year);
         try {
             List<Goal> goals = goalService.getGoalsByEmployee(employeeId, quarter, year);
@@ -122,6 +129,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         List<Goal> goals = goalService.getDraftGoalsByEmployee(employeeId, quarter, year);
 
         ApiResponse<List<Goal>> response = ApiResponse.<List<Goal>>builder()
@@ -137,6 +145,8 @@ public class GoalController {
             @PathVariable Long goalId,
             @Valid @RequestBody UpdateGoalDraftDto updateDto
     ) {
+        updateDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(updateDto.getEmployeeId()));
+        updateDto.setManagerId(cryptoUtil.decryptIfEncrypted(updateDto.getManagerId()));
         log.info("Updating draft goal with ID: {}", goalId);
         log.info("Update data - Title: {}, Target: {}, Weightage: {}",
                 updateDto.getTitle(), updateDto.getTarget(), updateDto.getWeightage());
@@ -188,6 +198,8 @@ public class GoalController {
     public ResponseEntity<ApiResponse<List<GoalResponseDto>>> approveOrSendBackGoals(
             @Valid @RequestBody ManagerApprovalRequestDto requestDto
     ) {
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
+        requestDto.setManagerId(cryptoUtil.decryptIfEncrypted(requestDto.getManagerId()));
         log.info("Manager approval action: {} for employee: {}",
                 requestDto.getAction(), requestDto.getEmployeeId());
 
@@ -212,6 +224,7 @@ public class GoalController {
             @PathVariable String managerId,
             @PathVariable Quarter quarter
     ) {
+        managerId = cryptoUtil.decryptIfEncrypted(managerId);
         List<String> employees = goalService.getTeamEmployeesByManager(managerId, quarter);
 
         ApiResponse<List<String>> response = ApiResponse.<List<String>>builder()
@@ -228,6 +241,8 @@ public class GoalController {
             @PathVariable String employeeId,
             @PathVariable Quarter quarter
     ) {
+        managerId = cryptoUtil.decryptIfEncrypted(managerId);
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         List<Goal> goals = goalService.getGoalsForManagerApproval(managerId, employeeId, quarter);
         List<GoalResponseDto> responseDtos = goals.stream()
                 .map(goal -> modelMapper.map(goal, GoalResponseDto.class))
@@ -249,6 +264,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         List<Goal> goals = goalService.getGoalsPendingSelfReview(employeeId, quarter, year);
         List<GoalResponseDto> responseDtos = goals.stream()
                 .map(goal -> modelMapper.map(goal, GoalResponseDto.class))
@@ -266,7 +282,8 @@ public class GoalController {
     public ResponseEntity<ApiResponse<List<GoalResponseDto>>> submitSelfReview(
             @Valid @RequestBody SelfReviewRequestDto requestDto
     ) {
-        log.info("Submitting self-review for employee");
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
+        log.info("Submitting self-review for employee: {}", requestDto.getEmployeeId());
 
         List<Goal> updatedGoals = goalService.submitSelfReview(requestDto);
         List<GoalResponseDto> responseDtos = updatedGoals.stream()
@@ -289,6 +306,8 @@ public class GoalController {
             @PathVariable String employeeId,
             @PathVariable Quarter quarter
     ) {
+        managerId = cryptoUtil.decryptIfEncrypted(managerId);
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         List<Goal> goals = goalService.getGoalsForManagerFinalReview(managerId, employeeId, quarter);
         List<GoalResponseDto> responseDtos = goals.stream()
                 .map(goal -> modelMapper.map(goal, GoalResponseDto.class))
@@ -306,6 +325,8 @@ public class GoalController {
     public ResponseEntity<ApiResponse<List<GoalResponseDto>>> submitManagerFinalReview(
             @Valid @RequestBody ManagerFinalReviewRequestDto requestDto
     ) {
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
+        requestDto.setManagerId(cryptoUtil.decryptIfEncrypted(requestDto.getManagerId()));
         log.info("Submitting manager final review for employee: {}", requestDto.getEmployeeId());
 
         List<Goal> updatedGoals = goalService.submitManagerFinalReview(requestDto);
@@ -329,6 +350,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         List<Goal> goals = goalService.getPendingGoalsForAcceptance(employeeId, quarter, year);
         List<GoalResponseDto> responseDtos = goals.stream()
                 .map(goal -> modelMapper.map(goal, GoalResponseDto.class))
@@ -348,6 +370,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         goalService.acceptReviewedGoals(employeeId, quarter, year);
 
         ApiResponse<String> response = ApiResponse.<String>builder()
@@ -366,6 +389,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         try {
             goalService.validateWeightageTotal(employeeId, quarter, year);
             WeightageValidationResponse validationResponse = new WeightageValidationResponse(true, 100, "Weightage total is valid (100%)");
@@ -404,6 +428,7 @@ public class GoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         log.info("Test endpoint - employeeId: {}, quarter: {}, year: {}", employeeId, quarter, year);
         try {
             List<Goal> goals = goalRepository.findByEmployeeIdAndQuarterAndYearAndGoalType(
@@ -434,6 +459,7 @@ public class GoalController {
             @PathVariable String quarter,
             @RequestParam Integer year) {
         try {
+            employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
             Quarter quarterEnum = Quarter.valueOf(quarter);
             List<Goal> goals = goalService.getAllGoalsForEditing(employeeId, quarterEnum, year);
             return ResponseEntity.ok(goals);
@@ -448,6 +474,7 @@ public class GoalController {
             @PathVariable String quarter,
             @RequestParam Integer year) {
         try {
+            employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
             Quarter quarterEnum = Quarter.valueOf(quarter);
             List<Goal> submittedGoals = goalService.submitAllDraftGoals(employeeId, quarterEnum, year);
             return ResponseEntity.ok(Map.of(

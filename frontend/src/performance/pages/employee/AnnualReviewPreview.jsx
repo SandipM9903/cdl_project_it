@@ -41,13 +41,13 @@ import {
   FaGrinTears,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL } from "../../services/api";
 import {
   FaFilePdf,
   FaFileExcel,
   FaFileWord,
   FaFileImage,
 } from "react-icons/fa";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL, getEncryptedEmployeeCode } from "../../services/api";
 import { simpleEncrypt } from "../../../simpleEncrypt";
 import { BASE_URL } from "../../../config/Config";
 import { createPortal } from "react-dom";
@@ -580,7 +580,7 @@ const AnnualReviewPreview = () => {
       }
 
       // Fetch annual review data
-      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${storedEmpId}/${year}`;
+      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${getEncryptedEmployeeCode(storedEmpId)}/${year}`;
       console.log("Fetching annual review from:", annualReviewUrl);
 
       const annualReviewResponse = await axios.get(annualReviewUrl);
@@ -654,7 +654,7 @@ const AnnualReviewPreview = () => {
     for (const quarter of quarters) {
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/${quarter}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(storedEmpId)}/${quarter}?year=${year}`,
         );
 
         let goals = [];

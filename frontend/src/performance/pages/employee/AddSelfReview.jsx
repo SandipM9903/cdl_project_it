@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS } from "../../services/api";
+import { BASE_URL_EPMS, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -27,7 +27,7 @@ const ManagerGoalsView = () => {
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`;
+        const url = `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`;
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Failed to fetch goals: ${response.status}`);

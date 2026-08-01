@@ -37,7 +37,7 @@ import {
   FaBan,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 
 // Helper function to get employee full name with priority to fullNameAsAadhaar
 const getEmployeeFullName = (employeeData) => {
@@ -232,7 +232,7 @@ const EmployeeAnnualSubmitToHr = () => {
         return;
       }
 
-      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${storedEmpId}/${year}`;
+      const annualReviewUrl = `${BASE_URL_EPMS}/api/annual-review/${getEncryptedEmployeeCode(storedEmpId)}/${year}`;
       console.log("Fetching annual review from:", annualReviewUrl);
       const annualReviewResponse = await axios.get(annualReviewUrl);
 

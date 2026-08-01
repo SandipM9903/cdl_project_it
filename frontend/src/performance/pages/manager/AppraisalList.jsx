@@ -42,7 +42,7 @@ import {
 import Button from "../../components/common/Button";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 
 const getEmployeeFullName = (employee) => {
@@ -696,7 +696,7 @@ const AppraisalList = () => {
       const empCode = getEmployeeCode(employee);
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarterParam}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarterParam}?year=${year}`,
           { timeout: 3000 },
         );
         let goals = [];
@@ -744,7 +744,7 @@ const AppraisalList = () => {
       const empCode = getEmployeeCode(employee);
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarterParam}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarterParam}?year=${year}`,
           { timeout: 3000 },
         );
         let goals = [];
@@ -794,7 +794,7 @@ const AppraisalList = () => {
       const empCode = getEmployeeCode(employee);
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarterParam}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarterParam}?year=${year}`,
           { timeout: 3000 },
         );
         let goals = [];
@@ -830,7 +830,7 @@ const AppraisalList = () => {
       const empCode = getEmployeeCode(employee);
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarterParam}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarterParam}?year=${year}`,
           { timeout: 3000 },
         );
         let goals = [];
@@ -864,7 +864,7 @@ const AppraisalList = () => {
       const empCode = getEmployeeCode(employee);
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarterParam}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarterParam}?year=${year}`,
           { timeout: 3000 },
         );
         let goals = [];
@@ -929,7 +929,7 @@ const AppraisalList = () => {
       for (const quarter of quarters) {
         try {
           const response = await axios.get(
-            `${BASE_URL_EPMS}/api/goals/employee/${empCode}/${quarter}?year=${year}`,
+            `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empCode)}/${quarter}?year=${year}`,
             { timeout: 3000 },
           );
           let goals = [];
@@ -966,7 +966,7 @@ const AppraisalList = () => {
 
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/annual-review/${empCode}/${year}`,
+          `${BASE_URL_EPMS}/api/annual-review/${getEncryptedEmployeeCode(empCode)}/${year}`,
           { timeout: 3000 },
         );
         if (response.data) {
@@ -1453,8 +1453,8 @@ const AppraisalList = () => {
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page
-                      ? "bg-red-600 text-white"
-                      : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    ? "bg-red-600 text-white"
+                    : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     }`}
                 >
                   {page}
@@ -1588,10 +1588,10 @@ const AppraisalList = () => {
                               handleViewQuarterGoals(employee, quarter)
                             }
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${isCompleted
-                                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                : qData.goalsCount > 0
-                                  ? "bg-red-100 text-red-700 hover:bg-red-200"
-                                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : qData.goalsCount > 0
+                                ? "bg-red-100 text-red-700 hover:bg-red-200"
+                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                               }`}
                           >
                             {isCompleted ? (

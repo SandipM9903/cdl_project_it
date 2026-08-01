@@ -51,7 +51,7 @@ public class EmailerServiceImpl implements EmailerService {
     @Value("${employee.api.emails.api}")
     private String employeeEmailsApi;
 
-    @Value("${app.frontend.url}")
+    @Value("${app.frontend.url:https://mycdl.cms.co.in}")
     private String frontendUrl;
 
     @Value("${app.frontend.paths.manager-goal-setting}")
@@ -356,6 +356,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("submissionDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             variables.put("goalsTable", goalsHtml.toString());
+            variables.put("previewUrl", frontendUrl + employeeDashboardPath + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, employeeEmail, "goal submission to employee");
@@ -414,6 +415,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("approvalDate", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
             variables.put("approvalTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             variables.put("goalsTable", goalsHtml.toString());
+            variables.put("previewUrl", frontendUrl + employeeDashboardPath + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, employeeEmail, "goal approval");
@@ -471,6 +473,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("rejectionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             variables.put("goalsTable", goalsHtml.toString());
             variables.put("rejectionReason", rejectionReason != null ? rejectionReason : "No specific reason provided");
+            variables.put("editUrl", frontendUrl + employeeDashboardPath + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, employeeEmail, "goal rejection");
@@ -530,6 +533,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             variables.put("goalsTable", goalsHtml.toString());
             variables.put("overallRating", String.valueOf(overallRating));
+            variables.put("reviewUrl", frontendUrl + managerGoalSettingPath + "/" + employeeId + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, managerEmail, "self review to manager");
@@ -587,6 +591,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("submissionTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
             variables.put("goalsTable", goalsHtml.toString());
             variables.put("overallRating", String.valueOf(overallRating));
+            variables.put("previewUrl", frontendUrl + employeeDashboardPath + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, employeeEmail, "self review to employee");
@@ -647,6 +652,7 @@ public class EmailerServiceImpl implements EmailerService {
             variables.put("goalsTable", goalsHtml.toString());
             variables.put("overallRating", String.valueOf(overallRating));
             variables.put("managerRating", managerRating != null ? managerRating : "Not specified");
+            variables.put("previewUrl", frontendUrl + employeeDashboardPath + "?year=" + year + "&quarter=" + quarter);
 
             emailRequest.setVariables(variables);
             sendEmailWithRetry(emailRequest, employeeEmail, "manager review to employee");
@@ -1317,7 +1323,7 @@ public class EmailerServiceImpl implements EmailerService {
             html.append("<td>").append(index++).append("</td>");
             html.append("<td>").append(escapeHtml(String.valueOf(goal.get("title")))).append("</td>");
             html.append("<td style='text-align: center;'>").append(goal.get("weightage")).append("%</td>");
-            html.append("<td style='text-align: center;'>").append(goal.get("selfAssessmentScore")).append("/100</td>");
+            html.append("<td style='text-align: center;'>").append(goal.get("selfAssessmentScore")).append("</td>");
             html.append("</tr>");
         }
         html.append("</tbody></table>");
@@ -1337,8 +1343,8 @@ public class EmailerServiceImpl implements EmailerService {
             html.append("<td>").append(index++).append("</td>");
             html.append("<td>").append(escapeHtml(String.valueOf(goal.get("title")))).append("</td>");
             html.append("<td style='text-align: center;'>").append(goal.get("weightage")).append("%</td>");
-            html.append("<td style='text-align: center;'>").append(goal.get("selfAssessmentScore")).append("/100</td>");
-            html.append("<td style='text-align: center;'>").append(goal.get("managerAssessmentScore")).append("/100</td>");
+            html.append("<td style='text-align: center;'>").append(goal.get("selfAssessmentScore")).append("</td>");
+            html.append("<td style='text-align: center;'>").append(goal.get("managerAssessmentScore")).append("</td>");
             html.append("</tr>");
         }
         html.append("</tbody></table>");

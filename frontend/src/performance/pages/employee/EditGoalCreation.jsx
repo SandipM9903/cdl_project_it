@@ -27,7 +27,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -374,7 +374,7 @@ const EditGoalCreation = () => {
   const fetchExistingDraftGoals = async () => {
     try {
       const storedEmpId = localStorage.getItem("empId") || empId;
-      const url = `${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/${selectedQuarter}?year=${selectedYear}`;
+      const url = `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(storedEmpId)}/${selectedQuarter}?year=${selectedYear}`;
       const response = await axios.get(url);
 
       let existingGoals = [];
@@ -667,7 +667,7 @@ const EditGoalCreation = () => {
         }
 
         console.log("Submitting all draft goals via bulk endpoint");
-        await axios.post(`${BASE_URL_EPMS}/api/goals/employee/${storedEmpId}/submit-all/${selectedQuarter}?year=${selectedYear}`);
+        await axios.post(`${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(storedEmpId)}/submit-all/${selectedQuarter}?year=${selectedYear}`);
 
         showModal("Success", "SMART Goals submitted for manager approval successfully!", "success", () => {
           closeModal();

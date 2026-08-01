@@ -53,7 +53,7 @@ import {
   FaRedo,
 } from "react-icons/fa";
 import { FiPlus, FiMinus, FiEye, FiEdit, FiTrash2, FiArrowLeft } from "react-icons/fi";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL, getEncryptedEmployeeCode } from "../../services/api";
 import { simpleEncrypt } from "../../../simpleEncrypt";
 import { BASE_URL } from "../../../config/Config";
 import { createPortal } from "react-dom";
@@ -542,7 +542,8 @@ const EmployeeAnnualReview = () => {
   const fetchExistingAnnualReview = async () => {
     try {
       setLoading(true);
-      const url = `${BASE_URL_EPMS}/api/annual-review/${empId}/${selectedYear}`;
+      const encryptedToken = getEncryptedEmployeeCode(empId);
+      const url = `${BASE_URL_EPMS}/api/annual-review/${encryptedToken}/${selectedYear}`;
       console.log("Fetching existing annual review from:", url);
 
       const response = await axios.get(url);
@@ -747,7 +748,7 @@ const EmployeeAnnualReview = () => {
     for (const quarter of quarters) {
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${empId}/${quarter}?year=${selectedYear}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(empId)}/${quarter}?year=${selectedYear}`,
         );
 
         let goals = [];

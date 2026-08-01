@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../../components/Header";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -167,7 +167,7 @@ const SelfAssessmentForm = () => {
       // Fetch predefined goals
       addDebugLog("Fetching predefined goals...");
       const predefinedResponse = await fetch(
-        `${BASE_URL_EPMS}/api/goals/predefined/employee/${employeeId}/${quarter}?year=${year}`,
+        `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`,
       );
       const predefinedResult = await predefinedResponse.json();
 

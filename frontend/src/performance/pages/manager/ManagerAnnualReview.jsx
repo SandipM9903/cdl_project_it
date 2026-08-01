@@ -38,7 +38,7 @@ import {
   FaDownload,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, DOC_URL, getEncryptedEmployeeCode } from "../../services/api";
 import { simpleEncrypt } from "../../../simpleEncrypt";
 import { BASE_URL } from "../../../config/Config";
 import { toast, ToastContainer } from "react-toastify";
@@ -997,7 +997,7 @@ const ManagerAnnualReview = () => {
     for (const quarter of quarters) {
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/employee/${employeeId}/${quarter}?year=${year}`,
+          `${BASE_URL_EPMS}/api/goals/employee/${getEncryptedEmployeeCode(employeeId)}/${quarter}?year=${year}`,
         );
 
         let goals = [];
@@ -1016,7 +1016,7 @@ const ManagerAnnualReview = () => {
 
   const fetchReviewByEmployeeAndYear = async (employeeId, year) => {
     try {
-      const url = `${BASE_URL_EPMS}/api/annual-review/${employeeId}/${year}`;
+      const url = `${BASE_URL_EPMS}/api/annual-review/${getEncryptedEmployeeCode(employeeId)}/${year}`;
       console.log("Fetching annual review from:", url);
       const response = await axios.get(url);
 
@@ -1506,8 +1506,8 @@ const ManagerAnnualReview = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab
-                      ? "border-red-500 text-red-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-red-300"
+                    ? "border-red-500 text-red-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-red-300"
                     }`}
                 >
                   {tabLabels[tab]}
@@ -1525,8 +1525,8 @@ const ManagerAnnualReview = () => {
                   <div
                     key={tab}
                     className={`h-2 w-8 rounded-full transition-all ${tabOrder.indexOf(activeTab) >= index
-                        ? "bg-red-500"
-                        : "bg-gray-300"
+                      ? "bg-red-500"
+                      : "bg-gray-300"
                       }`}
                   />
                 ))}
@@ -1698,8 +1698,8 @@ const ManagerAnnualReview = () => {
                             openDocument(cert.certificateDocId)
                           }
                           className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${cert.certificateDocId
-                              ? "bg-gray-50 border-gray-200 cursor-pointer hover:bg-gray-100"
-                              : "bg-gray-50 border-gray-200"
+                            ? "bg-gray-50 border-gray-200 cursor-pointer hover:bg-gray-100"
+                            : "bg-gray-50 border-gray-200"
                             }`}
                         >
                           <div className="flex items-center gap-3">
@@ -1764,8 +1764,8 @@ const ManagerAnnualReview = () => {
                   rows={8}
                   placeholder="Enter your detailed remarks about the employee's performance, achievements, areas of improvement, and overall assessment..."
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-red-500 focus:border-red-500 resize-none ${validationErrors.managerRemarks
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-300"
                     }`}
                 />
                 {validationErrors.managerRemarks && (
@@ -1847,8 +1847,8 @@ const ManagerAnnualReview = () => {
                         handleAchievementLevelChange(e.target.value)
                       }
                       className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 ${validationErrors.achievementLevel
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                     >
                       <option value="">Select Achievement Level</option>
@@ -1871,8 +1871,8 @@ const ManagerAnnualReview = () => {
                       value={potential}
                       onChange={(e) => handlePotentialChange(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${validationErrors.potential
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                       disabled={!achievementLevel}
                     >
@@ -1901,8 +1901,8 @@ const ManagerAnnualReview = () => {
                       value={performance}
                       onChange={(e) => handlePerformanceChange(e.target.value)}
                       className={`w-full p-2.5 border rounded-lg focus:ring-red-500 focus:border-red-500 bg-white ${validationErrors.performance
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                       disabled={!achievementLevel}
                     >
@@ -2016,8 +2016,8 @@ const ManagerAnnualReview = () => {
               onClick={goToPreviousTab}
               disabled={tabOrder.indexOf(activeTab) === 0}
               className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${tabOrder.indexOf(activeTab) === 0
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-gray-600 text-white hover:bg-gray-700"
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-gray-600 text-white hover:bg-gray-700"
                 }`}
             >
               <FaArrowLeftIcon size={14} />
@@ -2040,8 +2040,8 @@ const ManagerAnnualReview = () => {
                   onClick={handleSubmitToEmployee}
                   disabled={submitting || !isSubmitEnabled}
                   className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 ${isSubmitEnabled
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
                     }`}
                 >
                   {submitting ? (
@@ -2056,8 +2056,8 @@ const ManagerAnnualReview = () => {
                   onClick={goToNextTab}
                   disabled={!canProceedToNext()}
                   className={`px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2 ${canProceedToNext()
-                      ? "bg-red-500 text-white hover:bg-red-600"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    ? "bg-red-500 text-white hover:bg-red-600"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                 >
                   Next

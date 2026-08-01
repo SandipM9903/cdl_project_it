@@ -21,7 +21,7 @@ import {
   FaCalendar,
 } from "react-icons/fa";
 import axios from "axios";
-import { BASE_URL_EPMS, BASE_URL_EPMS_EMP } from "../../services/api";
+import { BASE_URL_EPMS, BASE_URL_EPMS_EMP, getEncryptedEmployeeCode } from "../../services/api";
 import LoadingAnimation from "../../components/common/LoadingAnimation";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -219,7 +219,7 @@ const ManagerBulkPredefinedGoals = () => {
       const empCode = employee.empCode || employee.id;
       try {
         const response = await axios.get(
-          `${BASE_URL_EPMS}/api/goals/predefined/employee/${empCode}/${quarter}`,
+          `${BASE_URL_EPMS}/api/goals/predefined/employee/${getEncryptedEmployeeCode(empCode)}/${quarter}`,
           { params: { year: yearToUse } }
         );
 
@@ -1246,10 +1246,10 @@ const GoalsTable = ({ groupedGoals, onFieldChange, onWeightageChange, onTimeline
                     ) : (
                       <div
                         className={`w-full px-4 py-3 border rounded-lg text-sm text-center font-medium ${isRedistributed
-                            ? "border-red-300 bg-red-50 text-red-700"
-                            : isWeightageZero
-                              ? "border-orange-300 bg-orange-50 text-orange-700"
-                              : "border-gray-200 bg-gray-50 text-gray-900"
+                          ? "border-red-300 bg-red-50 text-red-700"
+                          : isWeightageZero
+                            ? "border-orange-300 bg-orange-50 text-orange-700"
+                            : "border-gray-200 bg-gray-50 text-gray-900"
                           }`}
                       >
                         {group.weightage.toFixed(2)}%

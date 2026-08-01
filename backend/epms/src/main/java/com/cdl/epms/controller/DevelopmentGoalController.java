@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.cdl.epms.util.CryptoUtil;
 import java.util.List;
 
 @RestController
@@ -25,12 +26,14 @@ public class DevelopmentGoalController {
 
     private final DevelopmentGoalService developmentGoalService;
     private final ModelMapper modelMapper;
+    private final CryptoUtil cryptoUtil;
 
     @PostMapping("/create/{quarter}")
     public ResponseEntity<ApiResponse<DevelopmentGoalResponseDto>> createDevelopmentGoal(
             @PathVariable("quarter") Quarter quarter,
             @Valid @RequestBody CreateDevelopmentGoalRequestDto requestDto
     ) {
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
         log.info("Creating development goal for employee: {}, quarter: {}", requestDto.getEmployeeId(), quarter);
 
         DevelopmentGoal savedGoal = developmentGoalService.createDevelopmentGoal(requestDto, quarter);
@@ -49,6 +52,7 @@ public class DevelopmentGoalController {
             @PathVariable Long goalId,
             @Valid @RequestBody CreateDevelopmentGoalRequestDto requestDto
     ) {
+        requestDto.setEmployeeId(cryptoUtil.decryptIfEncrypted(requestDto.getEmployeeId()));
         log.info("Updating development goal: {}", goalId);
 
         DevelopmentGoal updatedGoal = developmentGoalService.updateDevelopmentGoal(goalId, requestDto);
@@ -82,6 +86,7 @@ public class DevelopmentGoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        employeeId = cryptoUtil.decryptIfEncrypted(employeeId);
         log.info("Fetching development goals for employee: {}, quarter: {}, year: {}", employeeId, quarter, year);
 
         List<DevelopmentGoal> goals = developmentGoalService.getDevelopmentGoalsByEmployee(employeeId, quarter, year);
@@ -103,6 +108,7 @@ public class DevelopmentGoalController {
             @PathVariable Quarter quarter,
             @RequestParam Integer year
     ) {
+        managerId = cryptoUtil.decryptIfEncrypted(managerId);
         log.info("Fetching development goals for manager: {}, quarter: {}, year: {}", managerId, quarter, year);
 
         List<DevelopmentGoal> goals = developmentGoalService.getDevelopmentGoalsByManager(managerId, quarter, year);
